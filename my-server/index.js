@@ -7,6 +7,7 @@ const Product = require("./models/Product.js")
 const User = require("./models/User.js");
 const Address = require("./models/Address.js");
 const Order = require("./models/Order.js");
+const Cart = require('./models/Cart.js');
 
 const app = express()
 const port = 3000
@@ -96,14 +97,12 @@ app.delete("/products/:id", async (req, res) => {
 });
 
 /* USER */
-// đăng ký
 app.post("/users", async (req, res) => {
   const user = new User(req.body);
   const result = await user.save();
   res.send(result);
 });
 
-// login
 app.post("/users/login", async (req, res) => {
 
   const { email, password } = req.body;
@@ -121,19 +120,16 @@ app.post("/users/login", async (req, res) => {
 
 });
 
-// lấy tất cả user
 app.get("/users", async (req, res) => {
   const users = await User.find();
   res.send(users);
 });
 
-// lấy user theo id
 app.get("/users/:id", async (req, res) => {
   const user = await User.findById(req.params.id);
   res.send(user);
 });
 
-// update user
 app.put("/users/:id", async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.params.id,
@@ -143,7 +139,6 @@ app.put("/users/:id", async (req, res) => {
   res.send(user);
 });
 
-// delete user
 app.delete("/users/:id", async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.send({ message: "User deleted" });
@@ -206,6 +201,44 @@ app.put("/orders/:id/cancel", async (req, res) => {
 app.delete("/orders/:id", async (req, res) => {
   await Order.findByIdAndDelete(req.params.id);
   res.json({ message: "Order deleted" });
+});
+
+/* CART */
+app.get("/cart", async (req, res) => {
+  const cart = await Cart.find().sort({ createdAt: -1 });
+  res.json(cart);
+});
+app.get("/cart/user/:userId", async (req, res) => {
+  const cart = await Cart.find({ userId: req.params.userId });
+  res.json(cart);
+});
+app.post("/cart", async (req, res) => {
+  const { userId, name, price, quantity, image } = req.body;
+  let item = await Cart.findOne({ userId, name });
+    if (item) {
+      item.quantity += quantity;
+      await item.save();
+    } else {
+      item = new Cart({ userId, name, price, quantity, image });
+      await item.save();
+    }
+  res.json(item);
+});
+app.put("/cart/:id", async (req, res) => {
+  const item = await Cart.findByIdAndUpdate(
+    req.params.id,
+    { quantity: req.body.quantity },
+    { new: true }
+  );
+  res.json(item);
+});
+app.delete("/cart/:id", async (req, res) => {
+  await Cart.findByIdAndDelete(req.params.id);
+  res.json({ message: "Item deleted" });
+});
+app.delete("/cart/user/:userId", async (req, res) => {
+  await Cart.deleteMany({ userId: req.params.userId });
+  res.json({ message: "Cart cleared" });
 });
 
 

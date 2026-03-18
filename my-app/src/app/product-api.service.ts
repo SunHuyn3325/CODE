@@ -26,4 +26,8 @@ export class ProductApiService {
   return this.http.get<Product[]>(url);
   }
 
+  placeOrder(orderData: any) {
+    return this.http.post(this.apiURL, orderData);
+  }
+
 }

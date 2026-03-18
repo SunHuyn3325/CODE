@@ -13,6 +13,7 @@ import { Login } from './login/login';
 import { Signup } from './signup/signup';
 import { Account } from './account/account';
 import { ProductDetail } from './product-detail/product-detail';
+import { Cart } from './cart/cart';
 
 export const routes: Routes = [
     { path: '', component: Home },
@@ -29,6 +30,7 @@ export const routes: Routes = [
     {path:'login',component:Login},
     {path:'signup',component:Signup},
     {path:'account',component:Account},
+    {path:'cart',component:Cart},
     {
     path: 'admin',
     loadChildren: () =>

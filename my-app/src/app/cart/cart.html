@@ -1,1 +1,72 @@
-<p>cart works!</p>
+<div class="checkout-container">
+
+  <!-- LEFT -->
+  <div class="checkout-left">
+    <h2>Thông tin giao hàng</h2>
+
+    <input type="text" placeholder="Họ tên" [(ngModel)]="form.name">
+    <input type="text" placeholder="Số điện thoại..." [(ngModel)]="form.phone">
+    <input type="email" placeholder="Email" [(ngModel)]="form.email">
+    <input type="text" placeholder="Địa chỉ..." [(ngModel)]="form.address">
+
+    <!-- Address -->
+    <div class="address-group">
+      <select (change)="onProvinceChange($event)">
+        <option value="">Chọn Tỉnh, Thành phố</option>
+        <option *ngFor="let p of provinces" [value]="p.code">
+          {{ p.name }}
+        </option>
+      </select>
+
+      <select (change)="onDistrictChange($event)">
+        <option value="">Chọn Quận, Huyện</option>
+        <option *ngFor="let d of districts" [value]="d.code">
+          {{ d.name }}
+        </option>
+      </select>
+
+      <select [(ngModel)]="form.ward">
+        <option value="">Chọn Phường, Xã</option>
+        <option *ngFor="let w of wards" [value]="w.name">
+          {{ w.name }}
+        </option>
+      </select>
+    </div>
+
+    <h3>Phương thức thanh toán</h3>
+    <div class="payment-box">
+      <input type="radio" checked>
+      <span>Thanh toán online qua cổng VNPay</span>
+    </div>
+  </div>
+
+  <div class="checkout-right">
+
+    <div class="cart-item" *ngFor="let item of cart">
+        <img [src]="item.image || item.images?.[0]">
+
+        <div class="info">
+            <p class="name">{{ item.name }}</p>
+            <p class="variant">
+            {{ item.color }} / {{ item.size }}
+            </p>
+    </div>
+
+  <div class="price">
+    {{ item.price * (item.quantity || 1) | number }}đ
+  </div>
+</div>
+
+    <div class="voucher">
+      <input type="text" placeholder="Nhập mã giảm giá">
+      <button>ÁP DỤNG VOUCHER</button>
+    </div>
+
+    <div class="summary">
+      <p>Tạm tính: <span>{{ total | number }}đ</span></p>
+      <p>Phí vận chuyển: <span class="shipping">Tùy khu vực</span></p>
+      <h3>Tổng: <span>{{ total | number }}đ</span></h3>
+    </div>
+        <button class="order-btn" (click)="placeOrder()">Đặt hàng</button>
+  </div>
+</div>
