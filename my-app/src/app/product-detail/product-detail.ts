@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
+import { CartApiService } from '../cart-api.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -29,7 +30,8 @@ export class ProductDetail implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private productService: ProductApiService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private cartService: CartApiService,
   ) {}
 
   ngOnInit() {
@@ -113,6 +115,38 @@ export class ProductDetail implements OnInit {
       localStorage.getItem('viewedProducts') || '[]'
     );
 
+  }
+  getUserId(): string {
+  const user = localStorage.getItem('user');
+
+    if (user) {
+      return JSON.parse(user)._id;
+    }
+
+    let guestId = localStorage.getItem('guestId');
+
+    if (!guestId) {
+      guestId = 'guest_' + new Date().getTime();
+      localStorage.setItem('guestId', guestId);
+    }
+
+    return guestId;
+  }
+  addToCart() {
+  const userId = this.getUserId();
+
+    const item = {
+      userId: userId,
+      productId: this.product._id,
+      name: this.product.product_name,
+      price: this.product.unit_price,
+      image: this.selectedImage,
+      quantity: this.quantity
+    };
+
+    this.cartService.addToCart(item).subscribe(() => {
+      alert('Đã thêm vào giỏ hàng');
+    });
   }
 
   changeImage(img: string) {

@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LocationApiService } from '../location-api.service';
-import { ProductApiService } from '../product-api.service';
+import { CartApiService } from '../cart-api.service';
+import { OrderApiService } from '../order-api.service';
 
 @Component({
   selector: 'app-cart',
@@ -12,6 +13,7 @@ import { ProductApiService } from '../product-api.service';
   styleUrl: './cart.css',
 })
 export class Cart implements OnInit {
+
   provinces: any[] = [];
   districts: any[] = [];
   wards: any[] = [];
@@ -32,26 +34,53 @@ export class Cart implements OnInit {
 
   constructor(
     private locationService: LocationApiService,
-    private productService: ProductApiService
+    private cartService: CartApiService,
+    private orderService: OrderApiService
   ) {}
 
   ngOnInit(): void {
 
-    // 👉 load location
+    // ✅ load location
     this.locationService.getAllLocations().subscribe(data => {
       this.allData = data;
       this.provinces = data;
     });
 
-    // 👉 load cart từ localStorage (QUAN TRỌNG)
-    this.cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    // ✅ load cart từ MongoDB
+    const userId = this.getUserId();
+    this.cartService.getCartByUser(userId).subscribe(data => {
+      this.cart = data;
 
-    // 👉 tính tổng tiền
+      this.calculateTotal();
+    });
+  }
+
+  // ✅ lấy userId (user hoặc guest)
+  getUserId(): string {
+    const user = localStorage.getItem('user');
+
+    if (user) {
+      return JSON.parse(user)._id;
+    }
+
+    let guestId = localStorage.getItem('guestId');
+
+    if (!guestId) {
+      guestId = 'guest_' + new Date().getTime();
+      localStorage.setItem('guestId', guestId);
+    }
+
+    return guestId;
+  }
+
+  // ✅ tính tổng tiền
+  calculateTotal() {
     this.total = this.cart.reduce((sum: number, item: any) => {
-      return sum + item.price * (item.quantity || 1);
+      return sum + item.price * item.quantity;
     }, 0);
   }
 
+  // ✅ chọn tỉnh
   onProvinceChange(event: any) {
     const code = +event.target.value;
     const province = this.allData.find(p => p.code === code);
@@ -60,6 +89,7 @@ export class Cart implements OnInit {
     this.wards = [];
   }
 
+  // ✅ chọn quận
   onDistrictChange(event: any) {
     const code = +event.target.value;
 
@@ -72,24 +102,48 @@ export class Cart implements OnInit {
     }
   }
 
-  // 👉 nút đặt hàng
+  // ✅ đặt hàng
   placeOrder() {
+
+    const userId = this.getUserId();
+
     const orderData = {
+      userId: userId,
       user: this.form,
       items: this.cart,
-      total: this.total
+      total: this.total,
+      status: 'pending'
     };
 
-    this.productService.placeOrder(orderData).subscribe(() => {
+    this.orderService.createOrder(orderData).subscribe(() => {
+
       alert('Đặt hàng thành công!');
 
-      // clear cart
-      localStorage.removeItem('cart');
+      // 🔥 clear cart trong DB
+      this.cartService.clearCart(userId).subscribe(() => {
+        this.cart = [];
+        this.total = 0;
+      });
 
-      // reset UI
-      this.cart = [];
-      this.total = 0;
     });
+  }
+  increase(item: any) {
+    item.quantity++;
+
+    this.cartService.updateQuantity(item._id, item.quantity)
+      .subscribe(() => {
+        this.calculateTotal();
+      });
+  }
+  decrease(item: any) {
+    if (item.quantity > 1) {
+      item.quantity--;
+
+      this.cartService.updateQuantity(item._id, item.quantity)
+        .subscribe(() => {
+          this.calculateTotal();
+        });
+    }
   }
 
 }

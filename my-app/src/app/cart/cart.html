@@ -48,8 +48,13 @@
         <div class="info">
             <p class="name">{{ item.name }}</p>
             <p class="variant">
-            {{ item.color }} / {{ item.size }}
+                {{ item.color }} / {{ item.size }}
             </p>
+            <div class="quantity-box">
+                <button (click)="decrease(item)">-</button>
+                <span>{{ item.quantity }}</span>
+                <button (click)="increase(item)">+</button>
+            </div>
     </div>
 
   <div class="price">
