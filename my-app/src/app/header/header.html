@@ -1,0 +1,52 @@
+<header class="header">
+
+  <!-- Top header -->
+  <div class="header-top">
+    
+  <!-- Logo -->
+  <div class="logo">
+    <img src="assets/Logo.png" alt="SẮC" routerLink="/">
+  </div>
+
+  <!-- Right icons -->
+  <div class="header-actions">
+    <button class="icon-btn">
+      <img src="assets/search.png" alt="Search">
+    </button>
+    <button class="icon-btn">
+      <img src="assets/cart.png" alt="Cart">
+    </button>
+    <div class="user-area">
+      <a *ngIf="!user" routerLink="/login" class="login-btn">
+        Đăng nhập
+      </a>
+      <div *ngIf="user" class="user-menu">
+        <button class="icon-btn" routerLink="/account">
+          <img src="assets/user.png" class="avatar">
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <ul>
+      <li><a routerLink="/">Trang chủ</a></li>
+      <li><a routerLink="/aboutus">Về Sắc</a></li>
+      <li class="dropdown">
+        <a>Sản phẩm</a>
+          <ul class="dropdown-menu">
+            <li><a routerLink="/products">Tất cả sản phẩm</a></li>
+            <li><a routerLink="/products/ao-dai" >Áo dài</a></li>
+            <li><a routerLink="/products/vietphuc">Việt phục</a></li>
+            <li><a routerLink="/products/aobaba">Áo bà ba</a></li>
+            <li><a routerLink="/products/phukien">Phụ kiện</a></li>
+          </ul>
+      </li>
+      <li><a routerLink="/collections">Bộ sưu tập</a></li>
+      <li><a routerLink="/contact">Liên hệ</a></li>
+    </ul>
+  </nav>
+
+</header>

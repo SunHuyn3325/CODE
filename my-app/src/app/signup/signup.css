@@ -1,0 +1,178 @@
+.outer-background{
+  background:#f3f3f3;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:60px 20px;
+}
+
+/* ===== FORM CARD ===== */
+
+.signup-container{
+  width:650px;
+  background:white;
+  padding:50px 60px;
+  border-radius:16px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.08);
+}
+
+/* ===== TITLE ===== */
+
+.signup-container h4{
+  font-size:26px;
+  font-weight:600;
+  color:#7b2c2c;
+  margin-bottom:10px;
+}
+
+.signup-container h6{
+  font-size:15px;
+  color:#666;
+  margin-bottom:35px;
+}
+
+/* ===== FORM SPACING ===== */
+
+.form-content .mb-4{
+  margin-bottom:32px;
+}
+
+/* ===== LABEL ===== */
+
+.form-label{
+  font-size:15px;
+  font-weight:600;
+  color:#2c2c2c;
+  margin-bottom:8px;
+}
+
+/* ===== INPUT ===== */
+
+.form-control{
+  width:100%;
+  height:50px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  padding:0 16px;
+  font-size:15px;
+  transition:all .2s ease;
+}
+
+.form-control:focus{
+  border-color:#b84a4a;
+  outline:none;
+  box-shadow:0 0 0 3px rgba(184,74,74,0.1);
+}
+
+/* ===== SELECT ===== */
+
+.birth-group{
+  display:flex;
+  gap:15px;
+  margin-top:8px;
+}
+
+.birth-group select{
+  flex:1;
+  height:48px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  padding-left:10px;
+  font-size:14px;
+}
+
+/* ===== GENDER ===== */
+
+.form-check{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:6px;
+}
+
+.form-check-label{
+  font-size:14px;
+  color:#444;
+}
+
+/* ===== HINT TEXT ===== */
+
+small,
+.text-muted{
+  font-size:13px;
+  color:#888;
+  font-style:italic;
+  margin-top:6px;
+  display:block;
+}
+
+/* ===== ERROR TEXT ===== */
+
+.text-danger{
+  font-size:13px;
+  color:#9f3f3f;
+  font-style:italic;
+  margin-top:6px;
+}
+
+/* ===== NOTE TEXT ===== */
+
+.note-text{
+  font-size:13px;
+  color:#777;
+  line-height:1.6;
+  margin-top:10px;
+}
+
+/* ===== CHECKBOX ===== */
+
+.checkbox-area{
+  margin-top:15px;
+}
+
+.checkbox-area label{
+  font-size:14px;
+  color:#444;
+}
+
+/* ===== BUTTON ===== */
+
+.signup-button{
+  width:100%;
+  height:52px;
+  border-radius:12px;
+  border:none;
+  font-size:16px;
+  font-weight:600;
+  background:#b84a4a;
+  color:white;
+  margin-top:25px;
+  transition:all .2s ease;
+}
+
+.signup-button:hover{
+  background:#9f3f3f;
+  transform:translateY(-1px);
+}
+
+/* ===== LINK ===== */
+
+a{
+  color:#b84a4a;
+  text-decoration:none;
+  font-weight:500;
+}
+
+a:hover{
+  text-decoration:underline;
+}
+
+/* ===== LOGIN TEXT ===== */
+
+.login-text{
+  text-align:center;
+  margin-top:20px;
+  font-size:20px;
+  color:#555;
+}

@@ -1,0 +1,118 @@
+<div class="order-container">
+
+  <h2>Quản lý Đơn hàng</h2>
+
+  <div class="toolbar">
+
+    <div class="filters">
+
+      <select [(ngModel)]="filterOption" name="filterOption">
+        <option value="orderId">Order ID</option>
+        <option value="user">User</option>
+      </select>
+
+      <input
+        type="text"
+        placeholder="Tìm kiếm"
+        [(ngModel)]="searchText"
+        name="searchText"
+        (input)="filterOrders()"
+        />
+
+      <select [(ngModel)]="selectedStatus" name="selectedStatus">
+
+        <option value="">Tình trạng</option>
+
+        <option value="pending">Chờ xử lý</option>
+
+        <option value="processing">Đang xử lý</option>
+
+        <option value="shipped">Đang giao</option>
+
+        <option value="delivered">Hoàn thành</option>
+
+        <option value="cancelled">Đã hủy</option>
+
+      </select>
+
+      <button
+        class="btn-filter"
+        (click)="filterOrders()"
+      >
+        Lọc
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+    <table class="order-table">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>User</th>
+                <th>Tổng giá trị</th>
+                <th>Thanh toán</th>
+                <th>Order Dt</th>
+                <th>Tình trạng</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let order of paginatedOrders">
+                <td>{{order._id}}</td>
+                <td>{{order.userName || 'Guest'}}</td>
+                <td>{{order.totalPrice | number}} đ</td>
+
+                <td>{{order.isPaid}}</td>
+
+                <td>{{order.createdAt | date:'dd/MM/yyyy'}}</td>
+
+                <td>
+
+                <select [(ngModel)]="order.status" (change)="updateOrderStatus(order, order.status)" >
+
+                <option *ngFor="let s of statusOptions" [value]="s.value">
+                {{s.label}}
+                </option>
+
+                </select>
+
+                </td>
+
+                <td>
+
+                <button (click)="cancelOrder(order)" class="btn-danger">
+                Hủy đơn
+                </button>
+                </td>
+
+            </tr>
+        </tbody>
+    
+    
+</table>
+
+<div class="pagination">
+
+<button
+(click)="previousPage()"
+[disabled]="currentPage === 1"
+>
+Previous
+</button>
+
+<span>
+Page {{currentPage}} / {{totalPages}}
+</span>
+
+<button
+(click)="nextPage()"
+[disabled]="currentPage === totalPages"
+>
+Next
+</button>
+
+</div>
+

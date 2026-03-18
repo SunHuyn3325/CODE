@@ -1,0 +1,92 @@
+<div class="dashboard">
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div>
+      <h1>Xin chào, Admin</h1>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary">Trở về trang web</button>
+      <button class="btn-outline">Đổi mật khẩu</button>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+
+    <!-- Hoạt động -->
+    <div class="card activity">
+
+        <h3>Hoạt động gần đây</h3>
+
+        <div class="activity-item" *ngFor="let item of recentActivities">
+            <div>{{item.module}}</div>
+            <div class="highlight">{{item.action}}</div>
+        </div>
+    </div>
+
+    <!-- Right side -->
+    <div class="admin-panels">
+
+  <!-- Xác thực -->
+  <div class="panel">
+    <div class="panel-header">
+      Xác thực
+    </div>
+
+    <div class="panel-item">
+      <span>Nhóm</span>
+      <button class="edit-btn">✏️</button>
+    </div>
+
+    <div class="panel-item">
+      <span>Tài khoản</span>
+      <button class="edit-btn">✏️</button>
+    </div>
+
+  </div>
+
+
+  <!-- Chức năng -->
+        <div class="panel">
+            <div class="panel-header">
+            Chức năng
+            </div>
+
+            <div class="panel-item">
+            <span>Sản phẩm</span>
+            <button class="edit-btn">✏️</button>
+            </div>
+
+            <div class="panel-item">
+            <span>Danh mục</span>
+            <button class="edit-btn">✏️</button>
+            </div>
+
+            <div class="panel-item">
+            <span>Liên hệ</span>
+            <button class="edit-btn">✏️</button>
+            </div>
+
+            <div class="panel-item" routerLink="/admin/orders">
+                <span>Đơn hàng</span>
+                <button class="edit-btn">✏️</button>
+            </div>
+
+            <div class="panel-item">
+            <span>Blogs</span>
+            <button class="edit-btn">✏️</button>
+            </div>
+
+            <div class="panel-item">
+            <span>Giảm giá</span>
+            <button class="edit-btn">✏️</button>
+            </div>
+
+        </div>
+
+    </div>
+
+  </div>
+
+</div>

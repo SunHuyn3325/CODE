@@ -1,0 +1,57 @@
+<div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <img src="assets/Logo.png">
+        </div>
+
+        <ul class="menu">
+            <li routerLink="/admin/mainpage">Trang chủ</li>
+            <li>Xem trang web</li>
+
+            <li class="menu-title">Xác thực</li>
+            <li routerLink="/admin/users">Tài khoản</li>
+            <li>Nhóm</li>
+
+            <li class="menu-title">Chức năng</li>
+
+            <li routerLink="/admin/products">Sản phẩm</li>
+            <li routerLink="/admin/categories">Danh mục</li>
+
+            <li routerLink="/admin/orders" class="menu-link">
+                Đơn hàng
+            </li>
+
+            <li routerLink="/admin/blogs">Blogs</li>
+            <li routerLink="/admin/discounts">Giảm giá</li>
+        </ul>
+    </aside>
+
+    <!-- Main -->
+    <div class="main">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="title">
+                {{ pageTitle || 'Trang quản trị SẮC' }}
+            </div>
+            <div class="admin-user">
+                <span class="notification">🔔</span>
+                <span class="email">
+                    {{ profileName || 'admin@uel.edu.vn' }}
+                </span>
+                <button class="logout-btn" (click)="confirmLogout()">
+                    Đăng xuất
+                </button>
+            </div>
+        </header>
+
+        <!-- Page content -->
+        <div class="content">
+            <router-outlet></router-outlet>
+        </div>
+
+    </div>
+
+</div>

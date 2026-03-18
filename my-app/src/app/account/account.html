@@ -1,0 +1,161 @@
+<div class="account-container">
+
+  <!-- Sidebar -->
+  <div class="account-sidebar">
+
+    <div class="account-avatar">
+      <img src="assets/user.png">
+      <p>{{user.profileName}}</p>
+    </div>
+
+    <ul>
+      <li 
+        [class.active]="currentTab==='profile'"
+        (click)="currentTab='profile'">
+        Thông tin tài khoản
+      </li>
+
+      <li>Đơn hàng của tôi</li>
+
+      <li 
+        [class.active]="currentTab==='address'"
+        (click)="currentTab='address'">
+        Địa chỉ giao hàng
+      </li>
+
+      <li (click)="logout()">Đăng xuất</li>
+    </ul>
+
+  </div>
+
+
+  <!-- Content -->
+  <div class="account-content">
+
+
+    <!-- PROFILE -->
+    <div *ngIf="currentTab==='profile'">
+
+      <h2>Thông tin tài khoản</h2>
+
+      <!-- VIEW MODE -->
+      <div *ngIf="!editUser && user?._id" class="info-card">
+
+        <div class="info-row">
+          <label>Họ và tên</label>
+          <span>{{user?.profileName}}</span>
+        </div>
+
+        <div class="info-row">
+          <label>Email</label>
+          <span>{{user?.email}}</span>
+        </div>
+
+        <div class="info-row">
+          <label>Số điện thoại</label>
+          <span>{{user?.phone || 'Chưa cập nhật'}}</span>
+        </div>
+
+        <div class="info-row">
+          <label>Giới tính</label>
+          <span>
+            {{user?.gender === 'female' ? 'Nữ' : 'Nam'}}
+          </span>
+        </div>
+
+        <div class="info-row">
+          <label>Ngày sinh</label>
+          <span>
+            {{user?.birthDay}} / {{user?.birthMonth}} / {{user?.birthYear}}
+          </span>
+        </div>
+
+        <button class="edit-btn" (click)="editUser=true">
+          Chỉnh sửa thông tin
+        </button>
+
+      </div>
+
+
+      <!-- EDIT MODE -->
+      <div *ngIf="editUser && user?._id" class="info-card">
+
+        <div class="edit-form">
+
+          <label>Họ và tên</label>
+          <input [(ngModel)]="user.profileName">
+
+          <label>Số điện thoại</label>
+          <input [(ngModel)]="user.phone">
+
+          <label>Giới tính</label>
+          <select [(ngModel)]="user.gender">
+            <option value="male">Nam</option>
+            <option value="female">Nữ</option>
+          </select>
+
+          <label>Ngày sinh</label>
+
+          <div class="birthday">
+            <input type="number" [(ngModel)]="user.birthDay" placeholder="Ngày">
+            <input type="number" [(ngModel)]="user.birthMonth" placeholder="Tháng">
+            <input type="number" [(ngModel)]="user.birthYear" placeholder="Năm">
+          </div>
+
+          <div class="edit-buttons">
+            <button class="save-btn" (click)="saveUser()">Lưu</button>
+            <button class="cancel-btn" (click)="editUser=false">Hủy</button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+    <!-- ADDRESS TAB -->
+    <div *ngIf="currentTab==='address'">
+
+      <h2>Địa chỉ giao hàng</h2>
+
+      <div *ngIf="!editAddress">
+
+        <p *ngIf="address?.address">
+          {{address.address}}, {{address.ward}}, {{address.district}}, {{address.city}}
+        </p>
+
+        <p *ngIf="!address?.address">
+          Bạn chưa thêm địa chỉ giao hàng
+        </p>
+
+        <button class="edit-btn" (click)="editAddress=true">
+          Thêm / Chỉnh sửa địa chỉ
+        </button>
+
+      </div>
+
+
+      <!-- EDIT ADDRESS -->
+      <div *ngIf="editAddress" class="address-form">
+
+        <input [(ngModel)]="address.phone" placeholder="Số điện thoại nhận hàng">
+
+        <input [(ngModel)]="address.address" placeholder="Địa chỉ">
+
+        <input [(ngModel)]="address.ward" placeholder="Phường / Xã">
+
+        <input [(ngModel)]="address.district" placeholder="Quận / Huyện">
+
+        <input [(ngModel)]="address.city" placeholder="Tỉnh / Thành phố">
+
+        <div class="btn-group">
+          <button (click)="saveAddress()">Lưu</button>
+          <button (click)="editAddress=false">Huỷ</button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

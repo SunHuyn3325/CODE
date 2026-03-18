@@ -1,0 +1,234 @@
+
+
+:host{
+  --text-main:#40513b;
+  --text-header:#6e5034;
+  --primary:#a94053;
+  --bg-main:#ebe1d8;
+  --white:#ffffff;
+}
+
+
+section{
+  padding:80px 40px;
+  background:var(--bg-main);
+}
+
+h1,h2,h3{
+  color:var(--text-main);
+}
+
+p{
+  color:var(--text-main);
+  line-height:1.7;
+}
+
+button{
+  font-family:"Montserrat", sans-serif;
+}
+
+
+
+.primary-btn{
+  padding:12px 26px;
+  background:var(--primary);
+  color:white;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  margin-top:20px;
+  transition:0.3s;
+}
+
+.primary-btn:hover{
+  opacity:0.9;
+}
+
+
+.about-hero{
+  height:70vh;
+  background:url("/assets/about/hero.jpg") center/cover no-repeat;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+.hero-content{
+  max-width:700px;
+  background:rgba(255,255,255,0.6);
+  padding:40px;
+  border-radius:10px;
+}
+
+.hero-content h1{
+  font-size:56px;
+  letter-spacing:4px;
+}
+
+.hero-content h2{
+  font-size:24px;
+  margin:10px 0 20px;
+}
+
+
+.story-container{
+  max-width:1100px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;
+  align-items:center;
+}
+
+.story-image img{
+  width:100%;
+  border-radius:10px;
+}
+
+
+.about-values{
+  text-align:center;
+}
+
+.values-grid{
+  margin-top:40px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:30px;
+  max-width:1000px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.value-card{
+  background:var(--white);
+  padding:30px;
+  border-radius:10px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  transition:0.3s;
+}
+
+.value-card:hover{
+  transform:translateY(-5px);
+}
+
+
+.heritage-container{
+  max-width:1100px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;
+  align-items:center;
+}
+
+.heritage-image img{
+  width:100%;
+  border-radius:10px;
+}
+
+.heritage-text ul{
+  margin-top:15px;
+}
+
+.heritage-text li{
+  margin-bottom:8px;
+}
+
+
+.about-artisans{
+  text-align:center;
+}
+
+.artisan-desc{
+  max-width:700px;
+  margin:auto;
+  margin-bottom:40px;
+}
+
+.artisan-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
+  max-width:1000px;
+  margin:auto;
+}
+
+.artisan-card{
+  background:white;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+  transition:0.3s;
+}
+
+.artisan-card:hover{
+  transform:translateY(-6px);
+}
+
+.artisan-card img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+}
+
+.artisan-card h3{
+  margin-top:12px;
+}
+
+.artisan-card p{
+  margin-bottom:15px;
+  color:var(--text-header);
+}
+
+
+.impact-container{
+  max-width:1100px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;
+  align-items:center;
+}
+
+.impact-image img{
+  width:100%;
+  border-radius:10px;
+}
+
+.impact-text ul{
+  margin-bottom:20px;
+}
+
+.impact-text li{
+  margin-bottom:6px;
+}
+
+
+.about-cta{
+  text-align:center;
+}
+
+.about-cta h2{
+  margin-bottom:15px;
+}
+
+
+@media(max-width:900px){
+
+.story-container,
+.heritage-container,
+.impact-container{
+grid-template-columns:1fr;
+}
+
+.values-grid{
+grid-template-columns:1fr;
+}
+
+.artisan-grid{
+grid-template-columns:1fr;
+}
+
+}

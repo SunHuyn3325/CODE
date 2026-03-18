@@ -1,0 +1,195 @@
+<div class="container">
+
+  <!-- Title -->
+  <h2>Xác thực / Tài khoản</h2>
+
+  <!-- Search + Add -->
+  <div class="search-bar">
+
+    <input
+      type="text"
+      placeholder="Tìm kiếm người dùng..."
+      [(ngModel)]="searchText"
+      name="searchText"
+    />
+
+    <button (click)="searchUser()">
+      Tìm kiếm
+    </button>
+
+    <button class="add-btn" (click)="openAddUser()">
+      + Thêm người dùng
+    </button>
+
+  </div>
+
+  <!-- TABLE -->
+  <table>
+
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Tên người dùng</th>
+        <th>Giới tính</th>
+        <th>Điện thoại</th>
+        <th>Địa chỉ</th>
+        <th>Vai trò</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let user of paginatedUsers; let i = index">
+
+        <td>{{ i + 1 + (currentPage-1)*pageSize }}</td>
+
+        <!-- Name -->
+        <td>
+
+          <span *ngIf="editingUserId !== user._id">
+            {{ user.profileName }}
+          </span>
+
+          <input
+            *ngIf="editingUserId === user._id"
+            [(ngModel)]="editedUser.profileName"
+          />
+
+        </td>
+
+        <!-- Gender -->
+        <td>
+
+          <span *ngIf="editingUserId !== user._id">
+            {{ user.gender }}
+          </span>
+
+          <input
+            *ngIf="editingUserId === user._id"
+            [(ngModel)]="editedUser.gender"
+          />
+
+        </td>
+
+        <!-- Phone -->
+        <td>
+
+          <span *ngIf="editingUserId !== user._id">
+            {{ user.phone || '-' }}
+          </span>
+
+          <input
+            *ngIf="editingUserId === user._id"
+            [(ngModel)]="editedUser.phone"
+          />
+
+        </td>
+
+        <!-- Address -->
+        <td>
+
+          <span *ngIf="editingUserId !== user._id">
+            {{ user.address || '-' }}
+          </span>
+
+          <input
+            *ngIf="editingUserId === user._id"
+            [(ngModel)]="editedUser.address"
+          />
+
+        </td>
+
+        <!-- Role -->
+        <td>
+
+          <span *ngIf="editingUserId !== user._id">
+            {{ user.role || '-' }}
+          </span>
+
+          <input
+            *ngIf="editingUserId === user._id"
+            [(ngModel)]="editedUser.role"
+          />
+
+        </td>
+
+        <!-- Buttons -->
+        <td>
+
+          <!-- normal mode -->
+          <div *ngIf="editingUserId !== user._id">
+
+            <button
+              class="edit-btn"
+              (click)="editUser(user)"
+            >
+              Sửa
+            </button>
+
+            <button
+              class="delete-btn"
+              (click)="deleteUser(user._id)"
+            >
+              Xóa
+            </button>
+
+          </div>
+
+          <!-- edit mode -->
+          <div *ngIf="editingUserId === user._id">
+
+            <button
+              class="edit-btn"
+              (click)="saveEditing(user._id)"
+            >
+              Lưu
+            </button>
+
+            <button
+              class="delete-btn"
+              (click)="cancelEditing()"
+            >
+              Hủy
+            </button>
+
+          </div>
+
+        </td>
+
+      </tr>
+
+      <!-- empty -->
+      <tr *ngIf="paginatedUsers.length == 0">
+        <td colspan="7" style="text-align:center;">
+          Không có dữ liệu
+        </td>
+      </tr>
+
+    </tbody>
+
+  </table>
+</div>
+
+  <!-- PAGINATION -->
+  <div class="pagination">
+
+    <button
+    (click)="previousPage()"
+    [disabled]="currentPage === 1"
+    >
+    Previous
+    </button>
+
+    <span>
+    Page {{currentPage}} / {{totalPages}}
+    </span>
+
+    <button
+    (click)="nextPage()"
+    [disabled]="currentPage === totalPages"
+    >
+    Next
+    </button>
+
+</div>

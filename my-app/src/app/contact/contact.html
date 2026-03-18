@@ -1,0 +1,40 @@
+<div class="contact-page">
+
+  <h1 class="title">Liên hệ với SẮC</h1>
+
+  <form (submit)="onSubmit($event)" class="contact-form">
+
+    <div class="row">
+
+      <div class="input-group">
+        <input type="text" name="firstName" required placeholder="Nhập tên của bạn*">
+      </div>
+
+      <div class="input-group">
+        <input type="tel" name="phone" required placeholder="Nhập số điện thoại*">
+      </div>
+
+    </div>
+
+    <div class="input-group">
+      <input type="email" name="email" required placeholder="Nhập địa chỉ email*">
+    </div>
+
+    <div class="input-group">
+      <textarea name="message" rows="4" placeholder="Nhập câu hỏi của bạn ở đây*"></textarea>
+    </div>
+
+    <div class="button-group">
+
+      <button type="submit" class="btn-primary">
+        GỬI SẮC
+      </button>
+      <a href="tel:0812059720" class="btn-outline call-btn">
+          📞 GỌI CHO COCOON
+      </a>
+
+    </div>
+
+  </form>
+
+</div>

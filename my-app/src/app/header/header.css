@@ -1,0 +1,152 @@
+.header {
+  width: 100%;
+  background: #f5f5f5;
+  padding-bottom: 30px;
+}
+
+/* Top section */
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 20px 40px;
+}
+
+.logo img {
+  height: 70px;
+}
+
+/* Right side icons */
+.header-actions {
+  position: absolute;
+  right: 40px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* Icon buttons (search + cart) */
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* icon image */
+.icon-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+/* hover effect */
+.icon-btn:hover {
+  background: #f0f0ff;
+  transform: translateY(-2px);
+}
+
+/* Login button */
+.login-btn {
+  background: linear-gradient(90deg,#4b00ff,#2500a8);
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  text-decoration: none;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Navbar */
+
+.navbar{
+  display: flex;
+  justify-content: center; /* căn giữa toàn bộ menu */
+}
+
+.navbar > ul{
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  list-style: none;
+  gap: 80px; 
+  margin: 0;
+  padding: 0;
+}
+
+.avatar{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  object-fit:cover;
+  border:1px solid #eee;
+  transition:0.3s;
+}
+
+.avatar:hover{
+  transform:scale(1.05);
+  border-color:#ffffff;
+  background:#ffffff;
+}
+
+.navbar li a{
+  text-decoration: none;
+  color: black;
+  font-size: 20px;
+}
+
+.menu{
+  display:flex;
+  justify-content:center;
+  gap:50px;
+  list-style:none;
+}
+
+.dropdown{
+  position:relative;
+}
+
+/* dropdown box */
+.dropdown-menu{
+  position:absolute;
+  top:100%;
+  left:0;
+
+  background:white;
+  width:220px;
+  
+  list-style:none;
+  padding:10px 0;
+  margin:0;
+  display:none;
+}
+
+.dropdown-menu li{
+  display:block;
+  padding:10px 20px;
+}
+
+.dropdown-menu li a{
+  font-size:16px;  
+}
+
+/* hover mới hiện */
+.dropdown:hover .dropdown-menu{
+  display:block;
+}

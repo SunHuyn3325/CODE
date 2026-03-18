@@ -1,0 +1,125 @@
+.admin-layout{
+    display:flex;
+    height:100vh;
+    background:#ebe1d8;
+}
+
+/* sidebar */
+
+.sidebar{
+    width:240px;
+    background:#40513b;
+    color:white;
+    padding:20px;
+}
+
+.logo{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.logo img{
+    height: 70px;
+}
+
+.menu{
+    list-style:none;
+    padding:0;
+}
+
+.menu li{
+    cursor:pointer;
+    padding:8px 12px;
+}
+
+.menu-title{
+    margin-top:20px;
+    font-weight:bold;
+    color:#a94053;
+}
+
+.menu li:hover{
+    background:#f3f3f3;
+    border-radius:6px;
+}
+
+/* main */
+
+.main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+}
+
+/* topbar */
+
+.topbar{
+    height:60px;
+    background:white;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 20px;
+    border-bottom:1px solid #ddd;
+    color:#40513b;
+}
+
+.profile button{
+    background:#a94053;
+    color:white;
+    border:none;
+    padding:6px 12px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+/* content */
+
+.content{
+    padding:30px;
+}
+.topbar{
+    height:60px;
+    background:white;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 25px;
+    border-bottom:1px solid #eee;
+}
+
+.title{
+    font-size:18px;
+    font-weight:600;
+    color:#40513b;
+}
+
+.admin-user{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.notification{
+    font-size:18px;
+    cursor:pointer;
+}
+
+.email{
+    font-weight:500;
+    color:#40513b;
+}
+
+.logout-btn{
+    background:#a94053;
+    color:white;
+    border:none;
+    padding:7px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.logout-btn:hover{
+    opacity:0.9;
+}
