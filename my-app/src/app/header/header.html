@@ -1,52 +1,141 @@
-<header class="header">
+<!-- Search Modal -->
+<div class="modal-overlay search-overlay" *ngIf="showSearchModal" (click)="closeSearchModal()">
+  <div class="search-modal custom-search-modal" (click)="$event.stopPropagation()">
+    <div class="search-modal-header">
+      <div>
+        <h1 class="search-title">Tìm kiếm sản phẩm</h1>
+        <p class="search-subtitle">Khám phá bộ sưu tập áo dài và Việt phục của SẮC</p>
+      </div>
+      <button class="search-close-btn" (click)="closeSearchModal()">✕</button>
+    </div>
 
-  <!-- Top header -->
-  <div class="header-top">
-    
-  <!-- Logo -->
-  <div class="logo">
-    <img src="assets/Logo.png" alt="SẮC" routerLink="/">
-  </div>
+    <div class="search-modal-body">
+      <!-- Search Input Group -->
+      <div class="search-input-group">
+        <div class="search-field-wrapper">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M11 19a8 8 0 100-16 8 8 0 000 16zm0 0l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input 
+            type="text" 
+            class="search-field" 
+            placeholder="Tìm áo dài, Việt phục, phụ kiện..." 
+            (keyup.enter)="performSearch($event)"
+            (keyup)="filterSuggestions($event.target.value)"
+            #searchInput
+            autocomplete="off"
+          >
+          <label class="camera-icon-btn" for="image-upload" title="Tìm kiếm bằng hình ảnh">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="2"/>
+              <path d="M19 13V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </label>
+          <input 
+            type="file" 
+            id="image-upload" 
+            accept="image/*" 
+            (change)="handleImageSearch($event)"
+            style="display: none"
+          >
+        </div>
+      </div>
 
-  <!-- Right icons -->
-  <div class="header-actions">
-    <button class="icon-btn">
-      <img src="assets/search.png" alt="Search">
-    </button>
-    <button class="icon-btn">
-      <img src="assets/cart.png" alt="Cart">
-    </button>
-    <div class="user-area">
-      <a *ngIf="!user" routerLink="/login" class="login-btn">
-        Đăng nhập
-      </a>
-      <div *ngIf="user" class="user-menu">
-        <button class="icon-btn" routerLink="/account">
-          <img src="assets/user.png" class="avatar">
-        </button>
+      <!-- Suggestions -->
+      <div class="suggestions-container" *ngIf="filteredSuggestions.length > 0 && searchInput.value">
+        <div class="suggestions-list">
+          <div class="suggestion-item" *ngFor="let item of filteredSuggestions" (click)="selectSuggestion(item)">
+            <span class="suggestion-dot"></span>
+            <span class="suggestion-label">{{ item }}</span>
+            <span class="suggestion-arrow">→</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Popular Categories -->
+      <div class="popular-searches" *ngIf="!searchInput.value || filteredSuggestions.length === 0">
+        <p class="popular-title">Danh mục được yêu thích</p>
+        <div class="category-grid">
+          <div class="category-chip" [ngClass]="getCategoryClass(category)" *ngFor="let category of popularCategories" (click)="selectSuggestion(category)">
+            <span>{{ category }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-  <!-- Navigation -->
-  <nav class="navbar">
-    <ul>
-      <li><a routerLink="/">Trang chủ</a></li>
-      <li><a routerLink="/aboutus">Về Sắc</a></li>
-      <li class="dropdown">
-        <a>Sản phẩm</a>
+<!-- Cart Modal -->
+<div class="modal-overlay" *ngIf="showCartModal" (click)="closeCartModal()">
+  <div class="cart-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Giỏ hàng</h2>
+      <button class="close-btn" (click)="closeCartModal()">✕</button>
+    </div>
+    <div class="modal-body cart-body">
+      <div class="empty-cart">
+        <img src="assets/cart.png" alt="Giỏ trống" class="empty-icon">
+        <p class="empty-text">Chưa có sản phẩm nào</p>
+        <p class="empty-subtext">Bắt đầu mua sắm để thêm sản phẩm vào giỏ</p>
+        <button class="btn-shopping" (click)="goToProducts()">Xem sản phẩm</button>
+        <p class="or-divider">— hoặc —</p>
+        <button class="btn-login" (click)="goToLogin()">Đăng nhập ngay</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<header class="header">
+  <div class="header-backdrop"></div>
+
+  <div class="header-shell">
+    <div class="header-top">
+      <div class="header-left">
+        <span class="brand-note">Tinh tế trong từng đường may</span>
+      </div>
+
+      <div class="logo" routerLink="/">
+        <img src="assets/Logo.png" alt="SẮC">
+      </div>
+
+      <div class="header-actions">
+        <button class="icon-btn" (click)="onSearch()" aria-label="Tìm kiếm">
+          <img src="assets/search.png" alt="Search">
+        </button>
+
+        <div class="cart-wrapper">
+          <button class="icon-btn" (click)="onCart()" aria-label="Giỏ hàng">
+            <img src="assets/cart.png" alt="Cart">
+          </button>
+          <span class="cart-count" *ngIf="cartCount > 0">{{ cartCount }}</span>
+        </div>
+
+        <div class="user-area">
+          <a *ngIf="!user" routerLink="/login" class="login-btn">Đăng nhập</a>
+          <div *ngIf="user" class="user-menu" routerLink="/account" aria-label="Tài khoản">
+            <img [src]="user.avatar || 'assets/user.png'" class="avatar" alt="Avatar người dùng">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="navbar" aria-label="Điều hướng chính">
+      <ul class="nav-links">
+        <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Trang chủ</a></li>
+        <li><a routerLink="/aboutus" routerLinkActive="active">Về Sắc</a></li>
+        <li class="dropdown">
+          <a class="drop-title">Sản phẩm</a>
           <ul class="dropdown-menu">
             <li><a routerLink="/products">Tất cả sản phẩm</a></li>
-            <li><a routerLink="/products/ao-dai" >Áo dài</a></li>
+            <li><a routerLink="/products/ao-dai">Áo dài</a></li>
             <li><a routerLink="/products/vietphuc">Việt phục</a></li>
             <li><a routerLink="/products/aobaba">Áo bà ba</a></li>
             <li><a routerLink="/products/phukien">Phụ kiện</a></li>
           </ul>
-      </li>
-      <li><a routerLink="/collections">Bộ sưu tập</a></li>
-      <li><a routerLink="/contact">Liên hệ</a></li>
-    </ul>
-  </nav>
-
+        </li>
+        <li><a routerLink="/collections" routerLinkActive="active">Bộ sưu tập</a></li>
+        <li><a routerLink="/contact" routerLinkActive="active">Liên hệ</a></li>
+      </ul>
+    </nav>
+  </div>
 </header>
