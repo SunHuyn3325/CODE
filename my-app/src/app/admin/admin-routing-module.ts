@@ -4,6 +4,7 @@ import { Mainpage } from './mainpage/mainpage';
 import { Admin } from './admin/admin';
 import { OrderManagement } from './order-management/order-management';
 import { UserManagement } from './user-management/user-management';
+import { ProductManagement } from './product-management/product-management';
 
 const routes: Routes = [
   {
@@ -13,6 +14,7 @@ const routes: Routes = [
       { path: 'mainpage', component: Mainpage },
       { path: 'orders', component: OrderManagement },
       { path: 'users', component: UserManagement },
+      { path: 'products', component: ProductManagement },
 
       { path: '', redirectTo: 'mainpage', pathMatch: 'full' }
     ]

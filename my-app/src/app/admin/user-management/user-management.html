@@ -25,7 +25,6 @@
 
   <!-- TABLE -->
   <table>
-
     <thead>
       <tr>
         <th>#</th>
@@ -37,126 +36,39 @@
         <th>Hành động</th>
       </tr>
     </thead>
-
     <tbody>
-
       <tr *ngFor="let user of paginatedUsers; let i = index">
-
         <td>{{ i + 1 + (currentPage-1)*pageSize }}</td>
-
-        <!-- Name -->
         <td>
-
-          <span *ngIf="editingUserId !== user._id">
-            {{ user.profileName }}
-          </span>
-
-          <input
-            *ngIf="editingUserId === user._id"
-            [(ngModel)]="editedUser.profileName"
-          />
-
+          <span *ngIf="editingUserId !== user._id">{{ user.profileName }}</span>
+          <input *ngIf="editingUserId === user._id" [(ngModel)]="editedUser.profileName"/>
         </td>
-
-        <!-- Gender -->
         <td>
-
-          <span *ngIf="editingUserId !== user._id">
-            {{ user.gender }}
-          </span>
-
-          <input
-            *ngIf="editingUserId === user._id"
-            [(ngModel)]="editedUser.gender"
-          />
-
+          <span *ngIf="editingUserId !== user._id">{{ user.gender }}</span>
+          <input *ngIf="editingUserId === user._id" [(ngModel)]="editedUser.gender"/>
         </td>
-
-        <!-- Phone -->
         <td>
-
-          <span *ngIf="editingUserId !== user._id">
-            {{ user.phone || '-' }}
-          </span>
-
-          <input
-            *ngIf="editingUserId === user._id"
-            [(ngModel)]="editedUser.phone"
-          />
-
+          <span *ngIf="editingUserId !== user._id">{{ user.phone || '-' }}</span>
+          <input *ngIf="editingUserId === user._id" [(ngModel)]="editedUser.phone"/>
         </td>
-
-        <!-- Address -->
         <td>
-
-          <span *ngIf="editingUserId !== user._id">
-            {{ user.address || '-' }}
-          </span>
-
-          <input
-            *ngIf="editingUserId === user._id"
-            [(ngModel)]="editedUser.address"
-          />
-
+          <span *ngIf="editingUserId !== user._id">{{ user.address || '-' }}</span>
+          <input *ngIf="editingUserId === user._id" [(ngModel)]="editedUser.address"/>
         </td>
-
-        <!-- Role -->
         <td>
-
-          <span *ngIf="editingUserId !== user._id">
-            {{ user.role || '-' }}
-          </span>
-
-          <input
-            *ngIf="editingUserId === user._id"
-            [(ngModel)]="editedUser.role"
-          />
-
+          <span *ngIf="editingUserId !== user._id">{{ user.role || '-' }}</span>
+          <input *ngIf="editingUserId === user._id" [(ngModel)]="editedUser.role"/>
         </td>
-
-        <!-- Buttons -->
         <td>
-
-          <!-- normal mode -->
           <div *ngIf="editingUserId !== user._id">
-
-            <button
-              class="edit-btn"
-              (click)="editUser(user)"
-            >
-              Sửa
-            </button>
-
-            <button
-              class="delete-btn"
-              (click)="deleteUser(user._id)"
-            >
-              Xóa
-            </button>
-
+            <button class="edit-btn" (click)="editUser(user)">Sửa</button>
+            <button class="delete-btn" (click)="deleteUser(user._id)">Xóa</button>
           </div>
-
-          <!-- edit mode -->
           <div *ngIf="editingUserId === user._id">
-
-            <button
-              class="edit-btn"
-              (click)="saveEditing(user._id)"
-            >
-              Lưu
-            </button>
-
-            <button
-              class="delete-btn"
-              (click)="cancelEditing()"
-            >
-              Hủy
-            </button>
-
+            <button class="edit-btn" (click)="saveEditing(user._id)">Lưu</button>
+            <button class="delete-btn" (click)="cancelEditing()">Hủy</button>
           </div>
-
         </td>
-
       </tr>
 
       <!-- empty -->
@@ -165,31 +77,54 @@
           Không có dữ liệu
         </td>
       </tr>
-
     </tbody>
-
   </table>
 </div>
 
-  <!-- PAGINATION -->
-  <div class="pagination">
+<!-- PAGINATION -->
+<div class="pagination">
+  <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+  <span>Page {{currentPage}} / {{totalPages}}</span>
+  <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+</div>
 
-    <button
-    (click)="previousPage()"
-    [disabled]="currentPage === 1"
-    >
-    Previous
-    </button>
+<!-- Modal popup thêm người dùng -->
+<div class="modal-overlay" *ngIf="showAddUserForm">
+  <div class="modal-content">
+    <button class="close-btn" (click)="cancelAddUser()">X</button>
+    <h3>Thêm người dùng mới</h3>
 
-    <span>
-    Page {{currentPage}} / {{totalPages}}
-    </span>
+    <label>Tên người dùng:</label>
+    <input type="text" [(ngModel)]="newUser.profileName" />
 
-    <button
-    (click)="nextPage()"
-    [disabled]="currentPage === totalPages"
-    >
-    Next
-    </button>
+    <label>Email:</label>
+    <input type="email" [(ngModel)]="newUser.email" />
 
+    <label>Mật khẩu:</label>
+    <input type="password" [(ngModel)]="newUser.password" />
+
+    <label>Giới tính:</label>
+    <select [(ngModel)]="newUser.gender">
+      <option value="Nam">Nam</option>
+      <option value="Nữ">Nữ</option>
+      <option value="Khác">Khác</option>
+    </select>
+
+    <label>Điện thoại:</label>
+    <input type="text" [(ngModel)]="newUser.phone" />
+
+    <label>Địa chỉ:</label>
+    <input type="text" [(ngModel)]="newUser.address" />
+
+    <label>Vai trò:</label>
+    <select [(ngModel)]="newUser.role">
+      <option value="user">User</option>
+      <option value="admin">Admin</option>
+    </select>
+
+    <div class="buttons">
+      <button (click)="addUser()">Thêm</button>
+      <button (click)="cancelAddUser()">Hủy</button>
+    </div>
+  </div>
 </div>

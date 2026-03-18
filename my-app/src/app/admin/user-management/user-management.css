@@ -143,3 +143,144 @@ background:#ccc;
 cursor:not-allowed;
 
 }
+
+/* --- Modal overlay --- */
+/* ---------------- Modal Overlay ---------------- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.35); /* nền tối nhẹ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 10px; /* tránh modal quá sát màn hình */
+  box-sizing: border-box;
+}
+
+/* ---------------- Modal Content ---------------- */
+.modal-content {
+  background: #ebe1d8; /* nền nhẹ nhàng */
+  padding: 25px 30px;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 100%;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  position: relative;
+  font-family: 'Arial', sans-serif;
+  color: #40513b;
+}
+
+/* Close button */
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #a94053;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.close-btn:hover {
+  background: #8c3142;
+}
+
+/* Modal Heading */
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.3em;
+  font-weight: 600;
+  color: #40513b;
+  text-align: center;
+}
+
+/* Labels */
+.modal-content label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #6e5034;
+  font-size: 0.95em;
+}
+
+/* Input / Select chung */
+.modal-content input,
+.modal-content select {
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95em;
+  box-sizing: border-box;
+  transition: all 0.3s;
+}
+
+/* Focus hiệu ứng */
+.modal-content input:focus,
+.modal-content select:focus {
+  outline: none;
+  border-color: #a94053;
+  box-shadow: 0 0 6px rgba(169,64,83,0.3);
+}
+
+/* Buttons Container */
+.modal-content .buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* Buttons chung */
+.modal-content .buttons button {
+  padding: 7px 16px;
+  font-size: 0.95em;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+/* Thêm user */
+.modal-content .buttons button:first-child {
+  background: #a94053;
+  color: #fff;
+}
+.modal-content .buttons button:first-child:hover {
+  background: #8c3142;
+}
+
+/* Hủy */
+.modal-content .buttons button:last-child {
+  background: #ccc;
+  color: #40513b;
+}
+.modal-content .buttons button:last-child:hover {
+  background: #b3b3b3;
+}
+
+/* ---------------- Responsive nhỏ ---------------- */
+@media (max-width: 450px){
+  .modal-content {
+    width: 100%;
+    padding: 20px;
+  }
+  .buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .buttons button {
+    width: 100%;
+  }
+}

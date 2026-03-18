@@ -1,0 +1,144 @@
+<div class="product-management container">
+
+  <!-- Header -->
+  <div class="header">
+    <h2>Quản lý Sản phẩm</h2>
+    <button class="btn btn-delete" (click)="deleteSelectedProducts()">Xóa tất cả</button>
+  </div>
+
+  <!-- Form -->
+  <div class="product-form" *ngIf="canEdit">
+    <h3>{{ isEditing ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới' }}</h3>
+
+    <form [formGroup]="productForm" (ngSubmit)="isEditing ? updateProduct() : createProduct()">
+
+      <!-- Row 1 -->
+      <div class="row">
+        <div class="col">
+          <label>Tên sản phẩm</label>
+          <input type="text" formControlName="product_name"/>
+        </div>
+
+        <div class="col">
+          <label>Danh mục</label>
+          <input type="text" formControlName="product_dept"/>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="row full">
+        <label>Mô tả sản phẩm</label>
+        <textarea formControlName="product_detail" rows="4"
+          placeholder="Nhập mô tả sản phẩm..."></textarea>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="row">
+        <div class="col">
+          <label>Giá</label>
+          <input type="number" formControlName="unit_price" value="0"/>
+        </div>
+
+        <div class="col">
+          <label>Số lượng tồn kho</label>
+          <input type="number" formControlName="stocked_quantity" value="0"/>
+        </div>
+      </div>
+
+      <!-- Row 3 -->
+      <div class="row">
+        <div class="col">
+          <label>Giảm giá (%)</label>
+          <input type="number" formControlName="discount" value="0"/>
+        </div>
+
+        <div class="col">
+          <label>Đánh giá</label>
+          <input type="number" formControlName="rating" value="4"/>
+        </div>
+      </div>
+
+      <!-- Upload images -->
+      <div class="row full">
+        <label>Tải lên hình ảnh (tối đa 5 hình)</label>
+
+        <div class="image-grid">
+          <div class="image-item" *ngFor="let img of [0,1,2,3,4]; let i=index">
+            <label>Hình ảnh {{i + 1}}</label>
+            <input type="file" (change)="onImageChange($event,i)" />
+            <!-- Preview ảnh -->
+            <img *ngIf="images[i]" [src]="images[i]" class="preview-img"/>
+            <button type="button" class="btn btn-small btn-danger" *ngIf="images[i]" (click)="clearImage(i)">Xóa</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">
+          {{ isEditing ? 'Cập nhật' : 'Thêm mới' }}
+        </button>
+        <button type="button" class="btn btn-secondary" *ngIf="isEditing" (click)="cancelEdit()">Hủy</button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Danh sách sản phẩm -->
+  <div class="product-list">
+    <h3>Danh sách sản phẩm</h3>
+
+    <div class="card-grid">
+      <div class="product-card" *ngFor="let product of paginatedProducts">
+        
+        <div class="card-image">
+          <img *ngIf="product.images?.length" [src]="product.images[0]" />
+          <div *ngIf="!product.images?.length" class="placeholder">No image</div>
+        </div>
+
+        <div class="card-content">
+          <h4>{{ product.product_name }}</h4>
+          <p class="category">{{ product.product_dept }}</p>
+          <p class="desc">
+            {{ product.product_detail | slice:0:50 }}
+            <span *ngIf="product.product_detail?.length > 50">...</span>
+          </p>
+          <p class="price">
+            {{ product.unit_price | currency:'VND':'symbol' }}
+          </p>
+          <p>
+            Size: {{ product.product_size }} |
+            Stock: {{ product.stocked_quantity }} |
+            Discount: {{ product.discount ? product.discount*100 : 0 }}%
+          </p>
+        </div>
+
+        <div class="card-actions">
+          <button class="btn btn-warning" *ngIf="canEdit"
+            (click)="editProduct(product)">
+            Sửa
+          </button>
+
+          <button class="btn btn-danger" *ngIf="canEdit"
+            (click)="deleteProduct(product._id!)">
+            Xóa
+          </button>
+        </div>
+
+      </div>
+
+      <div *ngIf="paginatedProducts?.length === 0" class="no-products">
+        Không có sản phẩm nào
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button [disabled]="currentPage===1" (click)="previousPage()">« Trước</button>
+      <span>Trang {{currentPage}} / {{totalPages}}</span>
+      <button [disabled]="currentPage===totalPages" (click)="nextPage()">Sau »</button>
+    </div>
+
+  </div>
+
+</div>

@@ -47,6 +47,10 @@ export class UserApiService {
       }
     });
   }
+  addUser(data: any) {
+    return this.http.post(this.api, data);
+  }
+
   
   getUsers() {
     return this.http.get<any[]>(this.api);
@@ -58,5 +62,4 @@ export class UserApiService {
   logout(){
     this.currentUser.next(null);
   }
-
 }
