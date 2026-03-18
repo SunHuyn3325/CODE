@@ -1,234 +1,222 @@
-
-
-:host{
-  --text-main:#40513b;
-  --text-header:#6e5034;
-  --primary:#a94053;
-  --bg-main:#ebe1d8;
-  --white:#ffffff;
+/* ============================= */
+/* HERO SECTION */
+/* ============================= */
+.about-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-color: #3a6b3a;
+  background-image: url('/assets/images/aboutus_bg.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
-
-section{
-  padding:80px 40px;
-  background:var(--bg-main);
+.about-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.55) 50%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
 }
 
-h1,h2,h3{
-  color:var(--text-main);
+.hero-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
 }
 
-p{
-  color:var(--text-main);
-  line-height:1.7;
+.hero-brand {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(72px, 14vw, 140px);
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 2px 24px rgba(0,0,0,0.25);
+  letter-spacing: 2px;
+  line-height: 1;
+  margin: 0;
 }
 
-button{
-  font-family:"Montserrat", sans-serif;
+.hero-sub {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(14px, 2.5vw, 22px);
+  font-weight: 400;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 8px;
+  margin: 0;
 }
 
-
-
-.primary-btn{
-  padding:12px 26px;
-  background:var(--primary);
-  color:white;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  margin-top:20px;
-  transition:0.3s;
+.hero-btn {
+  margin-top: 20px;
+  padding: 14px 36px;
+  border: 2px solid #fff;
+  background: transparent;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-.primary-btn:hover{
-  opacity:0.9;
+.hero-btn:hover {
+  background: #fff;
+  color: #2e5e2e;
 }
 
-
-.about-hero{
-  height:70vh;
-  background:url("/assets/about/hero.jpg") center/cover no-repeat;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
+.hero-scroll {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  animation: bounce 2s infinite;
 }
 
-.hero-content{
-  max-width:700px;
-  background:rgba(255,255,255,0.6);
-  padding:40px;
-  border-radius:10px;
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
 }
 
-.hero-content h1{
-  font-size:56px;
-  letter-spacing:4px;
+/* ============================= */
+/* CONTENT SECTION */
+/* ============================= */
+.about-story {
+  max-width: 1200px;
+  width: 100%; /* Đảm bảo co giãn tốt trên màn hình nhỏ */
+  margin: auto;
+  padding: 60px 20px;
+  font-family: "Montserrat", sans-serif;
 }
 
-.hero-content h2{
-  font-size:24px;
-  margin:10px 0 20px;
+/* Layout section */
+.story-section {
+  display: flex;
+  align-items: center;
+  gap: 80px; /* Tăng khoảng cách để giao diện thoáng hơn */
+  margin-bottom: 120px;
 }
 
-
-.story-container{
-  max-width:1100px;
-  margin:auto;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:60px;
-  align-items:center;
+/* section so le - Sửa lại để hiển thị đúng hiệu ứng đảo bên */
+.story-section.reverse {
+  flex-direction: row-reverse;
 }
 
-.story-image img{
-  width:100%;
-  border-radius:10px;
+/* text */
+.story-text {
+  flex: 1;
+  color: #40513b;
 }
 
-
-.about-values{
-  text-align:center;
+.story-text h2 {
+  font-size: 30px; /* Tăng nhẹ tiêu đề để cân đối với nội dung mới */
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #40513b;
+  font-family: "Montserrat", sans-serif; /* Font chữ sang trọng cho tiêu đề */
 }
 
-.values-grid{
-  margin-top:40px;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:30px;
-  max-width:1000px;
-  margin-left:auto;
-  margin-right:auto;
+.story-text p {
+  font-size: 15px; /* Tăng từ 13px lên 18px để dễ đọc hơn */
+  line-height: 1.8;
+  margin-bottom: 20px;
+  text-align: justify;
 }
 
-.value-card{
-  background:var(--white);
-  padding:30px;
-  border-radius:10px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.08);
-  transition:0.3s;
+/* image */
+.story-image {
+  flex: 1;
 }
 
-.value-card:hover{
-  transform:translateY(-5px);
+.story-image img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1); /* Thêm bóng mờ cho ảnh nổi bật */
 }
 
-
-.heritage-container{
-  max-width:1100px;
-  margin:auto;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:60px;
-  align-items:center;
+/* mission */
+.story-mission {
+  text-align: center;
+  max-width: 900px;
+  margin: 80px auto 0;
+  color: #40513b;
 }
 
-.heritage-image img{
-  width:100%;
-  border-radius:10px;
+.story-mission h2 {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 30px;
 }
 
-.heritage-text ul{
-  margin-top:15px;
+.story-mission p {
+  font-size: 15px; /* Đồng bộ kích thước chữ nội dung */
+  line-height: 1.8;
+  margin-bottom: 20px;
 }
 
-.heritage-text li{
-  margin-bottom:8px;
+.mission-image {
+  margin-top: 50px;
 }
 
-
-.about-artisans{
-  text-align:center;
+.mission-image img {
+  width: 100%;
+  max-width: 1000px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 10px;
 }
 
-.artisan-desc{
-  max-width:700px;
-  margin:auto;
-  margin-bottom:40px;
+/* ============================= */
+/* SCROLL ANIMATION */
+/* ============================= */
+
+/* opacity:0 only applied AFTER JS attaches the observer — prevents blank content on SSR */
+.observed.animate-left,
+.observed.animate-right,
+.observed.animate-up {
+  opacity: 0;
+  transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.75s ease;
+  will-change: transform, opacity;
 }
 
-.artisan-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:25px;
-  max-width:1000px;
-  margin:auto;
+.observed.animate-left { transform: translateX(-48px); }
+.observed.animate-right { transform: translateX(48px); }
+.observed.animate-up { transform: translateY(48px); }
+
+.show {
+  opacity: 1 !important;
+  transform: translate(0,0) !important;
 }
 
-.artisan-card{
-  background:white;
-  border-radius:10px;
-  overflow:hidden;
-  box-shadow:0 4px 10px rgba(0,0,0,0.08);
-  transition:0.3s;
-}
-
-.artisan-card:hover{
-  transform:translateY(-6px);
-}
-
-.artisan-card img{
-  width:100%;
-  height:220px;
-  object-fit:cover;
-}
-
-.artisan-card h3{
-  margin-top:12px;
-}
-
-.artisan-card p{
-  margin-bottom:15px;
-  color:var(--text-header);
-}
-
-
-.impact-container{
-  max-width:1100px;
-  margin:auto;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:60px;
-  align-items:center;
-}
-
-.impact-image img{
-  width:100%;
-  border-radius:10px;
-}
-
-.impact-text ul{
-  margin-bottom:20px;
-}
-
-.impact-text li{
-  margin-bottom:6px;
-}
-
-
-.about-cta{
-  text-align:center;
-}
-
-.about-cta h2{
-  margin-bottom:15px;
-}
-
-
-@media(max-width:900px){
-
-.story-container,
-.heritage-container,
-.impact-container{
-grid-template-columns:1fr;
-}
-
-.values-grid{
-grid-template-columns:1fr;
-}
-
-.artisan-grid{
-grid-template-columns:1fr;
-}
-
+@media (prefers-reduced-motion: reduce) {
+  .observed.animate-left,
+  .observed.animate-right,
+  .observed.animate-up {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }

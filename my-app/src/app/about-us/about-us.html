@@ -1,227 +1,142 @@
+<!-- Hero Section -->
 <section class="about-hero">
-
   <div class="hero-content">
-    <h1>SẮC</h1>
-    <h2>Sắc màu di sản – Hồn Việt trong từng thiết kế</h2>
+    <h1 class="hero-brand">Sắc</h1>
+    <p class="hero-sub">XIN CHÀO</p>
+    <button class="hero-btn" (click)="scrollToContent()">Khám phá hành trình của Sắc</button>
+  </div>
+  <div class="hero-scroll" (click)="scrollToContent()">
+    <span>Scroll</span>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </div>
+</section>
+
+<section class="about-story" id="about-content">
+
+  <!-- Section 1 -->
+  <div class="story-section">
+
+    <div class="story-text animate-left">
+      <h2>Vì sao SẮC ra đời?</h2>
+
+      <p>
+        Trong nhịp sống hiện đại, nhiều giá trị truyền thống Việt Nam
+        đang dần bị lãng quên. Những chiếc nón lá, tà áo dài hay các
+        bộ Việt phục từng gắn liền với lịch sử và đời sống văn hóa
+        nay ít xuất hiện trong cuộc sống thường ngày.
+      </p>
+
+      <p>
+        SẮC ra đời từ mong muốn đưa những giá trị ấy quay trở lại
+        với đời sống hiện đại, không chỉ như một biểu tượng văn hóa
+        mà còn như một phần của phong cách sống.
+      </p>
+
+      <p>
+        Chúng tôi tin rằng truyền thống không nên chỉ tồn tại trong
+        ký ức hay bảo tàng, mà cần được tiếp tục sống và được kể lại
+        bằng những cách mới mẻ hơn.
+      </p>
+    </div>
+
+    <div class="story-image animate-up">
+      <img src="assets/images/story1.png" alt="Vietnamese inspiration">
+    </div>
+
+  </div>
+
+
+  <!-- Section 2 -->
+  <div class="story-section reverse">
+
+    <div class="story-image animate-up">
+      <img src="assets/images/story2.png" alt="Vietnamese inspiration">
+    </div>
+
+    <div class="story-text animate-right">
+
+      <h2>Ý nghĩa của “SẮC”</h2>
+
+      <p>
+        “SẮC” không chỉ là màu sắc của trang phục. Đó còn là sắc màu
+        của văn hóa, của lịch sử và của bản sắc Việt Nam.
+      </p>
+
+      <p>
+        Từ sắc đỏ trong những bộ Việt phục cung đình, sắc vàng của
+        hoàng bào, cho đến sự thanh lịch của tà áo dài trắng,
+        mỗi sắc màu đều mang theo một câu chuyện riêng.
+      </p>
+
+      <p>
+        SẮC mong muốn lưu giữ những sắc màu ấy và đưa chúng bước
+        vào đời sống hiện đại theo một cách tinh tế và gần gũi hơn
+        với thế hệ hôm nay.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- Section 3 -->
+  <div class="story-section">
+
+    <div class="story-text animate-left">
+
+      <h2>Mỗi sản phẩm là một câu chuyện</h2>
+
+      <p>
+        Tại SẮC, mỗi sản phẩm không chỉ là một món đồ để mặc hay
+        sử dụng. Đó là kết tinh của lịch sử, nghệ thuật thủ công
+        và tinh thần văn hóa Việt.
+      </p>
+
+      <p>
+        Một chiếc nón lá không chỉ để che nắng, mà còn là hình ảnh
+        quen thuộc của làng quê Việt Nam. Một tà áo dài không chỉ
+        là trang phục, mà là biểu tượng của sự thanh lịch và
+        duyên dáng của người phụ nữ Việt.
+      </p>
+
+      <p>
+        Những bộ Việt phục được tái hiện từ các triều đại lịch sử
+        giúp người mặc không chỉ cảm nhận vẻ đẹp cổ truyền mà còn
+        hiểu thêm về câu chuyện văn hóa phía sau từng thiết kế.
+      </p>
+
+    </div>
+
+    <div class="story-image animate-up">
+      <img src="assets/images/story3.png" alt="Vietnamese inspiration">
+    </div>
+
+  </div>
+
+
+  <!-- Mission -->
+  <div class="story-mission animate-up">
+
+    <h2>Sứ mệnh của SẮC</h2>
 
     <p>
-      SẮC là thương hiệu thời trang lấy cảm hứng từ di sản văn hoá và
-      các làng nghề truyền thống Việt Nam. Mỗi họa tiết, mỗi đường kim
-      mũi chỉ đều mang trong mình câu chuyện về lịch sử, con người
-      và bản sắc dân tộc.
+      SẮC được xây dựng với mục tiêu giới thiệu, bảo tồn và
+      thương mại hóa các sản phẩm truyền thống Việt Nam như
+      nón lá, áo dài, Việt phục và các phụ kiện văn hóa
+      thông qua một nền tảng số hiện đại.
     </p>
 
-    <button class="primary-btn" (click)="scrollToStory()">
-        Khám phá di sản
-    </button>
-  </div>
+    <p>
+      SẮC không chỉ là nơi mua sắm mà còn là không gian
+      kể những câu chuyện văn hóa, giúp người dùng hiểu rõ
+      hơn về giá trị lịch sử, ý nghĩa và quá trình tạo tác
+      của từng sản phẩm.
+    </p>
 
-</section>
-
-
-<!-- BRAND STORY -->
-
-<section id="story" class="about-story">
-
-  <div class="story-container">
-
-    <div class="story-text">
-      <h2>Câu chuyện thương hiệu</h2>
-
-      <p>
-        SẮC ra đời từ mong muốn tái hiện vẻ đẹp của văn hoá Việt Nam
-        trong thời trang hiện đại. Trong quá trình phát triển nhanh
-        của xã hội, nhiều giá trị truyền thống dần bị lãng quên,
-        đặc biệt là các làng nghề thủ công.
-      </p>
-
-      <p>
-        Chúng tôi tin rằng mỗi sản phẩm thủ công không chỉ là
-        một món đồ, mà còn là kết tinh của kỹ thuật, ký ức
-        và văn hoá nhiều thế hệ.
-      </p>
-
-      <p>
-        Vì vậy, SẮC được hình thành như một cầu nối giữa
-        nghệ nhân, di sản và thế hệ trẻ hôm nay.
-      </p>
-    </div>
-
-    <div class="story-image">
-      <img src="assets/about/story.jpg">
+    <div class="mission-image">
+      <img src="assets/images/story4.png" alt="Vietnamese inspiration">
     </div>
 
   </div>
-
-</section>
-
-
-<!-- MISSION / VISION / VALUES -->
-
-<section class="about-values">
-
-  <h2>Giá trị cốt lõi</h2>
-
-  <div class="values-grid">
-
-    <div class="value-card">
-      <h3>Di sản</h3>
-      <p>
-        Trân trọng và bảo tồn những giá trị văn hoá lâu đời
-        của Việt Nam thông qua từng thiết kế.
-      </p>
-    </div>
-
-    <div class="value-card">
-      <h3>Sáng tạo</h3>
-      <p>
-        Kết hợp tinh hoa thủ công truyền thống
-        với tư duy thiết kế hiện đại.
-      </p>
-    </div>
-
-    <div class="value-card">
-      <h3>Bền vững</h3>
-      <p>
-        Hướng tới thời trang có trách nhiệm với
-        cộng đồng và môi trường.
-      </p>
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- HERITAGE -->
-
-<section class="about-heritage">
-
-  <div class="heritage-container">
-
-    <div class="heritage-image">
-      <img src="assets/about/heritage.jpg">
-    </div>
-
-    <div class="heritage-text">
-
-      <h2>Di sản & Làng nghề</h2>
-
-      <p>
-        Việt Nam sở hữu hàng trăm làng nghề truyền thống với
-        lịch sử hàng trăm năm. SẮC lựa chọn và tôn vinh
-        những di sản tiêu biểu thông qua thiết kế
-        và chất liệu sản phẩm.
-      </p>
-
-      <ul>
-        <li>Lụa Vạn Phúc – mềm mại, thanh lịch</li>
-        <li>Gốm Bát Tràng – hoa văn và màu sắc đặc trưng</li>
-        <li>Thổ cẩm Tây Bắc – họa tiết dân tộc</li>
-        <li>Lụa Tân Châu – tinh hoa Nam Bộ</li>
-      </ul>
-
-      <button class="primary-btn">
-        Xem sản phẩm theo di sản
-      </button>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- ARTISANS -->
-
-<section class="about-artisans">
-
-  <h2>Nghệ nhân</h2>
-
-  <p class="artisan-desc">
-    Đằng sau mỗi sản phẩm của SẮC là những nghệ nhân lành nghề
-    – những người đã dành cả cuộc đời để gìn giữ và phát triển
-    nghề truyền thống.
-  </p>
-
-  <div class="artisan-grid">
-
-    <div class="artisan-card">
-      <img src="assets/artisans/artisan1.jpg">
-      <h3>Nguyễn Văn Bình</h3>
-      <p>Làng gốm Bát Tràng</p>
-    </div>
-
-    <div class="artisan-card">
-      <img src="assets/artisans/artisan2.jpg">
-      <h3>Trần Thị Mai</h3>
-      <p>Lụa Vạn Phúc</p>
-    </div>
-
-    <div class="artisan-card">
-      <img src="assets/artisans/artisan3.jpg">
-      <h3>Lò Thị Hoa</h3>
-      <p>Thổ cẩm Tây Bắc</p>
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- IMPACT -->
-
-<section class="about-impact">
-
-  <div class="impact-container">
-
-    <div class="impact-text">
-
-      <h2>Định hướng & Tác động</h2>
-
-      <h3>Phát triển bền vững</h3>
-
-      <ul>
-        <li>Sử dụng chất liệu thân thiện môi trường</li>
-        <li>Hợp tác trực tiếp với làng nghề</li>
-        <li>Hỗ trợ bảo tồn kỹ thuật thủ công</li>
-        <li>Giảm thiểu sản xuất dư thừa</li>
-      </ul>
-
-      <h3>Ứng dụng công nghệ</h3>
-
-      <ul>
-        <li>Thương mại điện tử</li>
-        <li>Nội dung số kể câu chuyện di sản</li>
-        <li>Trải nghiệm trực tuyến về làng nghề</li>
-      </ul>
-
-    </div>
-
-    <div class="impact-image">
-      <img src="assets/about/sustain.jpg">
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- FINAL CTA -->
-
-<section class="about-cta">
-
-  <h2>
-    Di sản không chỉ thuộc về quá khứ.
-  </h2>
-
-  <p>
-    Di sản sống trong từng câu chuyện,
-    từng con người và từng thiết kế.
-  </p>
-
-  <button class="primary-btn">
-    Khám phá bộ sưu tập
-  </button>
 
 </section>
