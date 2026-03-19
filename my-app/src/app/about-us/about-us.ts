@@ -7,49 +7,52 @@ import { isPlatformBrowser } from '@angular/common';
   templateUrl: './about-us.html',
   styleUrl: './about-us.css',
 })
-export class AboutUs implements AfterViewInit {
+export class AboutUs implements AfterViewInit, OnDestroy {
   private observer?: IntersectionObserver;
   private platformId = inject(PLATFORM_ID);
 
-ngAfterViewInit() {
-  if (!isPlatformBrowser(this.platformId)) return;
+  ngAfterViewInit() {
+    if (!isPlatformBrowser(this.platformId)) return;
 
-  const elements = document.querySelectorAll(
-    '.animate-left, .animate-right, .animate-up'
-  );
+    const elements = document.querySelectorAll(
+      '.animate-left, .animate-right, .animate-up'
+    );
 
-  this.observer = new IntersectionObserver((entries) => {
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
 
-    entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // 👇 Khi vào màn hình → hiện + animate
+            entry.target.classList.add('show');
+          } else {
+            // 👇 Khi ra khỏi màn hình → reset lại để lần sau animate tiếp
+            entry.target.classList.remove('show');
+          }
 
-      if(entry.isIntersecting){
-        entry.target.classList.add('show');
-        // Animate once to avoid flicker while scrolling around threshold.
-        this.observer?.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.2,
+        rootMargin: '0px 0px -8% 0px',
       }
+    );
 
+    elements.forEach((el) => {
+      el.classList.add('observed');
+      this.observer?.observe(el);
     });
-
-  },{
-    threshold: 0.2,
-    rootMargin: '0px 0px -8% 0px'
-  });
-
-  elements.forEach(el => {
-    el.classList.add('observed');
-    this.observer?.observe(el);
-  });
-
-    }
+  }
 
   scrollToContent() {
     if (!isPlatformBrowser(this.platformId)) return;
-    document.getElementById('about-content')?.scrollIntoView({ behavior: 'smooth' });
+
+    document
+      .getElementById('about-content')
+      ?.scrollIntoView({ behavior: 'smooth' });
   }
 
   ngOnDestroy() {
     this.observer?.disconnect();
   }
-
-  }
-
+}

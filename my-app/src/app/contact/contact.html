@@ -1,40 +1,94 @@
 <div class="contact-page">
+  <div class="bg-overlay" aria-hidden="true">
+    <img src="assets/images/bg_contact.png" alt="Background texture">
+  </div>
 
-  <h1 class="title">Liên hệ với SẮC</h1>
-
-  <form (submit)="onSubmit($event)" class="contact-form">
-
-    <div class="row">
-
-      <div class="input-group">
-        <input type="text" name="firstName" required placeholder="Nhập tên của bạn*">
+  <section class="content">
+    <div class="contact-shell">
+      <div class="contact-heading">
+        <p class="eyebrow">Chăm sóc khách hàng</p>
+        <h1 class="title">LIÊN HỆ VỚI SẮC</h1>
+        <p class="subtitle">
+          Để lại lời nhắn, đội ngũ SẮC sẽ phản hồi trong thời gian sớm nhất để hỗ trợ bạn tận tình.
+        </p>
       </div>
 
-      <div class="input-group">
-        <input type="tel" name="phone" required placeholder="Nhập số điện thoại*">
+      <div class="contact-container">
+        <form class="contact-form" (submit)="onSubmit($event)">
+          <div class="row">
+            <div class="form-group">
+              <input id="firstName" name="firstName" type="text" required>
+              <label for="firstName">Họ và tên *</label>
+            </div>
+
+            <div class="form-group">
+              <input id="phone" name="phone" type="tel" required>
+              <label for="phone">Số điện thoại *</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <input id="email" name="email" type="email" required>
+            <label for="email">Email *</label>
+          </div>
+
+          <div class="form-group">
+            <textarea id="message" name="message" rows="5" required></textarea>
+            <label for="message">Câu hỏi của bạn *</label>
+          </div>
+
+          <div class="button-group">
+            <button class="btn-primary" type="submit">GỬI SẮC</button>
+          </div>
+        </form>
+
+        <aside class="contact-info">
+          <h3 class="info-title">Thông tin liên hệ</h3>
+
+          <div class="info-item">
+            <img src="assets/images/location.png" alt="Location" class="icon">
+            <span>123 Nguyễn Trãi, Quận 1, TP. Hồ Chí Minh</span>
+          </div>
+
+          <div class="info-item">
+            <img src="assets/images/time.png" alt="Time" class="icon">
+            <span>8:00 – 23:00</span>
+          </div>
+
+          <div class="info-item">
+            <img src="assets/images/email.png" alt="Email" class="icon">
+            <a href="mailto:sac.support@gmail.com" class="clickable">sac.support@gmail.com</a>
+          </div>
+
+          <div class="info-item">
+            <img src="assets/images/hotline.png" alt="Hotline" class="icon">
+            <a href="tel:0812059720" class="clickable">Hotline: 0812 059 720</a>
+          </div>
+
+          <div class="social-row">
+            <a class="social-icon" href="#" aria-label="Facebook">
+              <img src="assets/images/facebook.png" alt="Facebook">
+            </a>
+            <a class="social-icon" href="#" aria-label="Messenger">
+              <img src="assets/images/messenger.png" alt="Messenger">
+            </a>
+            <a class="social-icon" href="#" aria-label="Zalo">
+              <img src="assets/images/zalo.png" alt="Zalo">
+            </a>
+          </div>
+        </aside>
       </div>
-
     </div>
+  </section>
 
-    <div class="input-group">
-      <input type="email" name="email" required placeholder="Nhập địa chỉ email*">
-    </div>
-
-    <div class="input-group">
-      <textarea name="message" rows="4" placeholder="Nhập câu hỏi của bạn ở đây*"></textarea>
-    </div>
-
-    <div class="button-group">
-
-      <button type="submit" class="btn-primary">
-        GỬI SẮC
-      </button>
-      <a href="tel:0812059720" class="btn-outline call-btn">
-          📞 GỌI CHO COCOON
-      </a>
-
-    </div>
-
-  </form>
-
+  <div class="map-full">
+    <iframe
+      title="Bản đồ cửa hàng SẮC"
+      loading="lazy"
+      src="https://www.google.com/maps?q=123+Nguyen+Trai+Quan+1+Ho+Chi+Minh&output=embed">
+    </iframe>
+  </div>
 </div>
+
+
+
