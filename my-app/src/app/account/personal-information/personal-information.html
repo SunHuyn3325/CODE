@@ -1,0 +1,69 @@
+<section class="profile-shell">
+  <header class="profile-header">
+    <h1>Thong tin tai khoan</h1>
+    <p>Cap nhat ho so de dat hang nhanh hon va chinh xac hon.</p>
+  </header>
+
+  <div class="profile-card">
+    <div class="identity">
+      <img [src]="form.avatar || '/assets/user.png'" alt="Avatar" class="avatar" />
+      <div>
+        <h2>{{ form.profileName || 'Khach hang' }}</h2>
+        <span>{{ form.email || 'Chua cap nhat email' }}</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <label>
+        Ho va ten
+        <input [(ngModel)]="form.profileName" name="profileName" />
+      </label>
+
+      <label>
+        So dien thoai
+        <input [(ngModel)]="form.phone" name="phone" />
+      </label>
+
+      <label>
+        Email
+        <input [(ngModel)]="form.email" name="email" type="email" />
+      </label>
+
+      <label>
+        Gioi tinh
+        <select [(ngModel)]="form.gender" name="gender">
+          <option value="male">Nam</option>
+          <option value="female">Nu</option>
+          <option value="other">Khac</option>
+        </select>
+      </label>
+
+      <label>
+        Ngay sinh
+        <input [(ngModel)]="form.birthDay" name="birthDay" type="number" min="1" max="31" />
+      </label>
+
+      <label>
+        Thang sinh
+        <input
+          [(ngModel)]="form.birthMonth"
+          name="birthMonth"
+          type="number"
+          min="1"
+          max="12"
+        />
+      </label>
+
+      <label>
+        Nam sinh
+        <input [(ngModel)]="form.birthYear" name="birthYear" type="number" min="1900" max="2100" />
+      </label>
+    </div>
+
+    <div class="actions">
+      <button (click)="saveProfile()" [disabled]="isSaving">
+        {{ isSaving ? 'Dang luu...' : 'Luu thong tin' }}
+      </button>
+    </div>
+  </div>
+</section>

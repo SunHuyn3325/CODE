@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { Nav } from '../nav/nav';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
@@ -10,7 +9,6 @@ import { RouterOutlet } from '@angular/router';
   imports: [
     CommonModule,
     RouterModule,
-    Nav,
     RouterOutlet
   ],
   templateUrl: './admin.html',

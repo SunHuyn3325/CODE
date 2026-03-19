@@ -1,0 +1,122 @@
+<section class="reviews-container">
+  <div class="reviews-header">
+    <h2>Đánh Giá Sản Phẩm</h2>
+    <p class="reviews-subtitle">Chia sẻ trải nghiệm mua sắm của bạn</p>
+  </div>
+
+  <div class="reviews-actions">
+    <button class="btn-primary" (click)="toggleReviewForm()">
+      {{ showReviewForm ? 'Hủy' : '+ Viết Đánh Giá' }}
+    </button>
+  </div>
+
+  <!-- Review Form -->
+  <div *ngIf="showReviewForm" class="review-form-section">
+    <h3>Viết Đánh Giá</h3>
+    <form (ngSubmit)="submitReview()" class="form">
+      <div class="form-group">
+        <label for="orderId">Mã Đơn Hàng:</label>
+        <input 
+          type="text" 
+          id="orderId" 
+          [(ngModel)]="reviewForm.orderId" 
+          name="orderId"
+          placeholder="Nhập mã đơn hàng cần đánh giá"
+          class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label>Đánh Giá:</label>
+        <div class="rating-input">
+          <div class="stars" [title]="reviewForm.rating + ' sao'">
+            <span *ngFor="let i of [1,2,3,4,5]" 
+              class="star"
+              [class.filled]="i <= reviewForm.rating"
+              (click)="reviewForm.rating = i">★</span>
+          </div>
+          <span class="rating-text">{{ reviewForm.rating }} / 5 sao</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="title">Tiêu Đề Đánh Giá:</label>
+        <input 
+          type="text" 
+          id="title" 
+          [(ngModel)]="reviewForm.title" 
+          name="title"
+          placeholder="Ví dụ: Sản phẩm tốt, giao hàng nhanh"
+          class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label for="content">Nội Dung Đánh Giá:</label>
+        <textarea 
+          id="content" 
+          [(ngModel)]="reviewForm.content" 
+          name="content"
+          placeholder="Chia sẻ chi tiết về sản phẩm, chất lượng, độ bền, v.v..."
+          class="form-textarea"
+          rows="4"></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit">Gửi Đánh Giá</button>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <p>Đang tải đánh giá...</p>
+  </div>
+
+  <!-- Reviews List -->
+  <div *ngIf="!loading && reviews.length > 0" class="reviews-list">
+    <div *ngFor="let review of reviews" class="review-card">
+      <!-- Review Header -->
+      <div class="review-header-row" (click)="toggleReviewExpand(review._id)">
+        <div class="review-info">
+          <div class="review-title">
+            <strong>{{ review.title }}</strong>
+          </div>
+          <div class="review-rating">
+            <span class="stars">
+              <span *ngFor="let i of getStarArray(review.rating)" class="star filled">★</span>
+              <span *ngFor="let i of getEmptyStarArray(review.rating)" class="star empty">☆</span>
+            </span>
+            <span class="rating-value">{{ review.rating }}/5</span>
+          </div>
+        </div>
+        <div class="review-date">
+          {{ review.createdAt | date: 'dd/MM/yyyy' }}
+        </div>
+        <div class="expand-icon">
+          <span [class.rotated]="expandedReviewId === review._id">▼</span>
+        </div>
+      </div>
+
+      <!-- Review Details (Expanded) -->
+      <div *ngIf="expandedReviewId === review._id" class="review-details">
+        <div class="review-content">
+          {{ review.content }}
+        </div>
+
+        <div class="review-meta">
+          <span class="meta-label">Đơn hàng:</span>
+          <span class="meta-value">{{ review.orderId }}</span>
+        </div>
+
+        <div class="actions-section">
+          <button class="btn-delete" (click)="deleteReview(review._id)">
+            Xóa Đánh Giá
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && reviews.length === 0 && !showReviewForm" class="empty-state">
+    <p>Bạn chưa có đánh giá nào</p>
+    <small>Hãy chia sẻ feedback của bạn về sản phẩm đã mua để giúp người khác!</small>
+  </div>
+</section>

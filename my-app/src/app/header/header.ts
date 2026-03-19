@@ -44,6 +44,23 @@ export class Header {
 
   constructor(private userApi: UserApiService, private router: Router) {}
 
+  private scrollTop(): void {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+  }
+
+  openLoginPage(): void {
+    if (this.router.url.startsWith('/login')) {
+      this.scrollTop();
+      return;
+    }
+
+    this.router.navigate(['/login']).then(() => {
+      this.scrollTop();
+    });
+  }
+
   onSearch() {
     this.showSearchModal = true;
     this.filteredSuggestions = [];
@@ -109,21 +126,26 @@ export class Header {
   }
 
   onCart() {
-    this.showCartModal = true;
+    if (!this.user) {
+      this.showCartModal = true;
+      return;
+    }
+
+    this.router.navigate(['/cart']);
   }
 
   closeCartModal() {
     this.showCartModal = false;
   }
 
-  goToProducts() {
-    this.closeCartModal();
-    this.router.navigate(['/products']);
-  }
-
   goToLogin() {
     this.closeCartModal();
-    this.router.navigate(['/login']);
+    this.openLoginPage();
+  }
+
+  goToSignup() {
+    this.closeCartModal();
+    this.router.navigate(['/signup']);
   }
 
   onLogin() {

@@ -146,4 +146,18 @@ export class Cart implements OnInit {
     }
   }
 
+  resolveAssetImage(image?: string | null) {
+    if (!image) {
+      return '/assets/Logo.png';
+    }
+
+    if (/^(https?:)?\/\//.test(image) || image.startsWith('/assets/')) {
+      return image;
+    }
+
+    const normalizedImage = image.replace(/^\/+/, '').replace(/^assets\//, '');
+
+    return '/assets/' + normalizedImage;
+  }
+
 }

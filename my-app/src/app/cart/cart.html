@@ -43,7 +43,7 @@
   <div class="checkout-right">
 
     <div class="cart-item" *ngFor="let item of cart">
-        <img [src]="item.image || item.images?.[0]">
+    <img [src]="resolveAssetImage(item.image || item.images?.[0])">
 
         <div class="info">
             <p class="name">{{ item.name }}</p>

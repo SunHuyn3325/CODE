@@ -179,9 +179,10 @@
 }
 
 .info-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: 24px 1fr;
   align-items: center;
-  gap: 12px;
+  column-gap: 12px;
   margin-bottom: 14px;
   color: #5a4330;
   font-size: 18px;
@@ -189,10 +190,32 @@
 }
 
 .icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
-  opacity: 0.86;
+  flex-shrink: 0;
+  display: block;
+  justify-self: center;
+  align-self: center;
+  /* Unify PNG icon tone to match contact text color */
+  filter: brightness(0) saturate(100%) invert(24%) sepia(14%) saturate(1360%) hue-rotate(345deg) brightness(94%) contrast(90%);
+  transform-origin: center;
+}
+
+.icon-location {
+  transform: scale(1.16);
+}
+
+.icon-time {
+  transform: scale(1.16);
+}
+
+.icon-email {
+  transform: scale(0.76);
+}
+
+.icon-hotline {
+  transform: scale(1.02);
 }
 
 .clickable {
