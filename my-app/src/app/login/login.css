@@ -1,19 +1,35 @@
 .login-wrapper{
-    background:#ebe1d8;
     min-height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
+    background-image: url('/assets/login_bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.login-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
 }
 
 /* Card */
 
 .login-card{
+    position: relative;
+    z-index: 1;
     width:420px;
-    background:white;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     padding:40px;
     border-radius:14px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.1);
+    box-shadow:0 10px 40px rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.5);
 }
 
 /* Title */
@@ -22,11 +38,13 @@
     color:#a94053;
     font-weight:700;
     margin-bottom:10px;
+    text-align:center;
 }
 
 .login-subtitle{
     color:#40513b;
     margin-bottom:25px;
+    text-align:center;
 }
 
 /* Inputs */

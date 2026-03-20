@@ -20,8 +20,8 @@
 
     <div class="product-card" *ngFor="let product of products" [routerLink]="['/product', product._id]">
       <div class="image-wrapper">
-        <img class="img1" [src]="'assets/images/' + product.image_1">
-        <img class="img2" [src]="'assets/images/' + product.image_2">
+        <img class="img1" [src]="'/assets/' + product.image_1">
+        <img class="img2" [src]="'/assets/' + product.image_2">
       </div>
       <h3>{{product.product_name}}</h3>
       <p class="price">{{product.unit_price | number}}đ</p>

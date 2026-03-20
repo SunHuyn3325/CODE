@@ -1,0 +1,50 @@
+<section class="address-shell">
+  <header class="address-header">
+    <h1>So dia chi</h1>
+    <p>Cap nhat dia chi giao hang mac dinh cho tai khoan cua ban.</p>
+  </header>
+
+  <article class="address-card" *ngIf="!isEditing">
+    <div class="line"><strong>So dien thoai:</strong> {{ address.phone || 'Chua cap nhat' }}</div>
+    <div class="line"><strong>Dia chi:</strong> {{ address.address || 'Chua cap nhat' }}</div>
+    <div class="line"><strong>Phuong/Xa:</strong> {{ address.ward || 'Chua cap nhat' }}</div>
+    <div class="line"><strong>Quan/Huyen:</strong> {{ address.district || 'Chua cap nhat' }}</div>
+    <div class="line"><strong>Tinh/Thanh pho:</strong> {{ address.city || 'Chua cap nhat' }}</div>
+
+    <button class="primary" (click)="isEditing = true">Chinh sua dia chi</button>
+  </article>
+
+  <article class="address-card" *ngIf="isEditing">
+    <label>
+      So dien thoai
+      <input [(ngModel)]="address.phone" name="phone" />
+    </label>
+
+    <label>
+      Dia chi cu the
+      <input [(ngModel)]="address.address" name="address" />
+    </label>
+
+    <label>
+      Phuong/Xa
+      <input [(ngModel)]="address.ward" name="ward" />
+    </label>
+
+    <label>
+      Quan/Huyen
+      <input [(ngModel)]="address.district" name="district" />
+    </label>
+
+    <label>
+      Tinh/Thanh pho
+      <input [(ngModel)]="address.city" name="city" />
+    </label>
+
+    <div class="actions">
+      <button class="ghost" (click)="isEditing = false" [disabled]="isSaving">Huy</button>
+      <button class="primary" (click)="saveAddress()" [disabled]="isSaving">
+        {{ isSaving ? 'Dang luu...' : 'Luu dia chi' }}
+      </button>
+    </div>
+  </article>
+</section>

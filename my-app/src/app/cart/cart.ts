@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LocationApiService } from '../location-api.service';
 import { OrderApiService } from '../order-api.service';
-import { ProductApiService } from '../product-api.service';
 
 @Component({
   selector: 'app-cart',
@@ -34,17 +33,14 @@ export class Cart implements OnInit {
 
   constructor(
     private locationService: LocationApiService,
-    private orderService: OrderApiService,
-    private productService: ProductApiService
+    private orderService: OrderApiService
   ) {}
 
   ngOnInit() {
-    // Load provinces
     this.locationService.getProvinces().subscribe(res => {
       this.provinces = res;
     });
 
-    // Load cart (giả sử từ localStorage hoặc API)
     this.loadCart();
   }
 
@@ -52,9 +48,39 @@ export class Cart implements OnInit {
     const cartData = JSON.parse(localStorage.getItem('cart') || '[]');
     this.cart = cartData;
 
+    this.calculateTotal();
+  }
+
+  calculateTotal() {
     this.total = this.cart.reduce((sum: number, item: any) => {
       return sum + item.price * item.quantity;
     }, 0);
+  }
+
+  // ✅ FIX BUTTON + -
+  increase(item: any) {
+    item.quantity++;
+    this.calculateTotal();
+    localStorage.setItem('cart', JSON.stringify(this.cart));
+  }
+
+  decrease(item: any) {
+    if (item.quantity > 1) {
+      item.quantity--;
+      this.calculateTotal();
+      localStorage.setItem('cart', JSON.stringify(this.cart));
+    }
+  }
+
+  // ✅ FIX IMAGE
+  resolveAssetImage(image?: string | null) {
+    if (!image) return 'assets/default.png';
+
+    if (image.startsWith('http') || image.startsWith('/assets')) {
+      return image;
+    }
+
+    return 'assets/' + image;
   }
 
   onProvinceChange(event: any) {
@@ -90,13 +116,15 @@ export class Cart implements OnInit {
       },
       cart: this.cart,
       total: this.total,
-      isGuest: true // 👈 quan trọng (không login)
+      isGuest: true
     };
 
     this.orderService.createOrder(order).subscribe({
       next: () => {
         alert('Đặt hàng thành công');
         localStorage.removeItem('cart');
+        this.cart = [];
+        this.total = 0;
       },
       error: () => alert('Lỗi đặt hàng')
     });

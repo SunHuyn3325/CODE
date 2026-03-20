@@ -5,6 +5,7 @@ import { Product } from '../models/product';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { CartApiService } from '../cart-api.service';
 
@@ -32,6 +33,7 @@ export class ProductDetail implements OnInit {
     private productService: ProductApiService,
     private cdr: ChangeDetectorRef,
     private cartService: CartApiService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -116,24 +118,15 @@ export class ProductDetail implements OnInit {
     );
 
   }
-  getUserId(): string {
-  const user = localStorage.getItem('user');
-
-    if (user) {
-      return JSON.parse(user)._id;
-    }
-
-    let guestId = localStorage.getItem('guestId');
-
-    if (!guestId) {
-      guestId = 'guest_' + new Date().getTime();
-      localStorage.setItem('guestId', guestId);
-    }
-
-    return guestId;
-  }
   addToCart() {
-  const userId = this.getUserId();
+    const userRaw = localStorage.getItem('user');
+    if (!userRaw) {
+      alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng và nhận voucher ưu đãi.');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const userId = JSON.parse(userRaw)._id;
 
     const item = {
       userId: userId,

@@ -73,13 +73,13 @@
       <button class="close-btn" (click)="closeCartModal()">✕</button>
     </div>
     <div class="modal-body cart-body">
-      <div class="empty-cart">
-        <img src="assets/cart.png" alt="Giỏ trống" class="empty-icon">
-        <p class="empty-text">Chưa có sản phẩm nào</p>
-        <p class="empty-subtext">Bắt đầu mua sắm để thêm sản phẩm vào giỏ</p>
-        <button class="btn-shopping" (click)="goToProducts()">Xem sản phẩm</button>
+      <div class="empty-cart auth-gate-cart">
+        <img src="/assets/cart.png" alt="Giỏ trống" class="empty-icon">
+        <p class="empty-text">Giỏ hàng đang trống</p>
+        <p class="empty-subtext">Đăng nhập để thêm sản phẩm và nhận voucher ưu đãi.</p>
+        <button class="btn-shopping" (click)="goToLogin()">Đăng nhập nhận voucher</button>
         <p class="or-divider">— hoặc —</p>
-        <button class="btn-login" (click)="goToLogin()">Đăng nhập ngay</button>
+        <button class="btn-login" (click)="goToSignup()">Tạo tài khoản mới</button>
       </div>
     </div>
   </div>
@@ -95,25 +95,25 @@
       </div>
 
       <div class="logo" routerLink="/">
-        <img src="assets/Logo.png" alt="SẮC">
+        <img src="/assets/Logo.png" alt="SẮC">
       </div>
 
       <div class="header-actions">
         <button class="icon-btn" (click)="onSearch()" aria-label="Tìm kiếm">
-          <img src="assets/search.png" alt="Search">
+          <img src="/assets/search.png" alt="Search">
         </button>
 
         <div class="cart-wrapper">
           <button class="icon-btn" (click)="onCart()" aria-label="Giỏ hàng">
-            <img src="assets/cart.png" alt="Cart">
+            <img src="/assets/cart.png" alt="Cart">
           </button>
           <span class="cart-count" *ngIf="cartCount > 0">{{ cartCount }}</span>
         </div>
 
         <div class="user-area">
-          <a *ngIf="!user" routerLink="/login" class="login-btn">Đăng nhập</a>
+          <a *ngIf="!user" href="/login" (click)="$event.preventDefault(); openLoginPage()" class="login-btn">Đăng nhập</a>
           <div *ngIf="user" class="user-menu" routerLink="/account" aria-label="Tài khoản">
-            <img [src]="user.avatar || 'assets/user.png'" class="avatar" alt="Avatar người dùng">
+            <img [src]="user.avatar || '/assets/user.png'" class="avatar" alt="Avatar người dùng">
           </div>
         </div>
       </div>

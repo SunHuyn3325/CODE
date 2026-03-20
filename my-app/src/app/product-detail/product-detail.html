@@ -7,12 +7,12 @@
 
       <img
         class="main-image"
-        [src]="'assets/products/' + (selectedImage || product.images?.[0])">
+        [src]="'/assets/' + (selectedImage || (product.images && product.images[0]))">
       <div class="thumbnail-list">
 
         <img
           *ngFor="let img of product.images"
-          [src]="'assets/products/' + img"
+          [src]="'/assets/' + img"
           (click)="changeImage(img)"
         >
 
@@ -149,7 +149,7 @@
 
     <button class="close-btn" (click)="closeSizeGuide()">✕</button>
 
-    <img src="assets/size-guide.jpg" alt="Size Guide">
+    <img src="/assets/size-guide.jpg" alt="Size Guide">
 
   </div>
 
@@ -167,9 +167,11 @@
          [routerLink]="['/product', item._id]">
 
       <div class="image-wrapper">
-        <img class="img1" [src]="'assets/images/' + item.images?.[0]">
-        <img class="img2" *ngIf="item.images && item.images.length > 1"
-             [src]="'assets/images/' + item.images[1]">
+         <img class="img1" [src]="'/assets/' + item.images?.[0]">
+
+        <img class="img2"
+          *ngIf="item.images && item.images.length > 1"
+          [src]="'/assets/' + item.images[1]">
       </div>
 
       <h3>{{item.product_name}}</h3>
@@ -195,11 +197,11 @@
       <div class="image-wrapper">
 
         <img class="img1"
-             [src]="'assets/images/' + item.images?.[0]">
+           [src]="'/assets/' + item.images?.[0]">
 
         <img class="img2"
              *ngIf="item.images && item.images.length > 1"
-             [src]="'assets/images/' + item.images?.[1]">
+           [src]="'/assets/' + item.images[1]">
 
       </div>
 

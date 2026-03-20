@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { UserApiService } from '../user-api.service';
 
@@ -11,14 +11,15 @@ import { UserApiService } from '../user-api.service';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit {
   loginForm: FormGroup;
   loginError: string = '';
 
   constructor(
     private fb: FormBuilder,
     private userApi: UserApiService,
-    private router: Router
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: object
   ) {
 
     this.loginForm = this.fb.group({
@@ -27,6 +28,12 @@ export class Login {
       rememberMe: [false]
     });
 
+  }
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
   }
 
   onSubmit() {

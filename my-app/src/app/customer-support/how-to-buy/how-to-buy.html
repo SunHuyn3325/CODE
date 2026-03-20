@@ -1,29 +1,204 @@
-<section class="policy-page">
+<section class="support-section">
+  <div class="container">
+    <!-- Section Header -->
+    <div class="section-header">
+      <h2 class="section-title">HỖ TRỢ KHÁCH HÀNG</h2>
+      <p class="section-description">
+        <strong>Sắc</strong> tin rằng tà áo đẹp nhất là khi bạn mặc nó với sự thoải mái và tự tin. Nếu có bất kỳ điều gì chưa vừa ý, đừng ngần ngại nhắn tụi mình, vì hỗ trợ bạn cũng là cách tụi mình hoàn thiện hơn mỗi ngày.
+      </p>
+    </div>
 
-<h1>Phương thức thanh toán</h1>
-<div class="policy-divider"></div>
+    <!-- Accordion -->
+    <div class="accordion-wrapper" [class.no-animate]="skipAnimation">
+      <div
+        *ngFor="let support of supportItems; let i = index"
+        class="accordion-item"
+        [attr.id]="'support-tab-' + support.id"
+        [class.expanded]="support.isExpanded"
+      >
+        <!-- Accordion Header -->
+        <div class="accordion-header" (click)="toggleAccordion(support.id)">
+          <div class="header-left">
+            <div class="support-icon">
+              <img [src]="support.iconPath" [alt]="support.title" />
+            </div>
+            <h3 class="support-title">{{ support.title }}</h3>
+          </div>
+          <button class="accordion-toggle" [class.rotate]="support.isExpanded">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M6 9L12 15L18 9"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
 
-<div class="policy-box">
+        <!-- Accordion Content -->
+        <div class="accordion-content" [class.show]="support.isExpanded">
+          <div class="accordion-body" [innerHTML]="support.content" *ngIf="support.id !== 1"></div>
 
-<h2>Thanh toán khi nhận hàng (COD)</h2>
+          <!-- FAQ Accordion for support item 1 -->
+          <div class="accordion-body" *ngIf="support.id === 1">
+            <div class="faq-accordion">
+              <div
+                class="faq-accordion-item"
+                *ngFor="let faq of faqItems; let i = index"
+                [class.expanded]="faq.isExpanded"
+              >
+                <div class="faq-question" (click)="toggleFAQ(faq.id)">
+                  <div class="faq-plus" [class.rotate]="faq.isExpanded">+</div>
+                  <h4>{{ faq.question }}</h4>
+                </div>
+                <div class="faq-answer" [class.show]="faq.isExpanded">
+                  <div [innerHTML]="faq.answer"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<p>
-Khách hàng thanh toán trực tiếp cho nhân viên giao hàng khi nhận sản phẩm.
-</p>
+    <!-- Contact Section -->
+    <div class="contact-section">
+      <div class="contact-container">
+        <div class="contact-left">
+          <h3 class="contact-title">Cần thêm hỗ trợ? Liên hệ với chúng tôi</h3>
+          <form class="contact-form" (ngSubmit)="onSubmit()" #contactForm="ngForm">
+            <div class="form-group">
+              <label for="name">Họ và tên <sup>*</sup></label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                [(ngModel)]="contactData.name"
+                #nameInput="ngModel"
+                required
+                minlength="2"
+              />
+              <div class="error-message" *ngIf="nameInput.invalid && nameInput.touched">
+                <span *ngIf="nameInput.errors?.['required']">Họ và tên là bắt buộc</span>
+                <span *ngIf="nameInput.errors?.['minlength']"
+                  >Họ và tên phải có ít nhất 2 ký tự</span
+                >
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email">Email <sup>*</sup></label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                [(ngModel)]="contactData.email"
+                #emailInput="ngModel"
+                required
+                email
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+              />
+              <div class="error-message" *ngIf="emailInput.invalid && emailInput.touched">
+                <span *ngIf="emailInput.errors?.['required']">Email là bắt buộc</span>
+                <span *ngIf="emailInput.errors?.['email'] || emailInput.errors?.['pattern']"
+                  >Email không chính xác</span
+                >
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="message">Nội dung <sup>*</sup></label>
+              <textarea
+                id="message"
+                name="message"
+                rows="5"
+                [(ngModel)]="contactData.message"
+                #messageInput="ngModel"
+                required
+                minlength="10"
+              ></textarea>
+              <div class="error-message" *ngIf="messageInput.invalid && messageInput.touched">
+                <span *ngIf="messageInput.errors?.['required']">Nội dung là bắt buộc</span>
+                <span *ngIf="messageInput.errors?.['minlength']"
+                  >Nội dung phải có ít nhất 10 ký tự</span
+                >
+              </div>
+            </div>
+            <button type="submit" class="submit-btn" [disabled]="!contactForm.valid || isSubmitting">
+              <span *ngIf="!isSubmitting">Gửi ngay</span>
+              <span *ngIf="isSubmitting">Đang gửi...</span>
+            </button>
+          </form>
+        </div>
 
-<h2>Chuyển khoản ngân hàng</h2>
-
-<p>
-Khách hàng có thể thanh toán qua chuyển khoản theo thông tin tài khoản
-được cung cấp sau khi đặt hàng.
-</p>
-
-<h2>Thanh toán trực tuyến</h2>
-
-<p>
-Website hỗ trợ thanh toán qua các cổng thanh toán điện tử
-để đảm bảo giao dịch nhanh chóng và an toàn.
-</p>
-
-</div>
+        <div class="contact-right">
+          <div class="contact-info">
+            <h4>Thông tin liên hệ</h4>
+            <div class="info-item">
+              <div class="info-icon">
+                <svg class="icon-phone" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.32 1.78.59 2.63a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.45-1.25a2 2 0 0 1 2.11-.45c.85.27 1.73.47 2.63.59A2 2 0 0 1 22 16.92z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="info-text"><strong>Hotline:</strong> 0812 059 720</div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <svg class="icon-email" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 3.2l8 5.6 8-5.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M2 6l10 7 10-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="info-text"><strong>Email:</strong> sac.support@gmail.com</div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+                  <path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="info-text"><strong>Thời gian:</strong> 8h – 21h (T2–CN)</div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 21s-7-4.35-7-10a7 7 0 1 1 14 0c0 5.65-7 10-7 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="12" cy="11" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="info-text">
+                <strong>Địa chỉ:</strong> 669 QL1A, khu phố 6, Thủ Đức, Hồ Chí Minh
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
+
+<!-- Popup Notification -->
+<div class="popup-overlay" *ngIf="showPopup" (click)="closePopup()">
+  <div class="popup-container" [class.success]="popupType === 'success'" [class.error]="popupType === 'error'" (click)="$event.stopPropagation()">
+    <div class="popup-header">
+      <div class="popup-icon-wrapper">
+        <div class="popup-icon" [class.success-icon]="popupType === 'success'" [class.error-icon]="popupType === 'error'">
+          <span *ngIf="popupType === 'success'">✓</span>
+          <span *ngIf="popupType === 'error'">✕</span>
+        </div>
+      </div>
+      <button class="popup-close-btn" (click)="closePopup()" aria-label="Đóng">
+        <span>&times;</span>
+      </button>
+    </div>
+    <div class="popup-body">
+      <h3 class="popup-title" *ngIf="popupType === 'success'">Thành công!</h3>
+      <h3 class="popup-title" *ngIf="popupType === 'error'">Có lỗi xảy ra</h3>
+      <p class="popup-message">{{ popupMessage }}</p>
+    </div>
+    <div class="popup-footer">
+      <button class="popup-close" (click)="closePopup()">Đóng</button>
+    </div>
+  </div>
+</div>

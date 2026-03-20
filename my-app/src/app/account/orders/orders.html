@@ -1,0 +1,100 @@
+<section class="orders-container">
+  <div class="orders-header">
+    <h2>Quản Lý Đơn Hàng</h2>
+    <p class="orders-subtitle">Xem và quản lý các đơn hàng của bạn</p>
+  </div>
+
+  <!-- Filter Orders -->
+  <div class="filter-section">
+    <label for="statusFilter">Lọc theo trạng thái:</label>
+    <select 
+      id="statusFilter" 
+      [(ngModel)]="statusFilter" 
+      (change)="filterOrders()"
+      class="filter-select">
+      <option value="all">Tất cả</option>
+      <option value="pending">Chờ xử lý</option>
+      <option value="processing">Đang xử lý</option>
+      <option value="shipped">Đã gửi</option>
+      <option value="delivered">Đã giao</option>
+      <option value="cancelled">Đã hủy</option>
+    </select>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <p>Đang tải đơn hàng...</p>
+  </div>
+
+  <!-- Orders List -->
+  <div *ngIf="!loading && filteredOrders.length > 0" class="orders-list">
+    <div *ngFor="let order of filteredOrders" class="order-card">
+      <!-- Order Header -->
+      <div class="order-header-row" (click)="toggleOrderExpand(order._id)">
+        <div class="order-info">
+          <div class="order-number">
+            <strong>Đơn hàng #{{ order._id?.slice(-8).toUpperCase() }}</strong>
+          </div>
+          <div class="order-date">
+            {{ order.createdAt ? (order.createdAt | date: 'dd/MM/yyyy HH:mm') : 'N/A' }}
+          </div>
+        </div>
+        <div class="order-status-section">
+          <span [ngClass]="'status-badge ' + getStatusBadgeClass(order.status)">
+            {{ getStatusLabel(order.status) }}
+          </span>
+        </div>
+        <div class="order-amount">
+          <strong>{{ order.totalPrice || 0 | number: '1.0-0' }}đ</strong>
+        </div>
+        <div class="expand-icon">
+          <span [class.rotated]="expandedOrderId === order._id">▼</span>
+        </div>
+      </div>
+
+      <!-- Order Details (Expanded) -->
+      <div *ngIf="expandedOrderId === order._id" class="order-details">
+        <div class="items-section">
+          <h4>Chi Tiết Sản Phẩm</h4>
+          <div *ngFor="let item of order.orderItems" class="order-item">
+            <div class="item-info">
+              <span class="item-name">{{ item.name }}</span>
+              <span class="item-qty">x{{ item.qty }}</span>
+            </div>
+            <div class="item-price">
+              {{ item.price | number: '1.0-0' }}đ
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-section">
+          <div class="payment-info">
+            <span>Tổng Cộng:</span>
+            <strong>{{ order.totalPrice | number: '1.0-0' }}đ</strong>
+          </div>
+          <div class="payment-status">
+            <span>Thanh Toán:</span>
+            <span [class.paid]="order.isPaid" [class.unpaid]="!order.isPaid">
+              {{ order.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="actions-section" *ngIf="order.status !== 'delivered' && order.status !== 'cancelled'">
+          <button 
+            class="btn-cancel" 
+            (click)="cancelOrder(order._id)"
+            *ngIf="order.status === 'pending'">
+            Hủy Đơn Hàng
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && filteredOrders.length === 0" class="empty-state">
+    <p>Không có đơn hàng nào</p>
+    <small>Bạn chưa có đơn hàng. Hãy bắt đầu mua sắm ngay!</small>
+  </div>
+</section>

@@ -37,21 +37,28 @@
   <!-- RIGHT: ORDER -->
   <div class="checkout-right">
     <div class="cart-item" *ngFor="let item of cart">
-      <img [src]="item.image" />
-      <div>
-        <p>{{item.name}}</p>
-        <span>{{item.variant}}</span>
+
+    <img [src]="resolveAssetImage(item.image || (item.images && item.images[0]))">
+
+    <div class="info">
+      <p class="name">{{ item.name }}</p>
+
+      <p class="variant">
+        {{ item.color }} / {{ item.size }}
+      </p>
+
+      <div class="quantity-box">
+        <button (click)="decrease(item)">-</button>
+        <span>{{ item.quantity }}</span>
+        <button (click)="increase(item)">+</button>
       </div>
-      <div class="price">{{item.price | currency:'VND'}}</div>
     </div>
 
-    <input type="text" placeholder="Nhập mã giảm giá" />
-
-    <div class="summary">
-      <p>Tạm tính: {{total | currency:'VND'}}</p>
-      <p>Phí vận chuyển: TBD</p>
-      <h3>Tổng: {{total | currency:'VND'}}</h3>
+    <div class="price">
+      {{ item.price | currency:'VND' }}
     </div>
+
+  </div>
 
     <button (click)="submitOrder()">Đặt hàng</button>
   </div>
