@@ -5,6 +5,7 @@ const morgan = require("morgan")
 const multer = require("multer")
 const path = require("path")
 const fs = require("fs")
+const bcrypt = require("bcrypt")
 const Feedback = require("./models/Feedback.models.js")
 const Product = require("./models/Product.js")
 const User = require("./models/User.js");
@@ -14,6 +15,13 @@ const Cart = require('./models/Cart.js');
 
 const app = express()
 const port = 3000
+
+function sanitizeUser(userDoc) {
+  if (!userDoc) return userDoc
+  const user = userDoc.toObject ? userDoc.toObject() : { ...userDoc }
+  delete user.password
+  return user
+}
 
 app.use(cors())
 app.use(express.json({ limit: "10mb" }))
@@ -201,7 +209,7 @@ app.post("/users", async (req, res) => {
   try {
     const user = new User(req.body);
     const result = await user.save();
-    res.send(result);
+    res.send(sanitizeUser(result));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -210,11 +218,25 @@ app.post("/users", async (req, res) => {
 app.post("/users/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email, password });
-    if (!user) {
+    const user = await User.findOne({ email });
+    if (!user || !user.password) {
       return res.status(401).json({ message: "Sai email hoặc mật khẩu" });
     }
-    res.json(user);
+
+    let isPasswordValid = await bcrypt.compare(password, user.password);
+
+    // Backward compatibility for old plain-text passwords in database.
+    if (!isPasswordValid && password === user.password) {
+      user.password = password;
+      await user.save();
+      isPasswordValid = true;
+    }
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Sai email hoặc mật khẩu" });
+    }
+
+    res.json(sanitizeUser(user));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -223,7 +245,7 @@ app.post("/users/login", async (req, res) => {
 app.get("/users", async (req, res) => {
   try {
     const users = await User.find();
-    res.send(users);
+    res.send(users.map(sanitizeUser));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -232,7 +254,7 @@ app.get("/users", async (req, res) => {
 app.get("/users/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    res.send(user);
+    res.send(sanitizeUser(user));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -241,7 +263,7 @@ app.get("/users/:id", async (req, res) => {
 app.put("/users/:id", async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.send(user);
+    res.send(sanitizeUser(user));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
