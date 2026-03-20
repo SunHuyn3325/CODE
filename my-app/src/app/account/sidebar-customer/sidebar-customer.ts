@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { UserApiService } from '../../user-api.service';
+import { Account } from '../../models/Account';
 
 interface SidebarMenuItem {
   id: string;
@@ -17,9 +18,12 @@ interface SidebarMenuItem {
   styleUrl: './sidebar-customer.css',
 })
 export class SidebarCustomer implements OnInit {
+
   @Input() notificationBadge: number = 0;
 
   isMobileSidebarOpen = false;
+
+  user: Account | null = null;
   userName = 'Khach hang';
   userEmail = '';
   userAvatar = '/assets/user.png';
@@ -39,31 +43,24 @@ export class SidebarCustomer implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadUserInfo();
+
+    // ✅ CHỈ dùng BehaviorSubject (KHÔNG localStorage)
     this.userApi.currentUser$.subscribe((user) => {
+
       if (user) {
-        this.userName = user.profileName || user.fullName || this.userName;
-        this.userEmail = user.email || this.userEmail;
+        this.user = user;
+
+        this.userName = user.profileName || 'Khach hang';
+        this.userEmail = user.email || '';
+        this.userAvatar = user.avatar || '/assets/user.png';
+      } else {
+        // fallback khi logout
+        this.userName = 'Khach hang';
+        this.userEmail = '';
+        this.userAvatar = '/assets/user.png';
       }
+
     });
-  }
-
-  private loadUserInfo(): void {
-    const userRaw = localStorage.getItem('user');
-    if (!userRaw) {
-      return;
-    }
-
-    try {
-      const user = JSON.parse(userRaw);
-      this.userName = user.profileName || user.fullName || user.FullName || 'Khach hang';
-      this.userEmail = user.email || user.Email || '';
-      this.userAvatar = user.avatar || '/assets/user.png';
-    } catch {
-      this.userName = 'Khach hang';
-      this.userEmail = '';
-      this.userAvatar = '/assets/user.png';
-    }
   }
 
   toggleMobileSidebar(): void {
@@ -75,8 +72,7 @@ export class SidebarCustomer implements OnInit {
   }
 
   onLogout(): void {
-    localStorage.removeItem('user');
-    this.userApi.logout();
+    this.userApi.logout(); 
     this.closeMobileSidebar();
     this.router.navigate(['/login']);
   }

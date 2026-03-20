@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReturnApiService } from '../../return-api.service';
 
@@ -11,12 +11,15 @@ import { ReturnApiService } from '../../return-api.service';
   styleUrl: './return-management.css',
 })
 export class ReturnManagementComponent implements OnInit {
+
   returns: any[] = [];
   loading = false;
   showReturnForm = false;
   expandedReturnId: string | null = null;
   userId: string = '';
-  
+
+  isBrowser = false;
+
   returnForm = {
     orderId: '',
     reason: '',
@@ -33,17 +36,40 @@ export class ReturnManagementComponent implements OnInit {
     'Khác'
   ];
 
-  constructor(private returnApiService: ReturnApiService) {
-    this.userId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
+  constructor(
+    private returnApiService: ReturnApiService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
   ngOnInit(): void {
+
+    // ✅ chỉ chạy localStorage khi ở browser
+    if (this.isBrowser) {
+      const userRaw = localStorage.getItem('user');
+
+      if (userRaw) {
+        try {
+          const user = JSON.parse(userRaw);
+          this.userId = user._id || '';
+        } catch {
+          this.userId = '';
+        }
+      }
+    }
+
     this.loadReturns();
   }
 
   loadReturns(): void {
+    if (!this.userId) return;
+
     this.loading = true;
+
+    // ⚠️ giả sử service trả array (sync)
     this.returns = this.returnApiService.getReturnsByUser(this.userId);
+
     this.loading = false;
   }
 
@@ -69,7 +95,7 @@ export class ReturnManagementComponent implements OnInit {
       return;
     }
 
-    const newReturn = this.returnApiService.createReturn({
+    this.returnApiService.createReturn({
       userId: this.userId,
       ...this.returnForm
     });
@@ -80,7 +106,8 @@ export class ReturnManagementComponent implements OnInit {
   }
 
   toggleReturnExpand(returnId: string): void {
-    this.expandedReturnId = this.expandedReturnId === returnId ? null : returnId;
+    this.expandedReturnId =
+      this.expandedReturnId === returnId ? null : returnId;
   }
 
   cancelReturn(returnId: string): void {
@@ -92,22 +119,22 @@ export class ReturnManagementComponent implements OnInit {
 
   getStatusBadgeClass(status: string): string {
     const statusClasses: { [key: string]: string } = {
-      'pending': 'badge-pending',
-      'approved': 'badge-approved',
-      'shipped': 'badge-shipped',
-      'received': 'badge-received',
-      'rejected': 'badge-rejected'
+      pending: 'badge-pending',
+      approved: 'badge-approved',
+      shipped: 'badge-shipped',
+      received: 'badge-received',
+      rejected: 'badge-rejected'
     };
     return statusClasses[status] || 'badge-pending';
   }
 
   getStatusLabel(status: string): string {
     const statusLabels: { [key: string]: string } = {
-      'pending': 'Chờ xử lý',
-      'approved': 'Được phê duyệt',
-      'shipped': 'Đang gửi lại',
-      'received': 'Đã nhận',
-      'rejected': 'Bị từ chối'
+      pending: 'Chờ xử lý',
+      approved: 'Được phê duyệt',
+      shipped: 'Đang gửi lại',
+      received: 'Đã nhận',
+      rejected: 'Bị từ chối'
     };
     return statusLabels[status] || status;
   }

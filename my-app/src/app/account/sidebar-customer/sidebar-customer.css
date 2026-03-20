@@ -1,20 +1,35 @@
 :host {
   display: block;
+  width: 100%;
 }
 
+/* FIX QUAN TRỌNG */
+* {
+  box-sizing: border-box;
+}
+
+/* SIDEBAR */
 .account-sidebar {
-  width: 280px;
+  width: 100%;
+  max-width: 280px; /* 🔥 tránh tràn */
   min-height: 100%;
+
   background: linear-gradient(170deg, #6f2a39 0%, #8b3c4f 100%);
   color: #fff;
+
   border-radius: 16px;
   padding: 20px 16px;
+
   display: flex;
   flex-direction: column;
   gap: 18px;
+
   box-shadow: 0 12px 28px rgba(60, 27, 34, 0.28);
+
+  overflow: hidden; /* 🔥 chặn tràn bên trong */
 }
 
+/* USER */
 .user-section {
   text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.28);
@@ -33,14 +48,22 @@
   margin: 10px 0 4px;
   font-size: 18px;
   font-weight: 700;
+
+  /* chống text dài bị tràn */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .user-email {
   margin: 0;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.86);
+
+  word-break: break-word;
 }
 
+/* MENU */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -53,8 +76,11 @@
   padding: 12px 14px;
   border-radius: 10px;
   font-weight: 600;
+
   background: rgba(255, 255, 255, 0.08);
   transition: 0.2s ease;
+
+  width: 100%; /* 🔥 fix overflow */
 }
 
 .menu-link:hover,
@@ -63,6 +89,7 @@
   color: #5e2332;
 }
 
+/* LOGOUT */
 .logout-btn {
   margin-top: auto;
   border: 1px solid rgba(255, 255, 255, 0.35);
@@ -72,12 +99,15 @@
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
+
+  width: 100%;
 }
 
 .logout-btn:hover {
   background: rgba(255, 255, 255, 0.14);
 }
 
+/* MOBILE */
 .mobile-menu-btn,
 .mobile-close-btn,
 .mobile-overlay {
@@ -85,16 +115,19 @@
 }
 
 @media (max-width: 1024px) {
+
   .mobile-menu-btn {
     display: block;
     position: fixed;
     left: 14px;
     bottom: 14px;
     z-index: 1002;
+
     border: none;
     border-radius: 10px;
     padding: 10px 14px;
     font-weight: 700;
+
     background: #6f2a39;
     color: #fff;
   }
@@ -110,12 +143,14 @@
   .account-sidebar {
     position: fixed;
     top: 0;
-    left: -310px;
+    left: -100%; /* 🔥 fix chuẩn (không dùng -310px nữa) */
     z-index: 1001;
+
     width: 280px;
     height: 100vh;
+
     border-radius: 0 14px 14px 0;
-    transition: left 0.22s ease;
+    transition: left 0.25s ease;
   }
 
   .account-sidebar.mobile-open {
@@ -125,9 +160,11 @@
   .mobile-close-btn {
     display: inline-flex;
     align-self: flex-end;
+
     border: none;
     background: rgba(255, 255, 255, 0.15);
     color: #fff;
+
     border-radius: 8px;
     padding: 6px 10px;
     cursor: pointer;

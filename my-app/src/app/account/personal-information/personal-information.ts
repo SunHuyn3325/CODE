@@ -1,19 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserApiService } from '../../user-api.service';
-
-interface AccountUser {
-  _id?: string;
-  profileName: string;
-  email: string;
-  phone: string;
-  gender: 'male' | 'female' | 'other';
-  birthDay?: number;
-  birthMonth?: number;
-  birthYear?: number;
-  avatar?: string;
-}
+import { Account } from '../../models/Account';
 
 @Component({
   selector: 'app-personal-information',
@@ -23,10 +12,12 @@ interface AccountUser {
   styleUrl: './personal-information.css',
 })
 export class PersonalInformation implements OnInit {
+
   userId = '';
   isSaving = false;
+  isBrowser = false;
 
-  form: AccountUser = {
+  form: Account = {
     profileName: '',
     email: '',
     phone: '',
@@ -34,64 +25,93 @@ export class PersonalInformation implements OnInit {
     avatar: '/assets/user.png',
   };
 
-  constructor(private userApi: UserApiService) {}
+  constructor(
+    private userApi: UserApiService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngOnInit(): void {
+
+    if (!this.isBrowser) return;
+
     const userRaw = localStorage.getItem('user');
-    if (!userRaw) {
-      return;
+
+    if (userRaw) {
+      try {
+        const user = JSON.parse(userRaw);
+
+        this.userId = user._id || '';
+
+        this.form = {
+          ...this.form,
+          profileName: user.profileName || '',
+          email: user.email || '',
+          phone: user.phone || '',
+          gender: user.gender || 'other',
+          birthDay: user.birthDay,
+          birthMonth: user.birthMonth,
+          birthYear: user.birthYear,
+          avatar: user.avatar || '/assets/user.png'
+        };
+
+      } catch {}
     }
 
-    try {
-      const user = JSON.parse(userRaw);
-      this.userId = user._id || user.id || '';
-      this.form.profileName = user.profileName || user.fullName || user.FullName || '';
-      this.form.email = user.email || user.Email || '';
-      this.form.phone = user.phone || user.Phone || user.phoneNumber || '';
-      this.form.gender = user.gender || 'other';
-      this.form.birthDay = user.birthDay;
-      this.form.birthMonth = user.birthMonth;
-      this.form.birthYear = user.birthYear;
-      this.form.avatar = user.avatar || '/assets/user.png';
+    this.userApi.getUser(this.userId).subscribe({
+      next: (res: any) => {
+        console.log('DATA BACKEND:', res);
 
-      if (this.userId) {
-        this.userApi.getUser(this.userId).subscribe({
-          next: (res: any) => {
-            this.form = {
-              ...this.form,
-              ...res,
-              profileName: res.profileName || this.form.profileName,
-              avatar: res.avatar || '/assets/user.png',
-            };
-          },
-          error: () => {
-            // Keep local data as fallback.
-          },
-        });
-      }
-    } catch {
-      this.userId = '';
-    }
+        this.userId = res._id;
+
+        this.form = {
+          ...this.form,
+          profileName: res.profileName || '',
+          email: res.email || '',
+          phone: res.phone || '',
+          gender: res.gender || 'other',
+
+          birthDay: res.birthDay || res.birth_day || '',
+          birthMonth: res.birthMonth || res.birth_month || '',
+          birthYear: res.birthYear || res.birth_year || '',
+
+          avatar: res.avatar || '/assets/user.png'
+        };
+
+        if (this.isBrowser) {
+          localStorage.setItem('user', JSON.stringify(res));
+        }
+
+        this.userApi.setUser(res);
+      },
+      error: () => {}
+    });
   }
 
   saveProfile(): void {
-    if (!this.userId || this.isSaving) {
-      return;
-    }
+    if (!this.userId || this.isSaving) return;
 
     this.isSaving = true;
+
     this.userApi.updateUser(this.userId, this.form).subscribe({
       next: (updated: any) => {
-        const merged = { ...this.form, ...updated, _id: this.userId };
-        localStorage.setItem('user', JSON.stringify(merged));
+
+        const merged = { ...this.form, ...updated };
+
+        if (this.isBrowser) {
+          localStorage.setItem('user', JSON.stringify(merged));
+        }
+
         this.userApi.setUser(merged);
+
         this.isSaving = false;
-        alert('Cap nhat thong tin thanh cong');
+        alert('Cập nhật thành công');
       },
       error: () => {
         this.isSaving = false;
-        alert('Cap nhat that bai, vui long thu lai');
-      },
+        alert('Cập nhật thất bại');
+      }
     });
   }
 }

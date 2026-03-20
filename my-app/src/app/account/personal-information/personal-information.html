@@ -1,7 +1,7 @@
 <section class="profile-shell">
   <header class="profile-header">
-    <h1>Thong tin tai khoan</h1>
-    <p>Cap nhat ho so de dat hang nhanh hon va chinh xac hon.</p>
+    <h1>THÔNG TIN TÀI KHOẢN</h1>
+    <p>Cập nhật hồ sơ để đặt hàng nhanh và chính sác hơn.</p>
   </header>
 
   <div class="profile-card">
@@ -15,12 +15,12 @@
 
     <div class="grid">
       <label>
-        Ho va ten
+        Họ và tên
         <input [(ngModel)]="form.profileName" name="profileName" />
       </label>
 
       <label>
-        So dien thoai
+        Số điện thoại
         <input [(ngModel)]="form.phone" name="phone" />
       </label>
 
@@ -30,21 +30,21 @@
       </label>
 
       <label>
-        Gioi tinh
+        Giới tính
         <select [(ngModel)]="form.gender" name="gender">
           <option value="male">Nam</option>
-          <option value="female">Nu</option>
+          <option value="female">Nữ</option>
           <option value="other">Khac</option>
         </select>
       </label>
 
       <label>
-        Ngay sinh
+        Ngày sinh
         <input [(ngModel)]="form.birthDay" name="birthDay" type="number" min="1" max="31" />
       </label>
 
       <label>
-        Thang sinh
+        Tháng sinh
         <input
           [(ngModel)]="form.birthMonth"
           name="birthMonth"
@@ -55,14 +55,14 @@
       </label>
 
       <label>
-        Nam sinh
+        Năm sinh
         <input [(ngModel)]="form.birthYear" name="birthYear" type="number" min="1900" max="2100" />
       </label>
     </div>
 
     <div class="actions">
       <button (click)="saveProfile()" [disabled]="isSaving">
-        {{ isSaving ? 'Dang luu...' : 'Luu thong tin' }}
+        {{ isSaving ? 'Dang luu...' : 'Lưu thông tin' }}
       </button>
     </div>
   </div>
