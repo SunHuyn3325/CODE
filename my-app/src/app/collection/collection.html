@@ -1,0 +1,19 @@
+<div class="parallax-container">
+  <header class="collection-intro">
+    <div class="intro-content">
+      <span class="sub-title">Bộ Sưu Tập</span>
+      <h1 class="main-title">{{ collectionTitle }}</h1>
+      <div class="scroll-indicator">
+        <div class="mouse"></div>
+      </div>
+    </div>
+  </header>
+
+
+  <section class="parallax-section" *ngFor="let img of album; let i = index">
+    <div class="parallax-bg" [style.background-image]="'url(' + img + ')'"></div>
+    <div class="photo-info">
+    </div>
+  </section>
+</div>
+

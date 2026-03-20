@@ -16,6 +16,7 @@ import { ReviewsComponent } from './account/reviews/reviews';
 import { Wishlist } from './account/wishlist/wishlist';
 import { ProductDetail } from './product-detail/product-detail';
 import { Cart } from './cart/cart';
+import { Collection } from './collection/collection';
 
 export const routes: Routes = [
     { path: '', component: Home },
@@ -52,4 +53,5 @@ export const routes: Routes = [
       import('../app/admin/admin-module').then(m => m.AdminModule)
     },
     {path:'product/:id',component:ProductDetail},
-];
+    { path: 'collections/:id', component: Collection },
+  ];

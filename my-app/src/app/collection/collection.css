@@ -1,0 +1,66 @@
+/* src/app/collection/collection.css */
+
+
+.collection-intro {
+  height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: #f9f5f0; /* Màu paper nhẹ nhàng */
+}
+
+
+.sub-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: #8b2f3f; /* Màu wine của Sắc Heritage */
+  display: block;
+  margin-bottom: 15px;
+}
+
+
+.main-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  color: #a94053;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+
+.scroll-indicator {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #7e7072; /* ĐÃ SỬA: Dùng mã màu trực tiếp thay vì #muted */
+}
+
+
+.parallax-section {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+
+.parallax-bg {
+  position: absolute;
+  top: -20%;
+  left: 0;
+  width: 100%;
+  height: 140%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  will-change: transform;
+}
+
