@@ -9,4 +9,5 @@ export interface Account {
   birthMonth?: number;
   birthYear?: number;
   avatar?: string;
+  role?: 'user' | 'admin';
 }

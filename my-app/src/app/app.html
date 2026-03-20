@@ -1,7 +1,9 @@
-<app-header></app-header>
+<app-header *ngIf="showHeaderFooter"></app-header>
+
 <router-outlet></router-outlet>
-<app-footer></app-footer>
-<app-sac-bee></app-sac-bee>
+
+<app-footer *ngIf="showHeaderFooter"></app-footer>
+<app-sac-bee *ngIf="showHeaderFooter"></app-sac-bee>
 
 <button
 	type="button"

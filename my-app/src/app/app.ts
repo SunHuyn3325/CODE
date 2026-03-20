@@ -1,27 +1,36 @@
-import { Component, HostListener, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, HostListener, signal, OnInit } from '@angular/core';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Header } from './header/header';
 import { Footer } from './footer/footer';
 import { SacBee } from './sac-bee/sac-bee';
-
+import { UserApiService } from './user-api.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet,
-            CommonModule,
-            Header,
-            Footer,
-            SacBee,
-  ],
+  imports: [CommonModule, RouterOutlet, Header, Footer, SacBee],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('my-app');
+  showHeaderFooter = true;
   showBackToTop = false;
   private lastScrollY = 0;
+
+  constructor(private router: Router, private userApi: UserApiService) {}
+
+  ngOnInit() {
+    this.userApi.loadUserFromLocal();
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.showHeaderFooter = !event.url.startsWith('/admin');
+      });
+    this.showHeaderFooter = !this.router.url.startsWith('/admin');
+  }
 
   @HostListener('window:scroll')
   onWindowScroll(): void {
