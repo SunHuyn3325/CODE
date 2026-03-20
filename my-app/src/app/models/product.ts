@@ -3,7 +3,8 @@ export interface Product {
   _id: string
 
   product_name: string
-  product_detail: string
+  short_description?: string
+  description?: string
 
   unit_price: number
   discount: number
@@ -11,6 +12,9 @@ export interface Product {
 
   product_dept: string
   rating: number
+
+  material?: string
+  origin?: string
 
   images?: string[]
 

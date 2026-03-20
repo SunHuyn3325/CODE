@@ -164,4 +164,11 @@ export class ProductDetail implements OnInit {
     this.showSizeGuide = false;
   }
 
+  // trả đúng đường dẫn ảnh: base64 / http dùng trực tiếp, còn lại thêm /assets/
+  getImageSrc(img: string | undefined): string {
+    if (!img) return '/assets/placeholder.jpg';
+    if (img.startsWith('data:') || img.startsWith('http')) return img;
+    return '/assets/' + img;
+  }
+
 }

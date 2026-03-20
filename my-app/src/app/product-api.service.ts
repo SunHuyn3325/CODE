@@ -11,6 +11,7 @@ import { BehaviorSubject } from 'rxjs';
 export class ProductApiService {
 
   private apiURL = "http://localhost:3000/products";
+  private uploadURL = "http://localhost:3000/upload-image";
   private currentProduct = new BehaviorSubject<any>(null);
   currentProduct$ = this.currentProduct.asObservable();
 
@@ -30,6 +31,11 @@ export class ProductApiService {
   }
   addProduct(data: any) {
     return this.http.post(this.apiURL, data);
+  }
+  uploadImage(file: File) {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.http.post<{ fileName: string; imageUrl: string }>(this.uploadURL, formData);
   }
   deleteProduct(id: string) {
     return this.http.delete(this.apiURL + "/" + id);

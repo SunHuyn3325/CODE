@@ -3,82 +3,121 @@
   <!-- Header -->
   <div class="header">
     <h2>Quản lý Sản phẩm</h2>
-    <button class="btn btn-delete" (click)="deleteSelectedProducts()">Xóa tất cả</button>
+    <button class="btn btn-delete"
+      [disabled]="selectedProducts.length === 0"
+      (click)="deleteSelectedProducts()">
+      Xóa đã chọn ({{ selectedProducts.length }})
+    </button>
   </div>
 
-  <!-- Form -->
+  <!-- Thông báo -->
+  <div class="alert-success" *ngIf="successMsg">{{ successMsg }}</div>
+  <div class="alert-error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+  <!-- Form Thêm / Cập nhật -->
   <div class="product-form" *ngIf="canEdit">
     <h3>{{ isEditing ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới' }}</h3>
 
     <form [formGroup]="productForm" (ngSubmit)="isEditing ? updateProduct() : createProduct()">
 
-      <!-- Row 1 -->
+      <!-- Row 1: Tên + Danh mục -->
       <div class="row">
         <div class="col">
-          <label>Tên sản phẩm</label>
-          <input type="text" formControlName="product_name"/>
+          <label>Tên sản phẩm *</label>
+          <input type="text" formControlName="product_name" placeholder="Nhập tên sản phẩm..."/>
+          <small class="error-text"
+            *ngIf="productForm.get('product_name')?.invalid && productForm.get('product_name')?.touched">
+            Vui lòng nhập tên sản phẩm
+          </small>
         </div>
-
         <div class="col">
-          <label>Danh mục</label>
-          <input type="text" formControlName="product_dept"/>
+          <label>Danh mục *</label>
+          <select formControlName="product_dept">
+            <option value="">-- Chọn danh mục --</option>
+            <option value="ao-dai">Áo dài</option>
+            <option value="viet-phuc">Việt phục</option>
+            <option value="ao-ba-ba">Áo bà ba</option>
+            <option value="phu-kien">Phụ kiện</option>
+          </select>
+          <small class="error-text"
+            *ngIf="productForm.get('product_dept')?.invalid && productForm.get('product_dept')?.touched">
+            Vui lòng chọn danh mục
+          </small>
         </div>
       </div>
 
-      <!-- Description -->
+      <!-- Mô tả ngắn -->
       <div class="row full">
-        <label>Mô tả sản phẩm</label>
-        <textarea formControlName="product_detail" rows="4"
-          placeholder="Nhập mô tả sản phẩm..."></textarea>
+        <label>Mô tả ngắn</label>
+        <input type="text" formControlName="short_description" placeholder="Mô tả ngắn hiển thị trên thẻ..."/>
       </div>
 
-      <!-- Row 2 -->
+      <!-- Mô tả chi tiết -->
+      <div class="row full">
+        <label>Mô tả chi tiết</label>
+        <textarea formControlName="description" rows="4"
+          placeholder="Nhập mô tả chi tiết sản phẩm..."></textarea>
+      </div>
+
+      <!-- Row 2: Giá + Tồn kho -->
       <div class="row">
         <div class="col">
-          <label>Giá</label>
-          <input type="number" formControlName="unit_price" value="0"/>
+          <label>Giá (VNĐ) *</label>
+          <input type="number" formControlName="unit_price" min="0"/>
         </div>
-
         <div class="col">
-          <label>Số lượng tồn kho</label>
-          <input type="number" formControlName="stocked_quantity" value="0"/>
+          <label>Số lượng tồn kho *</label>
+          <input type="number" formControlName="stocked_quantity" min="0"/>
         </div>
       </div>
 
-      <!-- Row 3 -->
+      <!-- Row 3: Giảm giá + Đánh giá -->
       <div class="row">
         <div class="col">
-          <label>Giảm giá (%)</label>
-          <input type="number" formControlName="discount" value="0"/>
+          <label>Giảm giá (%) — nhập 10 = 10%</label>
+          <input type="number" formControlName="discount" min="0" max="100"/>
         </div>
-
         <div class="col">
-          <label>Đánh giá</label>
-          <input type="number" formControlName="rating" value="4"/>
+          <label>Đánh giá (1 – 5)</label>
+          <input type="number" formControlName="rating" min="1" max="5"/>
+        </div>
+      </div>
+
+      <!-- Row 4: Chất liệu + Xuất xứ -->
+      <div class="row">
+        <div class="col">
+          <label>Chất liệu</label>
+          <input type="text" formControlName="material" placeholder="Lụa, cotton, voan..."/>
+        </div>
+        <div class="col">
+          <label>Xuất xứ</label>
+          <input type="text" formControlName="origin" placeholder="Hà Nội, TP.HCM..."/>
         </div>
       </div>
 
       <!-- Upload images -->
       <div class="row full">
         <label>Tải lên hình ảnh (tối đa 5 hình)</label>
-
         <div class="image-grid">
           <div class="image-item" *ngFor="let img of [0,1,2,3,4]; let i=index">
             <label>Hình ảnh {{i + 1}}</label>
-            <input type="file" (change)="onImageChange($event,i)" />
-            <!-- Preview ảnh -->
-            <img *ngIf="images[i]" [src]="images[i]" class="preview-img"/>
-            <button type="button" class="btn btn-small btn-danger" *ngIf="images[i]" (click)="clearImage(i)">Xóa</button>
+            <input type="file" accept="image/*" (change)="onImageChange($event, i)" />
+            <div class="upload-status" *ngIf="uploadingImageAt === i">Đang tải ảnh...</div>
+            <div class="file-name" *ngIf="imageFileNames[i]">{{ imageFileNames[i] }}</div>
+            <button type="button" class="btn btn-small btn-danger"
+              *ngIf="images[i]" (click)="clearImage(i)">Xóa</button>
           </div>
         </div>
       </div>
 
-      <!-- Button -->
+      <!-- Buttons -->
       <div class="actions">
-        <button type="submit" class="btn btn-primary">
-          {{ isEditing ? 'Cập nhật' : 'Thêm mới' }}
+        <button type="submit" class="btn btn-primary" [disabled]="uploadingImageAt !== null">
+          {{ isEditing ? '✅ Cập nhật' : '+ Thêm mới' }}
         </button>
-        <button type="button" class="btn btn-secondary" *ngIf="isEditing" (click)="cancelEdit()">Hủy</button>
+        <button type="button" class="btn btn-secondary" *ngIf="isEditing" (click)="cancelEdit()">
+          Hủy
+        </button>
       </div>
 
     </form>
@@ -86,11 +125,27 @@
 
   <!-- Danh sách sản phẩm -->
   <div class="product-list">
-    <h3>Danh sách sản phẩm</h3>
+    <div class="list-header">
+      <h3>Danh sách sản phẩm ({{ products.length }})</h3>
+      <label class="select-all-label">
+        <input type="checkbox"
+          [checked]="selectedProducts.length === paginatedProducts.length && paginatedProducts.length > 0"
+          (change)="toggleSelectAll($event)"/>
+        Chọn tất cả trang này
+      </label>
+    </div>
 
     <div class="card-grid">
-      <div class="product-card" *ngFor="let product of paginatedProducts">
-        
+      <div class="product-card" *ngFor="let product of paginatedProducts"
+        [class.selected]="isSelected(product._id)">
+
+        <!-- Checkbox -->
+        <div class="card-select">
+          <input type="checkbox"
+            [checked]="isSelected(product._id)"
+            (change)="toggleSelect(product._id)"/>
+        </div>
+
         <div class="card-image">
           <img *ngIf="product.images?.length" [src]="product.images[0]" />
           <div *ngIf="!product.images?.length" class="placeholder">No image</div>
@@ -100,27 +155,23 @@
           <h4>{{ product.product_name }}</h4>
           <p class="category">{{ product.product_dept }}</p>
           <p class="desc">
-            {{ product.product_detail | slice:0:50 }}
-            <span *ngIf="product.product_detail?.length > 50">...</span>
+            {{ (product.short_description || product.description) | slice:0:60 }}
+            <span *ngIf="(product.short_description || product.description)?.length > 60">...</span>
           </p>
           <p class="price">
-            {{ product.unit_price | currency:'VND':'symbol' }}
+            {{ product.unit_price | currency:'VND':'symbol':'1.0-0' }}
           </p>
-          <p>
-            Size: {{ product.product_size }} |
-            Stock: {{ product.stocked_quantity }} |
-            Discount: {{ product.discount ? product.discount*100 : 0 }}%
+          <p class="meta">
+            Tồn: {{ product.stocked_quantity }} |
+            Giảm: {{ product.discount || 0 }}%
           </p>
         </div>
 
         <div class="card-actions">
-          <button class="btn btn-warning" *ngIf="canEdit"
-            (click)="editProduct(product)">
+          <button class="btn btn-warning" *ngIf="canEdit" (click)="editProduct(product)">
             Sửa
           </button>
-
-          <button class="btn btn-danger" *ngIf="canEdit"
-            (click)="deleteProduct(product._id!)">
+          <button class="btn btn-danger" *ngIf="canEdit" (click)="deleteProduct(product._id)">
             Xóa
           </button>
         </div>
@@ -134,9 +185,9 @@
 
     <!-- Pagination -->
     <div class="pagination">
-      <button [disabled]="currentPage===1" (click)="previousPage()">« Trước</button>
-      <span>Trang {{currentPage}} / {{totalPages}}</span>
-      <button [disabled]="currentPage===totalPages" (click)="nextPage()">Sau »</button>
+      <button [disabled]="currentPage === 1" (click)="previousPage()">« Trước</button>
+      <span>Trang {{ currentPage }} / {{ totalPages }}</span>
+      <button [disabled]="currentPage === totalPages" (click)="nextPage()">Sau »</button>
     </div>
 
   </div>

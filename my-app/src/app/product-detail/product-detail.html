@@ -7,12 +7,12 @@
 
       <img
         class="main-image"
-        [src]="'/assets/' + (selectedImage || (product.images && product.images[0]))">
+        [src]="getImageSrc(selectedImage || product.images?.[0])">
       <div class="thumbnail-list">
 
         <img
           *ngFor="let img of product.images"
-          [src]="'/assets/' + img"
+          [src]="getImageSrc(img)"
           (click)="changeImage(img)"
         >
 
@@ -138,9 +138,13 @@
 
     <h2>Thông tin sản phẩm</h2>
 
-    <p>
-      {{product.product_detail}}
-    </p>
+    <p *ngIf="product.description">{{ product.description }}</p>
+    <p *ngIf="!product.description" style="color:#aaa;">Chưa có mô tả.</p>
+
+    <div *ngIf="product.material || product.origin" class="product-extra-info">
+      <p *ngIf="product.material"><strong>Chất liệu:</strong> {{ product.material }}</p>
+      <p *ngIf="product.origin"><strong>Xuất xứ:</strong> {{ product.origin }}</p>
+    </div>
 
   </div>
   <div class="size-popup" *ngIf="showSizeGuide">
@@ -167,10 +171,10 @@
          [routerLink]="['/product', item._id]">
 
       <div class="image-wrapper">
-         <img class="img1" [src]="'/assets/' + item.images?.[0]">
+        <img class="img1" [src]="getImageSrc(item.images?.[0])">
         <img class="img2"
           *ngIf="item.images && item.images.length > 1"
-          [src]="'/assets/' + item.images[1]">
+         [src]="getImageSrc(item.images[1])">
       </div>
 
       <h3>{{item.product_name}}</h3>
@@ -196,11 +200,11 @@
       <div class="image-wrapper">
 
         <img class="img1"
-           [src]="'/assets/' + item.images?.[0]">
+           [src]="getImageSrc(item.images?.[0])">
 
         <img class="img2"
              *ngIf="item.images && item.images.length > 1"
-           [src]="'/assets/' + item.images[1]">
+           [src]="getImageSrc(item.images[1])">
 
       </div>
 

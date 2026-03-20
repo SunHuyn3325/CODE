@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProductApiService } from '../../product-api.service';
-import { CommonModule, CurrencyPipe, SlicePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -19,6 +19,8 @@ export class ProductManagement implements OnInit {
 
   productForm!: FormGroup;
   images: string[] = [];
+  imageFileNames: string[] = [];
+  uploadingImageAt: number | null = null;
   isEditing = false;
   editingProductId: string | null = null;
 
@@ -26,7 +28,9 @@ export class ProductManagement implements OnInit {
   pageSize = 10;
   totalPages = 1;
 
-  canEdit = true; // tạm thời
+  canEdit = true;
+  successMsg = '';
+  errorMsg = '';
 
   constructor(private fb: FormBuilder, private productService: ProductApiService) {}
 
@@ -35,107 +39,232 @@ export class ProductManagement implements OnInit {
     this.productForm = this.fb.group({
       product_name: ['', Validators.required],
       product_dept: ['', Validators.required],
-      product_detail: [''],
-      unit_price: [0, Validators.required],
-      stocked_quantity: [0, Validators.required],
+      short_description: [''],
+      description: [''],
+      unit_price: [0, [Validators.required, Validators.min(0)]],
+      stocked_quantity: [0, [Validators.required, Validators.min(0)]],
       discount: [0],
-      rating: [0]
+      rating: [4],
+      material: [''],
+      origin: [''],
     });
   }
 
   loadProducts() {
-    this.productService.getProducts().subscribe((data: any[]) => {
-      this.products = data;
-      this.totalPages = Math.ceil(this.products.length / this.pageSize);
-      this.updatePagination();
+    this.productService.getProducts().subscribe({
+      next: (data: any[]) => {
+        this.products = data;
+        this.totalPages = Math.ceil(this.products.length / this.pageSize) || 1;
+        this.updatePagination();
+      },
+      error: () => this.showError('Không thể tải danh sách sản phẩm!')
     });
   }
 
   updatePagination() {
-    const start = (this.currentPage-1)*this.pageSize;
+    const start = (this.currentPage - 1) * this.pageSize;
     this.paginatedProducts = this.products.slice(start, start + this.pageSize);
   }
 
   previousPage() {
-    if(this.currentPage>1){ this.currentPage--; this.updatePagination(); }
+    if (this.currentPage > 1) { this.currentPage--; this.updatePagination(); }
   }
 
   nextPage() {
-    if(this.currentPage<this.totalPages){ this.currentPage++; this.updatePagination(); }
+    if (this.currentPage < this.totalPages) { this.currentPage++; this.updatePagination(); }
   }
 
+  showSuccess(msg: string) {
+    this.successMsg = msg;
+    this.errorMsg = '';
+    setTimeout(() => this.successMsg = '', 3000);
+  }
+
+  showError(msg: string) {
+    this.errorMsg = msg;
+    this.successMsg = '';
+    setTimeout(() => this.errorMsg = '', 6000);
+  }
+
+  // =====================
+  // THÊM MỚI
+  // =====================
   createProduct() {
-    const data = {...this.productForm.value, images: this.images};
+    if (this.uploadingImageAt !== null) {
+      this.showError('Vui lòng chờ tải ảnh xong rồi thêm sản phẩm.');
+      return;
+    }
+
+    if (this.productForm.invalid) {
+      this.productForm.markAllAsTouched();
+      this.showError('❌ Vui lòng điền đầy đủ: Tên sản phẩm và Danh mục.');
+      return;
+    }
+    const data = { ...this.productForm.value, images: this.images.filter(img => img) };
     this.productService.addProduct(data).subscribe({
-      next: (res) => { this.products.push(res); this.totalPages = Math.ceil(this.products.length/this.pageSize); this.updatePagination(); this.productForm.reset(); this.images=[]; },
-      error: err => console.error(err)
+      next: (res: any) => {
+        this.products.unshift(res); // thêm vào đầu danh sách
+        this.totalPages = Math.ceil(this.products.length / this.pageSize) || 1;
+        this.updatePagination();
+        this.productForm.reset({ unit_price: 0, stocked_quantity: 0, discount: 0, rating: 4 });
+        this.images = [];
+        this.imageFileNames = [];
+        this.showSuccess('Thêm sản phẩm thành công!');
+      },
+      error: (err: any) => {
+        const msg = err?.error?.error || err?.error?.message || 'Lỗi khi thêm sản phẩm!';
+        this.showError(`❌ ${msg}`);
+      }
     });
   }
 
+  // =====================
+  // CHỈNH SỬa
+  // =====================
   editProduct(product: any) {
     this.isEditing = true;
     this.editingProductId = product._id;
-    this.productForm.patchValue(product);
-    this.images = product.images || [];
+    this.productForm.patchValue({
+      product_name: product.product_name || '',
+      product_dept: product.product_dept || '',
+      short_description: product.short_description || '',
+      description: product.description || '',
+      unit_price: product.unit_price || 0,
+      stocked_quantity: product.stocked_quantity || 0,
+      discount: product.discount || 0,
+      rating: product.rating || 4,
+      material: product.material || '',
+      origin: product.origin || '',
+    });
+    this.images = product.images ? [...product.images] : [];
+    this.imageFileNames = this.images.map((img) => {
+      const last = img.split('/').pop() || img;
+      return last.split('?')[0];
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   updateProduct() {
-    if(!this.editingProductId) return;
-    const data = {...this.productForm.value, images: this.images};
+    if (this.uploadingImageAt !== null) {
+      this.showError('Vui lòng chờ tải ảnh xong rồi cập nhật sản phẩm.');
+      return;
+    }
+
+    if (!this.editingProductId || this.productForm.invalid) {
+      this.productForm.markAllAsTouched();
+      this.showError('❌ Vui lòng điền đầy đủ: Tên sản phẩm và Danh mục.');
+      return;
+    }
+    const data = { ...this.productForm.value, images: this.images.filter(img => img) };
     this.productService.updateProduct(this.editingProductId, data).subscribe({
-      next: (res) => {
-        const idx = this.products.findIndex(p=>p._id===this.editingProductId);
-        if(idx!==-1) this.products[idx]=res;
+      next: (res: any) => {
+        const idx = this.products.findIndex(p => p._id === this.editingProductId);
+        if (idx !== -1) this.products[idx] = res;
         this.cancelEdit();
         this.updatePagination();
+        this.showSuccess('✅ Cập nhật sản phẩm thành công!');
       },
-      error: err => console.error(err)
+      error: (err: any) => {
+        const msg = err?.error?.error || err?.error?.message || 'Lỗi khi cập nhật sản phẩm!';
+        this.showError(`❌ ${msg}`);
+      }
     });
   }
 
   cancelEdit() {
     this.isEditing = false;
     this.editingProductId = null;
-    this.productForm.reset();
-    this.images=[];
+    this.productForm.reset({ unit_price: 0, stocked_quantity: 0, discount: 0, rating: 4 });
+    this.images = [];
+    this.imageFileNames = [];
+    this.uploadingImageAt = null;
   }
 
+  // =====================
+  // XÓA
+  // =====================
   deleteProduct(id: string) {
-    if(!confirm("Bạn có chắc muốn xóa sản phẩm này?")) return;
+    if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
     this.productService.deleteProduct(id).subscribe({
-      next: () => { this.products = this.products.filter(p=>p._id!==id); this.updatePagination(); },
-      error: err => console.error(err)
+      next: () => {
+        this.products = this.products.filter(p => p._id !== id);
+        this.selectedProducts = this.selectedProducts.filter(x => x !== id);
+        this.totalPages = Math.ceil(this.products.length / this.pageSize) || 1;
+        if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
+        this.updatePagination();
+        this.showSuccess('✅ Xóa sản phẩm thành công!');
+      },
+      error: () => this.showError('❌ Lỗi khi xóa sản phẩm!')
     });
   }
 
   deleteSelectedProducts() {
-    if(!confirm("Bạn có chắc muốn xóa các sản phẩm đã chọn?")) return;
-    this.selectedProducts.forEach(id=>this.deleteProduct(id));
-    this.selectedProducts = [];
+    if (this.selectedProducts.length === 0) return;
+    if (!confirm(`Bạn có chắc muốn xóa ${this.selectedProducts.length} sản phẩm đã chọn?`)) return;
+
+    const ids = [...this.selectedProducts];
+    let completed = 0;
+    let hasError = false;
+
+    ids.forEach(id => {
+      this.productService.deleteProduct(id).subscribe({
+        next: () => {
+          this.products = this.products.filter(p => p._id !== id);
+          completed++;
+          if (completed === ids.length) {
+            this.selectedProducts = [];
+            this.totalPages = Math.ceil(this.products.length / this.pageSize) || 1;
+            if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
+            this.updatePagination();
+            if (!hasError) this.showSuccess(`✅ Đã xóa ${ids.length} sản phẩm thành công!`);
+          }
+        },
+        error: () => {
+          hasError = true;
+          this.showError('❌ Lỗi khi xóa một số sản phẩm!');
+        }
+      });
+    });
   }
 
   isSelected(id: string) { return this.selectedProducts.includes(id); }
 
   toggleSelect(id: string) {
-    if(this.selectedProducts.includes(id)) this.selectedProducts = this.selectedProducts.filter(x=>x!==id);
-    else this.selectedProducts.push(id);
+    if (this.selectedProducts.includes(id))
+      this.selectedProducts = this.selectedProducts.filter(x => x !== id);
+    else
+      this.selectedProducts.push(id);
   }
 
   toggleSelectAll(event: any) {
-    if(event.target.checked) this.selectedProducts = this.products.map(p=>p._id!);
-    else this.selectedProducts = [];
+    if (event.target.checked)
+      this.selectedProducts = this.paginatedProducts.map(p => p._id);
+    else
+      this.selectedProducts = [];
   }
 
   onImageChange(event: any, index: number) {
     const file = event.target.files[0];
-    if(file){
-      const reader = new FileReader();
-      reader.onload = e => { this.images[index] = reader.result as string; };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    this.uploadingImageAt = index;
+    this.productService.uploadImage(file).subscribe({
+      next: (res) => {
+        this.images[index] = res.imageUrl;
+        this.imageFileNames[index] = res.fileName;
+        this.uploadingImageAt = null;
+        this.showSuccess(`Đã tải ảnh ${res.fileName}`);
+      },
+      error: (err: any) => {
+        const msg = err?.error?.message || 'Upload ảnh thất bại!';
+        this.uploadingImageAt = null;
+        this.showError(`❌ ${msg}`);
+      }
+    });
   }
 
   clearImage(index: number) {
     this.images[index] = '';
+    this.imageFileNames[index] = '';
   }
 }
