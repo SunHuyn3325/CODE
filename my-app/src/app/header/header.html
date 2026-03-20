@@ -112,8 +112,23 @@
 
         <div class="user-area">
           <a *ngIf="!user" href="/login" (click)="$event.preventDefault(); openLoginPage()" class="login-btn">Đăng nhập</a>
-          <div *ngIf="user" class="user-menu" routerLink="/account" aria-label="Tài khoản">
-            <img [src]="user.avatar || '/assets/user.png'" class="avatar" alt="Avatar người dùng">
+          <div *ngIf="user" class="user-menu" (click)="toggleUserDropdown($event)" aria-label="Tài khoản" role="button" tabindex="0">
+            <ng-container *ngIf="hasCustomAvatar; else defaultHeaderAvatar">
+              <img [src]="user.avatar" class="avatar" alt="Avatar người dùng">
+            </ng-container>
+            <ng-template #defaultHeaderAvatar>
+              <span class="avatar-fallback" aria-label="Avatar mặc định">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="avatar-fallback-icon">
+                  <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M4 20c0-3.314 3.582-6 8-6s8 2.686 8 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+            </ng-template>
+
+            <div class="user-dropdown" *ngIf="showUserDropdown" (click)="$event.stopPropagation()">
+              <button type="button" class="user-dropdown-item" (click)="viewAccountInfo($event)">Xem thông tin</button>
+              <button type="button" class="user-dropdown-item danger" (click)="logout($event)">Đăng xuất</button>
+            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { UserApiService } from '../user-api.service';
 import { CommonModule } from '@angular/common';
@@ -15,6 +15,20 @@ export class Header {
   cartCount: number = 0;
   showSearchModal: boolean = false;
   showCartModal: boolean = false;
+  showUserDropdown: boolean = false;
+
+  get hasCustomAvatar(): boolean {
+    const avatar = String(this.user?.avatar ?? '').trim().toLowerCase();
+    if (!avatar) {
+      return false;
+    }
+
+    return !(
+      avatar === '/assets/user.png' ||
+      avatar.endsWith('/assets/user.png') ||
+      avatar.endsWith('assets/user.png')
+    );
+  }
   
   productSuggestions: string[] = [
     'Áo dài truyền thống',
@@ -138,6 +152,30 @@ export class Header {
     this.showCartModal = false;
   }
 
+  toggleUserDropdown(event: Event): void {
+    event.stopPropagation();
+    this.showUserDropdown = !this.showUserDropdown;
+  }
+
+  viewAccountInfo(event: Event): void {
+    event.stopPropagation();
+    this.showUserDropdown = false;
+    this.router.navigate(['/account/profile']);
+  }
+
+  logout(event: Event): void {
+    event.stopPropagation();
+    localStorage.removeItem('user');
+    this.userApi.logout();
+    this.showUserDropdown = false;
+    this.router.navigate(['/']);
+  }
+
+  @HostListener('document:click')
+  closeUserDropdown(): void {
+    this.showUserDropdown = false;
+  }
+
   goToLogin() {
     this.closeCartModal();
     this.openLoginPage();
@@ -165,6 +203,9 @@ export class Header {
   ngOnInit(){
     this.userApi.currentUser$.subscribe(user=>{
       this.user = user;
+      if (!user) {
+        this.showUserDropdown = false;
+      }
     });
   }
 }

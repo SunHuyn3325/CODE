@@ -1,10 +1,10 @@
 /* Nút chat Sac-bee - Cố định ở góc dưới bên phải */
 .sacbot-button {
   position: fixed;
-  bottom: 18px;
-  right: 14px;
-  width: 96px;
-  height: 96px;
+  bottom: 70px;
+  right: 26px;
+  width: 66px;
+  height: 66px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -28,9 +28,9 @@
 }
 
 .sacbot-icon {
-  width: 96px;
-  height: 96px;
-  object-fit: contain;
+  width: 66px;
+  height: 66px;
+  object-fit: cover;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -73,7 +73,7 @@
 /* Cửa sổ chat */
 .chat-window {
   position: fixed;
-  bottom: 126px;
+  bottom: 154px;
   right: 20px;
   width: 380px;
   height: min(600px, calc(100vh - 250px));
@@ -435,15 +435,15 @@
 /* Đáp ứng */
 @media (max-width: 768px) {
   .sacbot-button {
-    width: 88px;
-    height: 88px;
-    bottom: 16px;
-    right: 12px;
+    width: 64px;
+    height: 64px;
+    bottom: 64px;
+    right: 22px;
   }
 
   .sacbot-icon {
-    width: 88px;
-    height: 88px;
+    width: 64px;
+    height: 64px;
   }
 
   .chat-window {
@@ -451,7 +451,7 @@
     max-width: 400px;
     height: min(560px, calc(100vh - 220px));
     max-height: calc(100vh - 220px);
-    bottom: 114px;
+    bottom: 140px;
     right: 16px;
     left: auto;
     border-radius: 16px;
@@ -478,22 +478,22 @@
 
 @media (max-width: 480px) {
   .sacbot-button {
-    width: 56px;
-    height: 56px;
-    bottom: 12px;
-    right: 12px;
+    width: 58px;
+    height: 58px;
+    bottom: 56px;
+    right: 22px;
   }
 
   .sacbot-icon {
-    width: 56px;
-    height: 56px;
+    width: 58px;
+    height: 58px;
   }
 
   .chat-window {
     width: calc(100vw - 24px);
     height: min(520px, calc(100vh - 190px));
     max-height: calc(100vh - 190px);
-    bottom: 88px;
+    bottom: 118px;
     right: 12px;
     left: auto;
     border-radius: 16px;

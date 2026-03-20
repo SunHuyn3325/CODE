@@ -136,13 +136,13 @@
 
 .two-col {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 14px;
 }
 
 .two-col > div {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 14px;
   min-width: 0;
 }
 
@@ -150,7 +150,10 @@
   font-size: 14px;
   font-weight: 600;
   color: #4d3a36;
-  margin-bottom: 8px;
+  margin: 0;
+  display: block;
+  line-height: 1.4;
+  height: 19.6px;
 }
 
 .form-control,
@@ -164,6 +167,8 @@
   font-size: 14px;
   color: #3f2f2d;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  line-height: 1.4;
 }
 
 .form-control:focus,
@@ -176,31 +181,94 @@
 .birth-group {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 6px;
 }
 
 .text-muted {
   font-size: 12px;
   color: #7f6962;
-  margin-top: -3px;
+  margin: 6px 0 0 0;
+  line-height: 1.4;
+  display: block;
+}
+
+.password-requirements {
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.requirements-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #66514b;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.requirements-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  font-size: 13px;
+}
+
+.requirements-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #8d5f66;
+  transition: color 0.2s ease;
+}
+
+.requirements-list li.valid {
+  color: #2f8a47;
+}
+
+.requirement-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(141, 95, 102, 0.45);
+  background: rgba(255, 255, 255, 0.85);
+  color: rgba(141, 95, 102, 0.78);
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.requirements-list li.valid .requirement-icon {
+  border-color: rgba(47, 138, 71, 0.55);
+  background: rgba(47, 138, 71, 0.1);
+  color: #2f8a47;
+}
+
+.requirements-list li:not(.valid) .requirement-icon {
+  opacity: 0.55;
 }
 
 .gender-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 6px;
 }
 
 .form-check {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   border: 1px solid rgba(122, 77, 67, 0.2);
   border-radius: 999px;
-  padding: 8px 13px;
+  padding: 6px 12px;
   background: rgba(255, 255, 255, 0.66);
   color: #4a3e3b;
   font-size: 13px;
+  height: 32px;
 }
 
 .form-check input {
@@ -208,9 +276,9 @@
 }
 
 .checkbox-area {
-  margin-top: 2px;
+  margin-top: 6px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   font-size: 13px;
   color: #564742;
@@ -231,6 +299,9 @@
 .text-danger {
   font-size: 12px;
   color: #a33f4f;
+  line-height: 1.4;
+  margin: 0;
+  min-height: 16.8px;
 }
 
 a {
@@ -311,6 +382,10 @@ a:hover {
   }
 
   .birth-group {
+    grid-template-columns: 1fr;
+  }
+
+  .requirements-list {
     grid-template-columns: 1fr;
   }
 }

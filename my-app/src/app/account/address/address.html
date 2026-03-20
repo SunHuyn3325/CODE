@@ -1,49 +1,49 @@
 <section class="address-shell">
   <header class="address-header">
-    <h1>So dia chi</h1>
-    <p>Cap nhat dia chi giao hang mac dinh cho tai khoan cua ban.</p>
+    <h1>Sổ địa chỉ</h1>
+    <p>Cập nhật địa chỉ giao hàng mặc định cho tài khoản của bạn.</p>
   </header>
 
   <article class="address-card" *ngIf="!isEditing">
-    <div class="line"><strong>So dien thoai:</strong> {{ address.phone || 'Chua cap nhat' }}</div>
-    <div class="line"><strong>Dia chi:</strong> {{ address.address || 'Chua cap nhat' }}</div>
-    <div class="line"><strong>Phuong/Xa:</strong> {{ address.ward || 'Chua cap nhat' }}</div>
-    <div class="line"><strong>Quan/Huyen:</strong> {{ address.district || 'Chua cap nhat' }}</div>
-    <div class="line"><strong>Tinh/Thanh pho:</strong> {{ address.city || 'Chua cap nhat' }}</div>
+    <div class="line"><strong>Số điện thoại:</strong> {{ address.phone || 'Chưa cập nhật' }}</div>
+    <div class="line"><strong>Địa chỉ:</strong> {{ address.address || 'Chưa cập nhật' }}</div>
+    <div class="line"><strong>Phường/Xã:</strong> {{ address.ward || 'Chưa cập nhật' }}</div>
+    <div class="line"><strong>Quận/Huyện:</strong> {{ address.district || 'Chưa cập nhật' }}</div>
+    <div class="line"><strong>Tỉnh/Thành phố:</strong> {{ address.city || 'Chưa cập nhật' }}</div>
 
-    <button class="primary" (click)="isEditing = true">Chinh sua dia chi</button>
+    <button class="primary" (click)="isEditing = true">Chỉnh sửa địa chỉ</button>
   </article>
 
   <article class="address-card" *ngIf="isEditing">
     <label>
-      So dien thoai
+      Số điện thoại
       <input [(ngModel)]="address.phone" name="phone" />
     </label>
 
     <label>
-      Dia chi cu the
+      Địa chỉ cụ thể
       <input [(ngModel)]="address.address" name="address" />
     </label>
 
     <label>
-      Phuong/Xa
+      Phường/Xã
       <input [(ngModel)]="address.ward" name="ward" />
     </label>
 
     <label>
-      Quan/Huyen
+      Quận/Huyện
       <input [(ngModel)]="address.district" name="district" />
     </label>
 
     <label>
-      Tinh/Thanh pho
+      Tỉnh/Thành phố
       <input [(ngModel)]="address.city" name="city" />
     </label>
 
     <div class="actions">
-      <button class="ghost" (click)="isEditing = false" [disabled]="isSaving">Huy</button>
+      <button class="ghost" (click)="isEditing = false" [disabled]="isSaving">Hủy</button>
       <button class="primary" (click)="saveAddress()" [disabled]="isSaving">
-        {{ isSaving ? 'Dang luu...' : 'Luu dia chi' }}
+        {{ isSaving ? 'Đang lưu...' : 'Lưu địa chỉ' }}
       </button>
     </div>
   </article>

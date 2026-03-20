@@ -97,11 +97,11 @@ export class AddressComponent implements OnInit {
         }
         this.isSaving = false;
         this.isEditing = false;
-        alert('Luu dia chi thanh cong');
+        alert('Lưu địa chỉ thành công');
       },
       error: () => {
         this.isSaving = false;
-        alert('Luu dia chi that bai, vui long thu lai');
+        alert('Lưu địa chỉ thất bại, vui lòng thử lại');
       },
     });
   }

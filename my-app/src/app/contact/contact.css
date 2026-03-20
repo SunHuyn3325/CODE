@@ -113,6 +113,7 @@
 .form-group input,
 .form-group textarea {
   width: 100%;
+  box-sizing: border-box;
   border: 1px solid rgba(110, 80, 52, 0.22);
   border-radius: 14px;
   padding: 16px 14px 11px;
@@ -180,7 +181,7 @@
 
 .info-item {
   display: grid;
-  grid-template-columns: 24px 1fr;
+  grid-template-columns: 26px 1fr;
   align-items: center;
   column-gap: 12px;
   margin-bottom: 14px;
@@ -190,32 +191,30 @@
 }
 
 .icon {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   object-fit: contain;
   flex-shrink: 0;
   display: block;
   justify-self: center;
   align-self: center;
-  /* Unify PNG icon tone to match contact text color */
-  filter: brightness(0) saturate(100%) invert(24%) sepia(14%) saturate(1360%) hue-rotate(345deg) brightness(94%) contrast(90%);
-  transform-origin: center;
+  filter: brightness(0) saturate(100%) invert(25%) sepia(18%) saturate(1016%) hue-rotate(347deg) brightness(95%) contrast(90%);
 }
 
-.icon-location {
-  transform: scale(1.16);
-}
-
+.icon-location,
 .icon-time {
-  transform: scale(1.16);
-}
-
-.icon-email {
-  transform: scale(0.76);
+  width: 24px;
+  height: 24px;
 }
 
 .icon-hotline {
-  transform: scale(1.02);
+  width: 22px;
+  height: 22px;
+}
+
+.icon-email {
+  width: 16px;
+  height: 16px;
 }
 
 .clickable {
@@ -243,6 +242,7 @@
   display: grid;
   place-items: center;
   padding: 0;
+  overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
   text-decoration: none;
@@ -257,22 +257,18 @@
 .social-icon img {
   width: 18px;
   height: 18px;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
-  transform-origin: center;
 }
 
-/* Các PNG có khoảng trắng khác nhau nên cân tay theo kích thước hiển thị thực */
-.social-icon:nth-child(1) img {
-  transform: scale(2);
+.social-icon img.social-messenger {
+  width: 17px;
+  height: 17px;
 }
 
-.social-icon:nth-child(2) img {
-  transform: scale(2);
-}
-
-.social-icon:nth-child(3) img {
-  transform: scale(2) translateY(-0.4px);
+.social-icon img.social-zalo {
+  width: 19px;
+  height: 19px;
 }
 
 .map-full {

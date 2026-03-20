@@ -25,6 +25,18 @@ export class PersonalInformation implements OnInit {
     avatar: '/assets/user.png',
   };
 
+  get hasCustomAvatar(): boolean {
+    const avatar = String(this.form.avatar ?? '').trim().toLowerCase();
+    if (!avatar) {
+      return false;
+    }
+    return !(
+      avatar === '/assets/user.png' ||
+      avatar.endsWith('/assets/user.png') ||
+      avatar.endsWith('assets/user.png')
+    );
+  }
+
   constructor(
     private userApi: UserApiService,
     @Inject(PLATFORM_ID) private platformId: Object
@@ -32,86 +44,92 @@ export class PersonalInformation implements OnInit {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
+  private normalizeGender(value: unknown): 'male' | 'female' | 'other' {
+    const raw = String(value ?? '').trim().toLowerCase();
+    if (['female', 'nu', 'nữ'].includes(raw)) return 'female';
+    if (['male', 'nam'].includes(raw)) return 'male';
+    return 'other';
+  }
+
   ngOnInit(): void {
 
     if (!this.isBrowser) return;
 
     const userRaw = localStorage.getItem('user');
-
-    if (userRaw) {
-      try {
-        const user = JSON.parse(userRaw);
-
-        this.userId = user._id || '';
-
-        this.form = {
-          ...this.form,
-          profileName: user.profileName || '',
-          email: user.email || '',
-          phone: user.phone || '',
-          gender: user.gender || 'other',
-          birthDay: user.birthDay,
-          birthMonth: user.birthMonth,
-          birthYear: user.birthYear,
-          avatar: user.avatar || '/assets/user.png'
-        };
-
-      } catch {}
+    if (!userRaw) {
+      this.userId = '';
+      return;
     }
 
-    this.userApi.getUser(this.userId).subscribe({
-      next: (res: any) => {
-        console.log('DATA BACKEND:', res);
+    try {
+      const user = JSON.parse(userRaw);
+      this.userId = user._id || user.id || '';
+      this.form.profileName = user.profileName || user.fullName || user.FullName || '';
+      this.form.email = user.email || user.Email || '';
+      this.form.phone = user.phone || user.Phone || user.phoneNumber || '';
+      this.form.gender = this.normalizeGender(user.gender || user.Gender || user.gioiTinh);
+      this.form.birthDay = user.birthDay;
+      this.form.birthMonth = user.birthMonth;
+      this.form.birthYear = user.birthYear;
+      this.form.avatar = user.avatar || '/assets/user.png';
 
-        this.userId = res._id;
+      if (this.userId) {
+        this.userApi.getUser(this.userId).subscribe({
+          next: (res: any) => {
+            this.form = {
+              ...this.form,
+              ...res,
+              profileName: res.profileName || this.form.profileName,
+              gender: this.normalizeGender(res.gender || res.Gender || this.form.gender),
+              birthDay: res.birthDay || res.birth_day || this.form.birthDay,
+              birthMonth: res.birthMonth || res.birth_month || this.form.birthMonth,
+              birthYear: res.birthYear || res.birth_year || this.form.birthYear,
+              avatar: res.avatar || '/assets/user.png',
+            };
 
-        this.form = {
-          ...this.form,
-          profileName: res.profileName || '',
-          email: res.email || '',
-          phone: res.phone || '',
-          gender: res.gender || 'other',
-
-          birthDay: res.birthDay || res.birth_day || '',
-          birthMonth: res.birthMonth || res.birth_month || '',
-          birthYear: res.birthYear || res.birth_year || '',
-
-          avatar: res.avatar || '/assets/user.png'
-        };
-
-        if (this.isBrowser) {
-          localStorage.setItem('user', JSON.stringify(res));
-        }
-
-        this.userApi.setUser(res);
-      },
-      error: () => {}
-    });
+            const merged = { ...user, ...this.form, _id: this.userId };
+            localStorage.setItem('user', JSON.stringify(merged));
+            this.userApi.setUser(merged);
+          },
+          error: () => {
+            // Keep local data as fallback.
+          },
+        });
+      }
+    } catch {
+      this.userId = '';
+    }
   }
 
   saveProfile(): void {
     if (!this.userId || this.isSaving) return;
 
     this.isSaving = true;
+    const payload = {
+      ...this.form,
+      gender: this.normalizeGender(this.form.gender),
+    };
 
-    this.userApi.updateUser(this.userId, this.form).subscribe({
+    this.userApi.updateUser(this.userId, payload).subscribe({
       next: (updated: any) => {
-
-        const merged = { ...this.form, ...updated };
-
+        const merged = {
+          ...this.form,
+          ...updated,
+          gender: this.normalizeGender(updated?.gender || payload.gender),
+          _id: this.userId,
+        };
         if (this.isBrowser) {
           localStorage.setItem('user', JSON.stringify(merged));
         }
-
         this.userApi.setUser(merged);
 
         this.isSaving = false;
-        alert('Cập nhật thành công');
+        alert('Cập nhật thông tin thành công');
       },
       error: () => {
         this.isSaving = false;
-        alert('Cập nhật thất bại');
-      }
+        alert('Cập nhật thất bại, vui lòng thử lại');
+      },
     });
   }
 }

@@ -8,7 +8,7 @@
 
 .address-header h1 {
   margin: 0;
-  color: #6f2a39;
+  color: #6D1620;
   font-size: 34px;
 }
 
@@ -51,8 +51,8 @@ input {
 
 input:focus {
   outline: none;
-  border-color: #a94053;
-  box-shadow: 0 0 0 3px rgba(169, 64, 83, 0.12);
+  border-color: #b35773;
+  box-shadow: 0 0 0 3px rgba(179, 87, 115, 0.12);
 }
 
 .actions {
@@ -71,14 +71,18 @@ button {
 
 .primary {
   border: none;
-  background: linear-gradient(120deg, #7d2f40, #a94053);
+  background: linear-gradient(120deg, #8b2f3f, #b35773);
   color: #fff;
 }
 
 .ghost {
-  border: 1px solid #c7a08e;
-  background: #fff;
-  color: #7d2f40;
+  border: 1px solid #f4c4d4;
+  background: #fff8fb;
+  color: #8b2f3f;
+}
+
+.ghost:hover {
+  background: #fdf0f6;
 }
 
 button:disabled {

@@ -1,24 +1,27 @@
 .account-layout {
-  display: flex;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
   min-height: calc(100vh - 140px);
   background:
     radial-gradient(circle at 10% 10%, rgba(169, 64, 83, 0.08), transparent 34%),
     linear-gradient(160deg, #f8f2ea 0%, #f6efe6 45%, #f0e6da 100%);
   padding: 24px 28px;
-  margin: 0;
+  margin: 0 auto;
+  max-width: 1440px;
   gap: 20px;
-  align-items: stretch;
+  align-items: start;
+  overflow-x: hidden;
 }
 
 .sidebar-container {
-  width: 280px;
-  flex-shrink: 0;
+  width: 100%;
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
+  position: sticky;
+  top: 110px;
 }
 
 .content-container {
-  flex: 1;
   background: rgba(255, 255, 255, 0.76);
   border-radius: 18px;
   border: 1px solid rgba(169, 64, 83, 0.12);
@@ -27,42 +30,35 @@
   display: flex;
   flex-direction: column;
   padding: 0 24px 24px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 @media (max-width: 1024px) {
   .account-layout {
-    max-width: 100%;
+    display: block;
     padding: 12px;
-    gap: 0;
   }
 
   .sidebar-container {
-    width: 0;
-    flex-shrink: 0;
-    overflow: hidden;
+    width: 100%;
+    position: static;
   }
 
   .content-container {
     width: 100%;
-    max-width: 100%;
-    flex: 1 1 100%;
     padding: 0 14px 18px;
   }
 }
 
 @media (max-width: 768px) {
   .account-layout {
-    flex-direction: column;
     padding: 8px;
-    gap: 0;
-  }
-
-  .sidebar-container {
-    width: 100%;
   }
 
   .content-container {
     padding: 0 12px 14px;
+    border-radius: 14px;
   }
 }
 

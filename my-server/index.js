@@ -67,9 +67,13 @@ app.delete("/feedback/:id", async (req,res)=>{
 })
 
 app.post("/products", async (req, res) => {
-  const product = new Product(req.body);
-  const savedProduct = await product.save();
-  res.json(savedProduct);
+  try {
+    const product = new Product(req.body);
+    const savedProduct = await product.save();
+    res.json(savedProduct);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 /* PRODUCTS */
@@ -92,131 +96,182 @@ app.get("/products/:id", async (req, res) => {
 });
 
 app.delete("/products/:id", async (req, res) => {
-  await Product.findByIdAndDelete(req.params.id);
-  res.json({ message: "Product deleted" });
+  try {
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({ message: "Product deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 /* USER */
 app.post("/users", async (req, res) => {
-  const user = new User(req.body);
-  const result = await user.save();
-  res.send(result);
+  try {
+    const user = new User(req.body);
+    const result = await user.save();
+    res.send(result);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 app.post("/users/login", async (req, res) => {
-
-  const { email, password } = req.body;
-
-  const user = await User.findOne({
-    email: email,
-    password: password
-  });
-
-  if (!user) {
-    return res.status(401).json({ message: "Sai email hoặc mật khẩu" });
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email, password });
+    if (!user) {
+      return res.status(401).json({ message: "Sai email hoặc mật khẩu" });
+    }
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-
-  res.json(user);
-
 });
 
 app.get("/users", async (req, res) => {
-  const users = await User.find();
-  res.send(users);
+  try {
+    const users = await User.find();
+    res.send(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 app.get("/users/:id", async (req, res) => {
-  const user = await User.findById(req.params.id);
-  res.send(user);
-  const cart = await Cart.find({ userId });
-  res.json(cart);
+  try {
+    const user = await User.findById(req.params.id);
+    res.send(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 app.put("/users/:id", async (req, res) => {
-  const user = await User.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  )
-  res.send(user);
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.send(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 app.delete("/users/:id", async (req, res) => {
-  await User.findByIdAndDelete(req.params.id);
-  res.send({ message: "User deleted" });
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.send({ message: "User deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 /* ADDRESS */
 app.post("/addresses", async (req, res) => {
-  const address = new Address(req.body);
-  const savedAddress = await address.save();
-  res.json(savedAddress);
+  try {
+    const address = new Address(req.body);
+    const savedAddress = await address.save();
+    res.json(savedAddress);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 app.get("/addresses/:userId", async (req, res) => {
-  const address = await Address.findOne({ userId: req.params.userId });
-  res.json(address);
+  try {
+    const address = await Address.findOne({ userId: req.params.userId });
+    res.json(address);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 app.put("/addresses/:id", async (req, res) => {
-  const address = await Address.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  );
-  res.json(address);
+  try {
+    const address = await Address.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(address);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 app.delete("/addresses/:id", async (req, res) => {
-  await Address.findByIdAndDelete(req.params.id);
-  res.json({ message: "Address deleted" });
+  try {
+    await Address.findByIdAndDelete(req.params.id);
+    res.json({ message: "Address deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 /* ORDER */
 app.get("/orders", async (req, res) => {
-  const orders = await Order.find().sort({ createdAt: -1 });
-  res.json(orders);
+  try {
+    const orders = await Order.find().sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 app.get("/orders/user/:userId", async (req, res) => {
-  const orders = await Order.find({ userId: req.params.userId });
-  res.json(orders);
+  try {
+    const orders = await Order.find({ userId: req.params.userId });
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 app.post("/orders", async (req, res) => {
-  const order = new Order(req.body);
-  await order.save();
-  res.json(order);
+  try {
+    const order = new Order(req.body);
+    await order.save();
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 app.put("/orders/:id/status", async (req, res) => {
-  const order = await Order.findByIdAndUpdate(
-    req.params.id,
-    { status: req.body.status },
-    { new: true }
-  );
-  res.json(order);
+  try {
+    const order = await Order.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true });
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 app.put("/orders/:id/cancel", async (req, res) => {
-  const order = await Order.findByIdAndUpdate(
-    req.params.id,
-    { status: "cancelled" },
-    { new: true }
-  );
-  res.json(order);
+  try {
+    const order = await Order.findByIdAndUpdate(req.params.id, { status: "cancelled" }, { new: true });
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 app.delete("/orders/:id", async (req, res) => {
-  await Order.findByIdAndDelete(req.params.id);
-  res.json({ message: "Order deleted" });
+  try {
+    await Order.findByIdAndDelete(req.params.id);
+    res.json({ message: "Order deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 /* CART */
 app.get("/cart", async (req, res) => {
-  const cart = await Cart.find().sort({ createdAt: -1 });
-  res.json(cart);
+  try {
+    const cart = await Cart.find().sort({ createdAt: -1 });
+    res.json(cart);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 app.get("/cart/user/:userId", async (req, res) => {
-  const cart = await Cart.find({ userId: req.params.userId });
-  res.json(cart);
+  try {
+    const cart = await Cart.find({ userId: req.params.userId });
+    res.json(cart);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 app.post("/cart", async (req, res) => {
-  const { userId, name, price, quantity, image } = req.body;
-  let item = await Cart.findOne({ userId, name });
+  try {
+    const { userId, name, price, quantity, image } = req.body;
+    let item = await Cart.findOne({ userId, name });
     if (item) {
       item.quantity += quantity;
       await item.save();
@@ -224,23 +279,34 @@ app.post("/cart", async (req, res) => {
       item = new Cart({ userId, name, price, quantity, image });
       await item.save();
     }
-  res.json(item);
+    res.json(item);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 app.put("/cart/:id", async (req, res) => {
-  const item = await Cart.findByIdAndUpdate(
-    req.params.id,
-    { quantity: req.body.quantity },
-    { new: true }
-  );
-  res.json(item);
+  try {
+    const item = await Cart.findByIdAndUpdate(req.params.id, { quantity: req.body.quantity }, { new: true });
+    res.json(item);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 app.delete("/cart/:id", async (req, res) => {
-  await Cart.findByIdAndDelete(req.params.id);
-  res.json({ message: "Item deleted" });
+  try {
+    await Cart.findByIdAndDelete(req.params.id);
+    res.json({ message: "Item deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 app.delete("/cart/user/:userId", async (req, res) => {
-  await Cart.deleteMany({ userId: req.params.userId });
-  res.json({ message: "Cart cleared" });
+  try {
+    await Cart.deleteMany({ userId: req.params.userId });
+    res.json({ message: "Cart cleared" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 
