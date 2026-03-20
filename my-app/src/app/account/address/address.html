@@ -1,49 +1,98 @@
 <section class="address-shell">
   <header class="address-header">
-    <h1>So dia chi</h1>
-    <p>Cap nhat dia chi giao hang mac dinh cho tai khoan cua ban.</p>
+    <h1>Sổ địa chỉ</h1>
+    <p>Cập nhật địa chỉ giao hàng mặc định cho tài khoản của bạn.</p>
   </header>
 
+  <!-- HIỂN THỊ -->
   <article class="address-card" *ngIf="!isEditing">
-    <div class="line"><strong>So dien thoai:</strong> {{ address.phone || 'Chua cap nhat' }}</div>
-    <div class="line"><strong>Dia chi:</strong> {{ address.address || 'Chua cap nhat' }}</div>
-    <div class="line"><strong>Phuong/Xa:</strong> {{ address.ward || 'Chua cap nhat' }}</div>
-    <div class="line"><strong>Quan/Huyen:</strong> {{ address.district || 'Chua cap nhat' }}</div>
-    <div class="line"><strong>Tinh/Thanh pho:</strong> {{ address.city || 'Chua cap nhat' }}</div>
+    <div class="line">
+      <strong>Địa chỉ:</strong> {{ address.address || 'Chưa cập nhật' }}
+    </div>
+    <div class="line">
+      <strong>Phường/Xã:</strong> {{ address.ward || 'Chưa cập nhật' }}
+    </div>
+    <div class="line">
+      <strong>Quận/Huyện:</strong> {{ address.district || 'Chưa cập nhật' }}
+    </div>
+    <div class="line">
+      <strong>Tỉnh/Thành phố:</strong> {{ address.city || 'Chưa cập nhật' }}
+    </div>
 
-    <button class="primary" (click)="isEditing = true">Chinh sua dia chi</button>
+    <button class="primary" (click)="startEdit()">
+      Chỉnh sửa địa chỉ
+    </button>
   </article>
 
+  <!-- FORM -->
   <article class="address-card" *ngIf="isEditing">
+
+    <!-- SỐ NHÀ -->
     <label>
-      So dien thoai
-      <input [(ngModel)]="address.phone" name="phone" />
+      Số nhà, tên đường
+      <input
+        [(ngModel)]="formAddress.address"
+        placeholder="VD: 123 Lê Lợi"
+      />
     </label>
 
-    <label>
-      Dia chi cu the
-      <input [(ngModel)]="address.address" name="address" />
-    </label>
+    <!-- DROPDOWN ĐỊA CHỈ -->
+    <div class="address-select">
+      <!-- TỈNH -->
+      <label>
+        Tỉnh / Thành phố
+        <select (change)="onProvinceChange($event)">
+          <option value="">Chọn Tỉnh / Thành phố</option>
+          <option *ngFor="let p of provinces" [value]="p.code">
+            {{ p.name }}
+          </option>
+        </select>
+      </label>
 
-    <label>
-      Phuong/Xa
-      <input [(ngModel)]="address.ward" name="ward" />
-    </label>
+      <!-- QUẬN -->
+      <label>
+        Quận / Huyện
+        <select
+          (change)="onDistrictChange($event)"
+          [disabled]="!districts.length"
+        >
+          <option value="">Chọn Quận / Huyện</option>
+          <option *ngFor="let d of districts" [value]="d.code">
+            {{ d.name }}
+          </option>
+        </select>
+      </label>
 
-    <label>
-      Quan/Huyen
-      <input [(ngModel)]="address.district" name="district" />
-    </label>
+      <!-- PHƯỜNG -->
+      <label>
+        Phường / Xã
+        <select
+          (change)="onWardChange($event)"
+          [disabled]="!wards.length"
+        >
+          <option value="">Chọn Phường / Xã</option>
+          <option *ngFor="let w of wards" [value]="w.code">
+            {{ w.name }}
+          </option>
+        </select>
+      </label>
+    </div>
 
-    <label>
-      Tinh/Thanh pho
-      <input [(ngModel)]="address.city" name="city" />
-    </label>
-
+    <!-- BUTTON -->
     <div class="actions">
-      <button class="ghost" (click)="isEditing = false" [disabled]="isSaving">Huy</button>
-      <button class="primary" (click)="saveAddress()" [disabled]="isSaving">
-        {{ isSaving ? 'Dang luu...' : 'Luu dia chi' }}
+      <button
+        class="ghost"
+        (click)="cancelEdit()"
+        [disabled]="isSaving"
+      >
+        Hủy
+      </button>
+      <button
+        class="primary"
+        (click)="saveAddress()"
+        [disabled]="isSaving"
+      >
+        {{ isSaving ? 'Đang lưu...' : 'Lưu địa chỉ' }}
       </button>
     </div>
   </article>

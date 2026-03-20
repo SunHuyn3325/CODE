@@ -127,9 +127,7 @@ app.get("/users", async (req, res) => {
 
 app.get("/users/:id", async (req, res) => {
   const user = await User.findById(req.params.id);
-  res.send(user);
-  const cart = await Cart.find({ userId });
-  res.json(cart);
+  res.json(user);
 });
 
 app.put("/users/:id", async (req, res) => {
