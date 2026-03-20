@@ -131,7 +131,6 @@ async function buildUniqueSlug(baseText, excludeId = null) {
 
 app.post("/products", async (req, res) => {
   try {
-<<<<<<< HEAD
     const payload = { ...req.body };
     if (!payload.slug) {
       payload.slug = await buildUniqueSlug(payload.product_name);
@@ -145,13 +144,6 @@ app.post("/products", async (req, res) => {
       message: "Tạo sản phẩm thất bại",
       error: err?.message || err
     });
-=======
-    const product = new Product(req.body);
-    const savedProduct = await product.save();
-    res.json(savedProduct);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
->>>>>>> e8b7310616e121567d3792827dcf270335d12680
   }
 });
 
