@@ -22,19 +22,18 @@ export class SidebarCustomer implements OnInit {
   @Input() notificationBadge: number = 0;
 
   isMobileSidebarOpen = false;
-
   user: Account | null = null;
-  userName = 'Khach hang';
+  userName = 'Khách hàng';
   userEmail = '';
   userAvatar = '/assets/user.png';
 
   menuItems: SidebarMenuItem[] = [
-    { id: 'profile', label: 'Tai khoan ca nhan', route: '/account/profile' },
-    { id: 'address', label: 'So dia chi', route: '/account/address' },
-    { id: 'orders', label: 'Don hang', route: '/account/orders' },
-    { id: 'returns', label: 'Doi tra', route: '/account/returns' },
-    { id: 'reviews', label: 'Danh gia', route: '/account/reviews' },
-    { id: 'wishlist', label: 'Yeu thich', route: '/account/wishlist' },
+    { id: 'profile', label: 'Tài khoản cá nhân', route: '/account/profile' },
+    { id: 'address', label: 'Sổ địa chỉ', route: '/account/address' },
+    { id: 'orders', label: 'Đơn hàng', route: '/account/orders' },
+    { id: 'returns', label: 'Đổi trả', route: '/account/returns' },
+    { id: 'reviews', label: 'Đánh giá', route: '/account/reviews' },
+    { id: 'wishlist', label: 'Yêu thích', route: '/account/wishlist' },
   ];
 
   constructor(
@@ -42,20 +41,31 @@ export class SidebarCustomer implements OnInit {
     private userApi: UserApiService
   ) {}
 
-  ngOnInit(): void {
+  get hasCustomAvatar(): boolean {
+    const avatar = String(this.userAvatar ?? '').trim().toLowerCase();
+    if (!avatar) {
+      return false;
+    }
+    return !(
+      avatar === '/assets/user.png' ||
+      avatar.endsWith('/assets/user.png') ||
+      avatar.endsWith('assets/user.png')
+    );
+  }
 
-    // ✅ CHỈ dùng BehaviorSubject (KHÔNG localStorage)
+  ngOnInit(): void {
+    this.loadUserInfo();
+
     this.userApi.currentUser$.subscribe((user) => {
 
       if (user) {
         this.user = user;
 
-        this.userName = user.profileName || 'Khach hang';
+        this.userName = user.profileName || 'Khách hàng';
         this.userEmail = user.email || '';
         this.userAvatar = user.avatar || '/assets/user.png';
       } else {
-        // fallback khi logout
-        this.userName = 'Khach hang';
+        this.userName = 'Khách hàng';
         this.userEmail = '';
         this.userAvatar = '/assets/user.png';
       }
@@ -63,6 +73,27 @@ export class SidebarCustomer implements OnInit {
     });
   }
 
+  private loadUserInfo(): void {
+    if (typeof localStorage === 'undefined') {
+      return;
+    }
+
+    const userRaw = localStorage.getItem('user');
+    if (!userRaw) {
+      return;
+    }
+
+    try {
+      const user = JSON.parse(userRaw);
+      this.userName = user.profileName || user.fullName || user.FullName || 'Khách hàng';
+      this.userEmail = user.email || user.Email || '';
+      this.userAvatar = user.avatar || '/assets/user.png';
+    } catch {
+      this.userName = 'Khách hàng';
+      this.userEmail = '';
+      this.userAvatar = '/assets/user.png';
+    }
+  }
   toggleMobileSidebar(): void {
     this.isMobileSidebarOpen = !this.isMobileSidebarOpen;
   }

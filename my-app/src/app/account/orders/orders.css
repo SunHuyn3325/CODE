@@ -412,13 +412,13 @@
   font-family: 'Lexend', sans-serif;
 } */
 
-/* Legacy support */
-.orders-container {
+/* Legacy support (disabled for current layout) */
+.orders-container.legacy-orders {
   width: 100%;
   padding: 0 40px;
 }
 
-.orders-header {
+.orders-container.legacy-orders .orders-header {
   margin-bottom: 32px;
   display: flex;
   justify-content: space-between;
@@ -433,7 +433,7 @@
   font-family: 'SF Pro', sans-serif;
 }
 
-.orders-header p {
+.orders-container.legacy-orders .orders-header p {
   color: #808080;
   font-size: 16px;
   margin: 0;

@@ -10,7 +10,7 @@
 
 .reviews-header h2 {
   font-size: 28px;
-  color: #6f2a39;
+  color: #6D1620;
   margin-bottom: 8px;
   font-weight: 600;
 }
@@ -29,7 +29,7 @@
 
 .btn-primary {
   padding: 10px 20px;
-  background: linear-gradient(120deg, #7d2f40, #a94053);
+  background: linear-gradient(120deg, #8b2f3f, #b35773);
   color: white;
   border: none;
   border-radius: 6px;
@@ -41,7 +41,7 @@
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(169, 64, 83, 0.3);
+  box-shadow: 0 4px 12px rgba(70, 23, 35, 0.3);
 }
 
 /* Review Form */
@@ -91,8 +91,8 @@
 .form-input:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: #a94053;
-  box-shadow: 0 0 0 3px rgba(169, 64, 83, 0.1);
+  border-color: #b35773;
+  box-shadow: 0 0 0 3px rgba(179, 87, 115, 0.14);
 }
 
 .form-textarea {
@@ -141,7 +141,7 @@
 
 .btn-submit {
   padding: 12px 24px;
-  background: linear-gradient(120deg, #7d2f40, #a94053);
+  background: linear-gradient(120deg, #8b2f3f, #b35773);
   color: white;
   border: none;
   border-radius: 6px;
@@ -154,7 +154,7 @@
 
 .btn-submit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(169, 64, 83, 0.3);
+  box-shadow: 0 4px 12px rgba(70, 23, 35, 0.3);
 }
 
 /* Reviews List */

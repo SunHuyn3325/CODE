@@ -8,7 +8,7 @@
 
 .profile-header h1 {
   margin: 0;
-  color: #6f2a39;
+  color: #9a3f56;
   font-size: 34px;
 }
 
@@ -29,18 +29,57 @@
 .identity {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   border-bottom: 1px solid #efe3d6;
-  padding-bottom: 14px;
+  padding-bottom: 16px;
   margin-bottom: 16px;
 }
 
+.avatar-wrapper {
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5e8d8 0%, #ede0ce 100%);
+  border: 2px solid rgba(220, 180, 140, 0.4);
+  box-shadow: 0 6px 16px rgba(160, 100, 70, 0.08);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.35), transparent 60%);
+  pointer-events: none;
+}
+
+.avatar-wrapper.has-custom {
+  background: linear-gradient(135deg, #fdfaf8 0%, #f9f1ed 100%);
+  border: 2.5px solid rgba(212, 160, 100, 0.5);
+}
+
+.avatar-icon {
+  width: 56px;
+  height: 56px;
+  color: #8b6f4e;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 1px 2px rgba(120, 90, 60, 0.06));
+}
+
 .avatar {
-  width: 68px;
-  height: 68px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #c59a67;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 2px 8px rgba(120, 80, 60, 0.15));
 }
 
 .identity h2 {
@@ -81,8 +120,8 @@ select {
 input:focus,
 select:focus {
   outline: none;
-  border-color: #a94053;
-  box-shadow: 0 0 0 3px rgba(169, 64, 83, 0.12);
+  border-color: #b35773;
+  box-shadow: 0 0 0 3px rgba(179, 87, 115, 0.2);
 }
 
 .actions {
@@ -95,10 +134,16 @@ button {
   border: none;
   border-radius: 10px;
   padding: 11px 18px;
-  background: linear-gradient(120deg, #7d2f40, #a94053);
+  background: linear-gradient(120deg, #8b2f3f, #b35773);
   color: #fff;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.24s ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(70, 23, 35, 0.32);
 }
 
 button:disabled {

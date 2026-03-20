@@ -47,9 +47,21 @@ export class AboutUs implements AfterViewInit, OnDestroy {
   scrollToContent() {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    document
-      .getElementById('about-content')
-      ?.scrollIntoView({ behavior: 'smooth' });
+    const firstHeading = document.querySelector('.about-story .story-text h2') as HTMLElement | null;
+    const fallbackSection = document.getElementById('about-content');
+    const target = firstHeading ?? fallbackSection;
+
+    if (!target) return;
+
+    const appHeader = document.querySelector('app-header') as HTMLElement | null;
+    const headerOffset = appHeader?.offsetHeight ?? 120;
+    const extraGap = 20;
+    const targetTop = target.getBoundingClientRect().top + window.scrollY - headerOffset - extraGap;
+
+    window.scrollTo({
+      top: Math.max(targetTop, 0),
+      behavior: 'smooth',
+    });
   }
 
   ngOnDestroy() {

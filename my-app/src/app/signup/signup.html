@@ -102,9 +102,31 @@
           </div>
         </div>
 
-        <small class="text-muted">
-          Sử dụng ít nhất 8 ký tự gồm chữ hoa, chữ thường, số hoặc ký hiệu
-        </small>
+        <div class="password-requirements">
+          <small class="requirements-title">Mật khẩu phải chứa:</small>
+          <ul class="requirements-list">
+            <li [class.valid]="passwordRequirements.length">
+              <span class="requirement-icon">✓</span>
+              Ít nhất 8 ký tự
+            </li>
+            <li [class.valid]="passwordRequirements.uppercase">
+              <span class="requirement-icon">✓</span>
+              Chữ hoa (A-Z)
+            </li>
+            <li [class.valid]="passwordRequirements.lowercase">
+              <span class="requirement-icon">✓</span>
+              Chữ thường (a-z)
+            </li>
+            <li [class.valid]="passwordRequirements.number">
+              <span class="requirement-icon">✓</span>
+              Số (0-9)
+            </li>
+            <li [class.valid]="passwordRequirements.special">
+              <span class="requirement-icon">✓</span>
+              Ký hiệu (!@#$%^&* vv...)
+            </li>
+          </ul>
+        </div>
 
         <div class="form-row">
           <label class="form-label">Giới tính (tùy chọn)</label>
@@ -149,7 +171,7 @@
               (signupForm.get('birthDay')?.invalid ||
               signupForm.get('birthMonth')?.invalid ||
               signupForm.get('birthYear')?.invalid) &&
-              signupForm.touched
+              submitAttempted
             "
             class="text-danger"
           >

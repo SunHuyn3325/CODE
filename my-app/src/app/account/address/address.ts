@@ -179,7 +179,7 @@ export class AddressComponent implements OnInit {
       },
       error: () => {
         this.isSaving = false;
-        alert('Lưu thất bại');
+        alert('Lưu địa chỉ thất bại, vui lòng thử lại');
       },
     });
   }

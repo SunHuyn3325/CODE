@@ -7,6 +7,9 @@
   <!-- HIỂN THỊ -->
   <article class="address-card" *ngIf="!isEditing">
     <div class="line">
+      <strong>Số điện thoại:</strong> {{ address.phone || 'Chưa cập nhật' }}
+    </div>
+    <div class="line">
       <strong>Địa chỉ:</strong> {{ address.address || 'Chưa cập nhật' }}
     </div>
     <div class="line">
@@ -28,6 +31,15 @@
   <article class="address-card" *ngIf="isEditing">
 
     <!-- SỐ NHÀ -->
+    <label>
+      Số điện thoại
+      <input
+        [(ngModel)]="formAddress.phone"
+        name="phone"
+        placeholder="VD: 0912345678"
+      />
+    </label>
+
     <label>
       Số nhà, tên đường
       <input
