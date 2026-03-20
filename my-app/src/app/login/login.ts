@@ -38,15 +38,26 @@ export class Login implements OnInit {
 
   onSubmit() {
     if (this.loginForm.invalid) return;
-      this.userApi.login(this.loginForm.value).subscribe(
-        (res: any) => {
-          this.userApi.setUser(res);
-          alert("Đăng nhập thành công");
+
+    this.userApi.login(this.loginForm.value).subscribe(
+      (res: any) => {
+        this.userApi.setUser(res); // Lưu user vào service
+
+        alert("Đăng nhập thành công");
+
+        // Kiểm tra role
+        if (res.role === 'admin') {
+          this.router.navigate(['/admin']);
+        } else if (res.role === 'user') {
           this.router.navigate(['/account']);
-        },
-        (err: any) => {
-          alert("Sai email hoặc mật khẩu");
-          }
-        );
+        } else {
+          // Nếu role khác hoặc không xác định
+          this.router.navigate(['/']);
+        }
+      },
+      (err: any) => {
+        alert("Sai email hoặc mật khẩu");
       }
+    );
   }
+}
