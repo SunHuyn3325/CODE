@@ -1,0 +1,26 @@
+<div class="container">
+	<div class="filter-bar">
+		<div class="filter-item">Bài blog</div>
+		<div class="filter-highlight">
+			<select (change)="sortBlogs($event)">
+				<option value="featured">✓ Bài viết nổi bật</option>
+				<option value="newest">Mới nhất</option>
+				<option value="oldest">Cũ nhất</option>
+				<option value="nameAZ">Tiêu đề: A-Z</option>
+				<option value="nameZA">Tiêu đề: Z-A</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="blog-grid">
+		<div class="blog-card" *ngFor="let blog of filteredBlogs" [routerLink]="['/blogs', blog._id]">
+			<div class="image-wrapper">
+				<img [src]="getImageSrc(blog)" [alt]="blog.title">
+			</div>
+			<h3>{{ blog.title }}</h3>
+			<p class="excerpt">{{ getExcerpt(blog) }}</p>
+		</div>
+	</div>
+
+	<p class="empty" *ngIf="filteredBlogs.length === 0">Chưa có bài blog nào.</p>
+</div>

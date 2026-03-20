@@ -17,6 +17,8 @@ import { Wishlist } from './account/wishlist/wishlist';
 import { ProductDetail } from './product-detail/product-detail';
 import { Cart } from './cart/cart';
 import { Collection } from './collection/collection';
+import { BlogCatalog } from './blog-catalog/blog-catalog';
+import { BlogDetail } from './blog-detail/blog-detail';
 
 export const routes: Routes = [
     { path: '', component: Home },
@@ -28,6 +30,7 @@ export const routes: Routes = [
   { path: 'ship-method', component: Policy },
     { path: 'how-to-buy', component: HowToBuy },
     { path: 'aboutus', component: AboutUs },
+  { path: 'about-us', component: AboutUs },
     { path:'products', component: ProductList },
     { path:'products/:category', component: ProductList },
     {path:'login',component:Login},
@@ -54,4 +57,8 @@ export const routes: Routes = [
     },
     {path:'product/:id',component:ProductDetail},
     { path: 'collections/:id', component: Collection },
-  ];
+    { path: 'blogs', component: BlogCatalog },
+    { path: 'blog-catalog', component: BlogCatalog },
+    { path: 'blog/:id', component: BlogDetail },
+    { path: 'blogs/:id', component: BlogDetail },
+]

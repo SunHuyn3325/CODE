@@ -289,6 +289,20 @@
   position: relative;
 }
 
+.drop-title {
+  cursor: pointer;
+  user-select: none;
+}
+
+.dropdown.active-dropdown > .drop-title {
+  color: var(--wine-dark);
+  background: rgba(139, 47, 63, 0.1);
+}
+
+.dropdown.active-dropdown > .drop-title::before {
+  width: calc(100% - 28px);
+}
+
 .drop-title::after {
   content: '▾';
   font-size: 11px;

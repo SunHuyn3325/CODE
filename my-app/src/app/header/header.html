@@ -137,7 +137,13 @@
     <nav class="navbar" aria-label="Điều hướng chính">
       <ul class="nav-links">
         <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Trang chủ</a></li>
-        <li><a routerLink="/aboutus" routerLinkActive="active">Về Sắc</a></li>
+        <li class="dropdown" routerLinkActive="active-dropdown">
+          <a class="drop-title">Về Sắc</a>
+          <ul class="dropdown-menu">
+            <li><a routerLink="/about-us">Câu chuyện của Sắc</a></li>
+            <li><a routerLink="/blog-catalog">Mẩu chuyện nhỏ</a></li>
+          </ul>
+        </li>
         <li class="dropdown">
           <a class="drop-title">Sản phẩm</a>
           <ul class="dropdown-menu">

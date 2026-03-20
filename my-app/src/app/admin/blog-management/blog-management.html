@@ -1,0 +1,168 @@
+<div class="blog-admin">
+  <section class="topbar">
+    <div>
+      <h2>Quản lý Blog</h2>
+      <p class="subtitle">Tạo, chỉnh sửa và xuất bản bài viết cho website.</p>
+    </div>
+    <button class="btn-add" (click)="openCreateForm()">+ Thêm bài viết</button>
+  </section>
+
+  <section class="filters-card">
+    <input
+      type="text"
+      placeholder="Tìm kiếm theo tiêu đề hoặc mô tả..."
+      class="search"
+      [(ngModel)]="searchText"
+      (input)="applyFilters()" />
+
+    <select class="filter" [(ngModel)]="statusFilter" (change)="applyFilters()">
+      <option value="">Tất cả trạng thái</option>
+      <option value="draft">Bản nháp</option>
+      <option value="published">Đã xuất bản</option>
+    </select>
+  </section>
+
+  <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
+  <p class="success" *ngIf="successMsg">{{ successMsg }}</p>
+
+  <section class="table-card">
+    <table class="blog-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Bài viết</th>
+          <th>Trạng thái</th>
+          <th>Ngày đăng</th>
+          <th>Cập nhật</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngIf="loading">
+          <td colspan="6" class="center">Đang tải dữ liệu...</td>
+        </tr>
+
+        <tr *ngFor="let blog of paginatedBlogs; let i = index; trackBy: trackByBlogId">
+          <td>{{ i + 1 + (currentPage - 1) * pageSize }}</td>
+
+          <td>
+            <div class="post-col">
+              <img [src]="resolveThumbnail(blog.thumbnail)" class="thumb" />
+              <div>
+                <p class="title">{{ blog.title }}</p>
+                <p class="slug">{{ blog.excerpt || 'Chưa có mô tả ngắn' }}</p>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <span class="status" [class.published]="blog.status === 'published'" [class.draft]="blog.status === 'draft'">
+              {{ statusLabel(blog.status) }}
+            </span>
+          </td>
+
+          <td>{{ blog.publishedAt ? (blog.publishedAt | date:'dd/MM/yyyy') : '--' }}</td>
+          <td>{{ blog.updatedAt | date:'dd/MM/yyyy' }}</td>
+
+          <td class="row-actions">
+            <button class="btn edit" (click)="openEditForm(blog)">Sửa</button>
+            <button class="btn toggle" (click)="toggleStatus(blog)">
+              {{ blog.status === 'published' ? 'Ẩn' : 'Xuất bản' }}
+            </button>
+            <button class="btn delete" (click)="deleteBlog(blog._id)">Xóa</button>
+          </td>
+        </tr>
+
+        <tr *ngIf="!loading && paginatedBlogs.length === 0">
+          <td colspan="6" class="center">Không có bài viết phù hợp</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <button (click)="previousPage()" [disabled]="currentPage === 1">&lt;</button>
+      <span>Trang {{ currentPage }} / {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">&gt;</button>
+    </div>
+  </section>
+
+  <section class="blog-form-panel" *ngIf="showForm">
+    <div class="blog-form-content">
+      <h3>{{ isEditing ? 'Chỉnh sửa bài viết' : 'Thêm bài viết mới' }}</h3>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Tiêu đề *</label>
+          <input type="text" [(ngModel)]="blogForm.title" />
+          <small class="error" *ngIf="formErrors.title">Vui lòng nhập tiêu đề</small>
+        </div>
+
+        <div class="form-group full">
+          <label>Mô tả ngắn</label>
+          <textarea rows="3" [(ngModel)]="blogForm.excerpt"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Ngày đăng</label>
+          <input type="datetime-local" [(ngModel)]="blogForm.publishedAt" />
+        </div>
+
+        <div class="form-group">
+          <label>Trạng thái</label>
+          <select [(ngModel)]="blogForm.status">
+            <option value="draft">Bản nháp</option>
+            <option value="published">Đã xuất bản</option>
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label>Ảnh đại diện</label>
+          <input type="file" (change)="onThumbnailFileChange($event)" />
+          <img *ngIf="blogForm.thumbnail" [src]="resolveThumbnail(blogForm.thumbnail)" class="preview" />
+        </div>
+
+        <div class="form-group full">
+          <label>Nội dung *</label>
+          <div class="editor-toolbar">
+            <button type="button" (click)="formatText('bold')"><b>B</b></button>
+            <button type="button" (click)="formatText('italic')"><i>I</i></button>
+            <button type="button" (click)="formatText('underline')"><u>U</u></button>
+
+            <select class="size-select" [(ngModel)]="editorFontSize" (change)="setFontSize(editorFontSize)">
+              <option value="1">Rất nhỏ</option>
+              <option value="2">Nhỏ</option>
+              <option value="3">Thường</option>
+              <option value="4">Lớn</option>
+              <option value="5">Rất lớn</option>
+            </select>
+
+            <button type="button" (click)="formatText('justifyLeft')">Trái</button>
+            <button type="button" (click)="formatText('justifyCenter')">Giữa</button>
+            <button type="button" (click)="formatText('justifyRight')">Phải</button>
+
+            <label class="toolbar-upload">
+              + Ảnh
+              <input type="file" accept="image/*" (change)="onContentImageUpload($event)" hidden />
+            </label>
+          </div>
+
+          <div
+            #contentEditor
+            class="content-editor"
+            contenteditable="true"
+            (input)="onEditorInput()">
+          </div>
+
+          <small class="error" *ngIf="formErrors.content">Nội dung không được để trống</small>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn draft" [disabled]="saving" (click)="saveDraft()">Lưu nháp</button>
+        <button class="btn publish" [disabled]="saving" (click)="publishBlog()">Xuất bản</button>
+        <button class="btn cancel" [disabled]="saving" (click)="closeForm()">Hủy</button>
+      </div>
+    </div>
+  </section>
+</div>

@@ -12,6 +12,7 @@ const User = require("./models/User.js");
 const Address = require("./models/Address.js");
 const Order = require("./models/Order.js");
 const Cart = require('./models/Cart.js');
+const Blog = require('./models/Blog.js');
 
 const app = express()
 const port = 3000
@@ -137,6 +138,24 @@ async function buildUniqueSlug(baseText, excludeId = null) {
   return slug;
 }
 
+async function buildUniqueBlogSlug(baseText, excludeId = null) {
+  const base = toSlug(baseText) || `blog-${Date.now()}`;
+  let slug = base;
+  let i = 1;
+
+  while (
+    await Blog.exists(
+      excludeId
+        ? { slug, _id: { $ne: excludeId } }
+        : { slug }
+    )
+  ) {
+    slug = `${base}-${i++}`;
+  }
+
+  return slug;
+}
+
 app.post("/products", async (req, res) => {
   try {
     const payload = { ...req.body };
@@ -201,6 +220,129 @@ app.put("/products/:id", async (req, res) => {
       message: "Cập nhật sản phẩm thất bại",
       error: err?.message || err
     });
+  }
+});
+
+/* BLOGS */
+app.post("/blogs", async (req, res) => {
+  try {
+    const payload = { ...req.body };
+
+    if (!payload.title || !payload.content) {
+      return res.status(400).json({ message: "Thiếu tiêu đề hoặc nội dung bài viết" });
+    }
+
+    if (!payload.slug) {
+      payload.slug = await buildUniqueBlogSlug(payload.title);
+    } else {
+      payload.slug = await buildUniqueBlogSlug(payload.slug);
+    }
+
+    if (payload.status === "published" && !payload.publishedAt) {
+      payload.publishedAt = new Date();
+    }
+
+    if (typeof payload.tags === "string") {
+      payload.tags = payload.tags
+        .split(",")
+        .map(tag => tag.trim())
+        .filter(Boolean);
+    }
+
+    const blog = new Blog(payload);
+    const savedBlog = await blog.save();
+    res.status(201).json(savedBlog);
+  } catch (err) {
+    res.status(500).json({
+      message: "Tạo bài viết thất bại",
+      error: err?.message || err
+    });
+  }
+});
+
+app.get("/blogs", async (req, res) => {
+  try {
+    const { q, status, category, tag } = req.query;
+    const filter = {};
+
+    if (status) filter.status = status;
+    if (category) filter.category = category;
+    if (tag) filter.tags = tag;
+
+    if (q) {
+      filter.$or = [
+        { title: { $regex: q, $options: "i" } },
+        { excerpt: { $regex: q, $options: "i" } },
+        { content: { $regex: q, $options: "i" } }
+      ];
+    }
+
+    const blogs = await Blog.find(filter).sort({ createdAt: -1 });
+    res.json(blogs);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.get("/blogs/:id", async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) {
+      return res.status(404).json({ message: "Không tìm thấy bài viết" });
+    }
+    res.json(blog);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.put("/blogs/:id", async (req, res) => {
+  try {
+    const payload = { ...req.body };
+
+    if (payload.title && !payload.slug) {
+      payload.slug = await buildUniqueBlogSlug(payload.title, req.params.id);
+    }
+
+    if (payload.slug) {
+      payload.slug = await buildUniqueBlogSlug(payload.slug, req.params.id);
+    }
+
+    if (payload.status === "published" && !payload.publishedAt) {
+      payload.publishedAt = new Date();
+    }
+
+    if (typeof payload.tags === "string") {
+      payload.tags = payload.tags
+        .split(",")
+        .map(tag => tag.trim())
+        .filter(Boolean);
+    }
+
+    const blog = await Blog.findByIdAndUpdate(req.params.id, payload, { new: true });
+    if (!blog) {
+      return res.status(404).json({ message: "Không tìm thấy bài viết" });
+    }
+
+    res.json(blog);
+  } catch (err) {
+    res.status(500).json({
+      message: "Cập nhật bài viết thất bại",
+      error: err?.message || err
+    });
+  }
+});
+
+app.delete("/blogs/:id", async (req, res) => {
+  try {
+    const deleted = await Blog.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: "Không tìm thấy bài viết" });
+    }
+
+    res.json({ message: "Blog deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 
