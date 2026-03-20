@@ -26,13 +26,14 @@ export class ProductList implements OnInit{
 
   this.route.paramMap.subscribe(params => {
 
-    const category = params.get('category')?.replace('-', '');
+    const category = this.normalizeCategory(params.get('category'));
+    this.currentCategory = category;
 
     this.productService.getProducts().subscribe((data:any)=>{
 
       if(category){
         this.products = data.filter(
-          (p:any) => p.product_dept === category
+          (p:any) => this.normalizeCategory(p.product_dept) === category
         );
       } 
       else {
@@ -44,7 +45,8 @@ export class ProductList implements OnInit{
 
   });
 
-}
+  }
+
   sortProducts(event:any){
   const value = event.target.value;
     if(value === "priceLow"){
@@ -72,5 +74,46 @@ export class ProductList implements OnInit{
       this.products.sort((a:any,b:any)=> 
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     }
+  }
+
+  getImageSrc(product: any, imageIndex: number): string {
+    const image = product?.images?.[imageIndex]
+      || product?.images?.[0]
+      || product?.[`image_${imageIndex + 1}`]
+      || product?.image_1
+      || '';
+
+    if (!image) return '';
+
+    if (image.startsWith('data:') || image.startsWith('http')) {
+      return image;
+    }
+
+    if (image.startsWith('/')) {
+      return image;
+    }
+
+    return `/assets/${image}`;
+  }
+
+  private normalizeCategory(value: string | null | undefined): string | null {
+    if (!value) return null;
+
+    const normalized = value
+      .toString()
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-');
+
+    const compact = normalized.replace(/-/g, '');
+
+    if (compact === 'aodai') return 'ao-dai';
+    if (compact === 'vietphuc') return 'viet-phuc';
+    if (compact === 'aobaba') return 'ao-ba-ba';
+    if (compact === 'phukien') return 'phu-kien';
+
+    return normalized.replace(/^-+|-+$/g, '');
   }
 }

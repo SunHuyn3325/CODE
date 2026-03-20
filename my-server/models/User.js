@@ -53,43 +53,29 @@ const UserSchema = new mongoose.Schema({
 
 })
 
-UserSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    return next()
-  }
+UserSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
 
-  try {
-    this.password = await bcrypt.hash(this.password, BCRYPT_SALT_ROUNDS)
-    next()
-  } catch (error) {
-    next(error)
-  }
+  this.password = await bcrypt.hash(this.password, BCRYPT_SALT_ROUNDS);
 })
 
-UserSchema.pre("findOneAndUpdate", async function (next) {
+UserSchema.pre("findOneAndUpdate", async function () {
   const update = this.getUpdate() || {}
   const directPassword = update.password
   const setPassword = update.$set?.password
   const incomingPassword = directPassword || setPassword
 
-  if (!incomingPassword) {
-    return next()
+  if (!incomingPassword) return;
+
+  const hashedPassword = await bcrypt.hash(incomingPassword, BCRYPT_SALT_ROUNDS)
+
+  if (setPassword) {
+    update.$set.password = hashedPassword
+  } else {
+    update.password = hashedPassword
   }
 
-  try {
-    const hashedPassword = await bcrypt.hash(incomingPassword, BCRYPT_SALT_ROUNDS)
-
-    if (setPassword) {
-      update.$set.password = hashedPassword
-    } else {
-      update.password = hashedPassword
-    }
-
-    this.setUpdate(update)
-    next()
-  } catch (error) {
-    next(error)
-  }
+  this.setUpdate(update)
 })
 
 module.exports = mongoose.model("User", UserSchema)

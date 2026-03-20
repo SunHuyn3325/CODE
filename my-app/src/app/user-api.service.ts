@@ -29,14 +29,9 @@ export class UserApiService {
   login(data: any) {
     return this.http.post<any>(this.api + "/login", data).pipe(
       tap((res: any) => {
-        // 🔥 nếu backend trả user
-        if (res?.user) {
-          this.setUser(res.user);
-
-          // lưu local nếu muốn
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('user', JSON.stringify(res.user));
-          }
+        // server trả về user object trực tiếp (không bọc trong {user: ...})
+        if (res?._id) {
+          this.setUser(res);
         }
       })
     );

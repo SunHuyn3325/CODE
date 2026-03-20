@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { WishlistApiService } from '../../wishlist-api.service';
 
 @Component({
   selector: 'app-wishlist',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './wishlist.html',
   styleUrl: './wishlist.css',
 })
@@ -40,8 +41,7 @@ export class Wishlist implements OnInit {
     }
   }
 
-  addToCart(item: any): void {
-    alert('Chức năng thêm vào giỏ hàng sẽ được cập nhật');
-    // This will be implemented when cart service is ready
+  getProductId(item: any): string {
+    return item?.productId || item?.productSku || '';
   }
 }

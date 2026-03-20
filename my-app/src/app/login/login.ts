@@ -41,8 +41,7 @@ export class Login implements OnInit {
 
     this.userApi.login(this.loginForm.value).subscribe(
       (res: any) => {
-        this.userApi.setUser(res); // Lưu user vào service
-
+        // setUser đã được gọi trong tap của userApi.login()
         alert("Đăng nhập thành công");
 
         // Kiểm tra role

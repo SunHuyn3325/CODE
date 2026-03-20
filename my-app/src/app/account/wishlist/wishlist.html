@@ -17,7 +17,10 @@
 
   <!-- Wishlist Grid -->
   <div *ngIf="!loading && wishlistItems.length > 0" class="wishlist-grid">
-    <div *ngFor="let item of wishlistItems" class="wishlist-item">
+    <div
+      *ngFor="let item of wishlistItems"
+      class="wishlist-item"
+      [routerLink]="getProductId(item) ? ['/product', getProductId(item)] : null">
       <div class="item-image">
            <img [src]="item.productImage || '/assets/Logo.png'" 
              [alt]="item.productName"
@@ -45,10 +48,7 @@
       </div>
 
       <div class="item-actions">
-        <button class="btn-add-cart" (click)="addToCart(item)">
-          + Giỏ
-        </button>
-        <button class="btn-remove" (click)="removeFromWishlist(item._id)">
+        <button class="btn-remove" (click)="$event.stopPropagation(); removeFromWishlist(item._id)">
           ✕
         </button>
       </div>

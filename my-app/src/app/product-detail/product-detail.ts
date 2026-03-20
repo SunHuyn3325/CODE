@@ -8,6 +8,7 @@ import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { CartApiService } from '../cart-api.service';
+import { WishlistApiService } from '../wishlist-api.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -27,6 +28,7 @@ export class ProductDetail implements OnInit {
   viewedProducts: Product[] = [];
 
   showSizeGuide = false;
+  isWishlisted = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -34,6 +36,7 @@ export class ProductDetail implements OnInit {
     private cdr: ChangeDetectorRef,
     private cartService: CartApiService,
     private router: Router,
+    private wishlistService: WishlistApiService,
   ) {}
 
   ngOnInit() {
@@ -59,6 +62,7 @@ export class ProductDetail implements OnInit {
       this.selectedImage = data.images?.[0] || '';
 
       this.loadRelatedProducts(data.product_dept, data._id);
+      this.syncWishlistState();
 
       this.saveViewedProduct(data);
       this.loadViewedProducts();
@@ -142,6 +146,57 @@ export class ProductDetail implements OnInit {
     });
   }
 
+  toggleWishlist() {
+    const userRaw = localStorage.getItem('user');
+    if (!userRaw) {
+      alert('Vui lòng đăng nhập để thêm sản phẩm yêu thích.');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const user = JSON.parse(userRaw);
+    const userId = user?._id;
+    if (!userId || !this.product?._id) return;
+
+    const currentWishlist = this.wishlistService.getWishlistByUser(userId);
+    const existing = currentWishlist.find((item: any) => item.productId === this.product._id);
+
+    if (existing) {
+      this.wishlistService.removeFromWishlist(existing._id);
+      this.isWishlisted = false;
+      return;
+    }
+
+    this.wishlistService.addToWishlist({
+      userId,
+      productId: this.product._id,
+      productName: this.product.product_name,
+      productPrice: this.product.unit_price,
+      productSku: this.product._id,
+      productImage: this.getImageSrc(this.product.images?.[0]),
+    });
+
+    this.isWishlisted = true;
+  }
+
+  private syncWishlistState() {
+    const userRaw = localStorage.getItem('user');
+    if (!userRaw || !this.product?._id) {
+      this.isWishlisted = false;
+      return;
+    }
+
+    const user = JSON.parse(userRaw);
+    const userId = user?._id;
+    if (!userId) {
+      this.isWishlisted = false;
+      return;
+    }
+
+    const wishlist = this.wishlistService.getWishlistByUser(userId);
+    this.isWishlisted = wishlist.some((item: any) => item.productId === this.product._id);
+  }
+
   changeImage(img: string) {
     this.selectedImage = img;
   }
@@ -168,6 +223,7 @@ export class ProductDetail implements OnInit {
   getImageSrc(img: string | undefined): string {
     if (!img) return '/assets/placeholder.jpg';
     if (img.startsWith('data:') || img.startsWith('http')) return img;
+    if (img.startsWith('/')) return img;
     return '/assets/' + img;
   }
 

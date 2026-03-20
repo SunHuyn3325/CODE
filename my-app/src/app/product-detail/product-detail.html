@@ -98,6 +98,16 @@
     Mua ngay
   </button>
 
+        <button
+          class="btn-wishlist"
+          type="button"
+          [class.active]="isWishlisted"
+          [attr.aria-label]="isWishlisted ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'"
+          (click)="toggleWishlist()">
+          <span class="heart-outline" *ngIf="!isWishlisted">♡</span>
+          <span class="heart-fill" *ngIf="isWishlisted">♥</span>
+        </button>
+
 </div>
 
 <div class="product-support">
