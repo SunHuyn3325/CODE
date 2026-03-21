@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express")
 const mongoose = require("mongoose")
 const cors = require("cors")
@@ -86,9 +87,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage })
 
-mongoose.connect("mongodb://127.0.0.1:27017/contactdb")
-.then(()=> console.log("MongoDB connected"))
-.catch(err => console.log(err))
+const mongoUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/contactdb";
+mongoose.connect(mongoUri)
+  .then(() => console.log("MongoDB connected to:", mongoUri))
+  .catch(err => console.log("MongoDB connection error:", err));
 
 app.get("/", (req,res)=>{
     res.send("Hello Restful API")

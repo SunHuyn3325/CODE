@@ -3,7 +3,7 @@ import {
   createNodeRequestHandler,
   isMainModule,
   writeResponseToNodeResponse,
-} from '@angular/ssr/node';
+} from '@angular/ssr/fesm2022/node.mjs';
 import express from 'express';
 import { join } from 'node:path';
 
@@ -41,7 +41,7 @@ app.use(
 app.use((req, res, next) => {
   angularApp
     .handle(req)
-    .then((response) =>
+    .then((response: any) =>
       response ? writeResponseToNodeResponse(response, res) : next(),
     )
     .catch(next);
