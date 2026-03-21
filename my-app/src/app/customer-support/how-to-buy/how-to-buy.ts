@@ -195,16 +195,11 @@ export class HowToBuy implements OnInit {
       return;
     }
 
-    // Wait for DOM update, then scroll with sticky-header offset so title is visible.
+    // Use scrollIntoView — works correctly with scroll-margin-top set in CSS
     setTimeout(() => {
       const sectionEl = document.getElementById(`support-tab-${sectionId}`);
-      if (sectionEl) {
-        const header = document.querySelector('app-header .header') as HTMLElement | null;
-        const headerOffset = (header?.offsetHeight ?? 122) + 16;
-        const top = sectionEl.getBoundingClientRect().top + window.scrollY - headerOffset;
-        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
-      }
-    }, 80);
+      sectionEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
   }
 
   toggleAccordion(supportId: number): void {
