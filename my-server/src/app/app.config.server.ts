@@ -1,5 +1,5 @@
 import { mergeApplicationConfig, ApplicationConfig } from '@angular/core';
-import { provideServerRendering, withRoutes } from '@angular/ssr';
+import { provideServerRendering, withRoutes } from '@angular/ssr/fesm2022/ssr.mjs';
 import { appConfig } from './app.config';
 import { serverRoutes } from './app.routes.server';
 
