@@ -6,6 +6,8 @@ const multer = require("multer")
 const path = require("path")
 const fs = require("fs")
 const bcrypt = require("bcrypt")
+const crypto = require("crypto")
+const nodemailer = require("nodemailer")
 const Feedback = require("./models/Feedback.models.js")
 const Product = require("./models/Product.js")
 const User = require("./models/User.js");
@@ -17,10 +19,46 @@ const Blog = require('./models/Blog.js');
 const app = express()
 const port = 3000
 
+const FRONTEND_BASE_URL = process.env.FRONTEND_BASE_URL || "http://localhost:4200"
+const PASSWORD_RESET_EXPIRES_MINUTES = Number(process.env.PASSWORD_RESET_EXPIRES_MINUTES || 15)
+const SMTP_USER = process.env.SMTP_USER || ""
+const SMTP_PASS = process.env.SMTP_PASS || ""
+
+const mailTransport = SMTP_USER && SMTP_PASS
+  ? nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: SMTP_USER,
+        pass: SMTP_PASS,
+      },
+    })
+  : null
+
+function sha256(value) {
+  return crypto.createHash("sha256").update(value).digest("hex")
+}
+
+async function sendPasswordResetEmail(toEmail, resetLink) {
+  if (!mailTransport) {
+    console.warn("[auth] SMTP_USER/SMTP_PASS is missing, skip sending reset email")
+    return
+  }
+
+  await mailTransport.sendMail({
+    from: SMTP_USER,
+    to: toEmail,
+    subject: "Dat lai mat khau",
+    text: `Ban vua yeu cau dat lai mat khau. Link co hieu luc ${PASSWORD_RESET_EXPIRES_MINUTES} phut: ${resetLink}`,
+    html: `<p>Ban vua yeu cau dat lai mat khau.</p><p>Link co hieu luc <b>${PASSWORD_RESET_EXPIRES_MINUTES} phut</b>:</p><p><a href="${resetLink}">${resetLink}</a></p>`,
+  })
+}
+
 function sanitizeUser(userDoc) {
   if (!userDoc) return userDoc
   const user = userDoc.toObject ? userDoc.toObject() : { ...userDoc }
   delete user.password
+  delete user.passwordResetTokenHash
+  delete user.passwordResetExpiresAt
   return user
 }
 
@@ -379,6 +417,73 @@ app.post("/users/login", async (req, res) => {
     }
 
     res.json(sanitizeUser(user));
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.post("/users/forgot-password", async (req, res) => {
+  try {
+    const email = (req.body?.email || "").trim().toLowerCase();
+    if (!email) {
+      return res.status(400).json({ message: "Email la bat buoc" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (user) {
+      const rawToken = crypto.randomBytes(32).toString("hex");
+      const tokenHash = sha256(rawToken);
+
+      user.passwordResetTokenHash = tokenHash;
+      user.passwordResetExpiresAt = new Date(Date.now() + PASSWORD_RESET_EXPIRES_MINUTES * 60 * 1000);
+      await user.save();
+
+      const resetLink = `${FRONTEND_BASE_URL}/reset-password?token=${encodeURIComponent(rawToken)}`;
+      await sendPasswordResetEmail(user.email, resetLink);
+    }
+
+    return res.json({
+      message: "Neu email ton tai, he thong da gui link dat lai mat khau.",
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.post("/users/reset-password", async (req, res) => {
+  try {
+    const token = (req.body?.token || "").trim();
+    const newPassword = req.body?.newPassword || "";
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: "Thieu token hoac mat khau moi" });
+    }
+
+    const hasMinLength = newPassword.length >= 8;
+    const hasUppercase = /[A-Z]/.test(newPassword);
+    const hasLowercase = /[a-z]/.test(newPassword);
+
+    if (!hasMinLength || !hasUppercase || !hasLowercase) {
+      return res.status(400).json({ message: "Mat khau moi chua dat yeu cau" });
+    }
+
+    const tokenHash = sha256(token);
+    const user = await User.findOne({
+      passwordResetTokenHash: tokenHash,
+      passwordResetExpiresAt: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Token khong hop le hoac da het han" });
+    }
+
+    user.password = newPassword;
+    user.passwordResetTokenHash = null;
+    user.passwordResetExpiresAt = null;
+    await user.save();
+
+    return res.json({ message: "Dat lai mat khau thanh cong" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

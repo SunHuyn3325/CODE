@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap');
 
 :host {
+  display: block;
   --wine: #8b2f3f;
   --wine-dark: #61202c;
   --ink: #241d1e;

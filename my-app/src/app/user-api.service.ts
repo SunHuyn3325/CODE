@@ -37,6 +37,17 @@ export class UserApiService {
     );
   }
 
+  requestPasswordReset(email: string) {
+    return this.http.post<{ message: string }>(`${this.api}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string) {
+    return this.http.post<{ message: string }>(`${this.api}/reset-password`, {
+      token,
+      newPassword,
+    });
+  }
+
   // logout
   logout() {
     this.currentUser.next(null);
