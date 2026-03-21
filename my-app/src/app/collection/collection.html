@@ -1,5 +1,12 @@
 <div class="parallax-container">
   <header class="collection-intro">
+    <video autoplay muted loop playsinline class="intro-video">
+      <source src="assets/video_collection.mp4" type="video/mp4">
+      Trình duyệt của bạn không hỗ trợ video.
+    </video>
+
+    <div class="intro-overlay"></div>
+
     <div class="intro-content">
       <span class="sub-title">Bộ Sưu Tập</span>
       <h1 class="main-title">{{ collectionTitle }}</h1>
@@ -9,11 +16,8 @@
     </div>
   </header>
 
-
   <section class="parallax-section" *ngFor="let img of album; let i = index">
     <div class="parallax-bg" [style.background-image]="'url(' + img + ')'"></div>
-    <div class="photo-info">
-    </div>
+    <div class="photo-info"></div>
   </section>
 </div>
-
