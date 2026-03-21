@@ -17,48 +17,52 @@ import { Wishlist } from './account/wishlist/wishlist';
 import { ProductDetail } from './product-detail/product-detail';
 import { Cart } from './cart/cart';
 import { Collection } from './collection/collection';
-import { BlogCatalog } from './blog-catalog/blog-catalog';
+import { LettersComponent } from './letters/letters';
 import { BlogDetail } from './blog-detail/blog-detail';
+import { ForgotPasswordGmail } from './account/forgot-password-gmail/forgot-password-gmail';
+import { ForgotPasswordReset } from './account/forgot-password-reset/forgot-password-reset';
 
 export const routes: Routes = [
-    { path: '', component: Home },
-    { path: 'contact', component: Contact },
-    { path: 'policy', component: Policy },
+  { path: '', component: Home },
+  { path: 'contact', component: Contact },
+  { path: 'policy', component: Policy },
   { path: 'privacy', component: Policy },
   { path: 'term', component: Policy },
   { path: 'ship', component: Policy },
   { path: 'ship-method', component: Policy },
-    { path: 'how-to-buy', component: HowToBuy },
-    { path: 'aboutus', component: AboutUs },
+  { path: 'how-to-buy', component: HowToBuy },
+  { path: 'aboutus', component: AboutUs },
   { path: 'about-us', component: AboutUs },
-    { path:'products', component: ProductList },
-    { path:'products/:category', component: ProductList },
-    {path:'login',component:Login},
-    {path:'signup',component:Signup},
-    {
-      path:'account',
-      component: AccountLayout,
-      children: [
-        { path: '', redirectTo: 'profile', pathMatch: 'full' },
-        { path: 'profile', component: PersonalInformation },
-        { path: 'address', component: AddressComponent },
-        { path: 'orders', component: OrdersComponent },
-        { path: 'returns', component: ReturnManagementComponent },
-        { path: 'reviews', component: ReviewsComponent },
-        { path: 'wishlist', component: Wishlist },
-        { path: '**', redirectTo: 'profile' }
-      ]
-    },
-    {path:'cart',component:Cart},
-    {
+  { path: 'products', component: ProductList },
+  { path: 'products/:category', component: ProductList },
+  { path: 'login', component: Login },
+  { path: 'signup', component: Signup },
+  { path: 'forgot-password', component: ForgotPasswordGmail },
+  { path: 'reset-password', component: ForgotPasswordReset },
+  {
+    path: 'account',
+    component: AccountLayout,
+    children: [
+      { path: '', redirectTo: 'profile', pathMatch: 'full' },
+      { path: 'profile', component: PersonalInformation },
+      { path: 'address', component: AddressComponent },
+      { path: 'orders', component: OrdersComponent },
+      { path: 'returns', component: ReturnManagementComponent },
+      { path: 'reviews', component: ReviewsComponent },
+      { path: 'wishlist', component: Wishlist },
+      { path: '**', redirectTo: 'profile' }
+    ]
+  },
+  { path: 'cart', component: Cart },
+  {
     path: 'admin',
-    loadChildren: () =>
-      import('../app/admin/admin-module').then(m => m.AdminModule)
-    },
-    {path:'product/:id',component:ProductDetail},
-    { path: 'collections/:id', component: Collection },
-    { path: 'blogs', component: BlogCatalog },
-    { path: 'blog-catalog', component: BlogCatalog },
-    { path: 'blog/:id', component: BlogDetail },
-    { path: 'blogs/:id', component: BlogDetail },
-]
+    loadChildren: () => import('../app/admin/admin-module').then(m => m.AdminModule)
+  },
+  { path: 'product/:id', component: ProductDetail },
+  { path: 'collections/:id', component: Collection },
+  { path: 'blogs', component: LettersComponent },
+  { path: 'blog-catalog', component: LettersComponent },
+  { path: 'letters', component: LettersComponent },
+  { path: 'blog/:id', component: BlogDetail },
+  { path: 'blogs/:id', component: BlogDetail },
+];
