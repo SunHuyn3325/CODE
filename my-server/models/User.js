@@ -51,6 +51,16 @@ const UserSchema = new mongoose.Schema({
     required: true
   },
 
+  passwordResetTokenHash: {
+    type: String,
+    default: null
+  },
+
+  passwordResetExpiresAt: {
+    type: Date,
+    default: null
+  },
+
 })
 
 UserSchema.pre("save", async function () {
