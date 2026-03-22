@@ -282,6 +282,20 @@ app.post("/products", async (req, res) => {
       payload.slug = await buildUniqueSlug(payload.product_name);
     }
 
+    // Validate sizes array
+    if (!Array.isArray(payload.sizes) || payload.sizes.length === 0) {
+      return res.status(400).json({ message: "Sản phẩm phải có ít nhất một size với số lượng." });
+    }
+    const validSizes = ["S", "M", "L", "XL"];
+    for (const s of payload.sizes) {
+      if (!s.size || !validSizes.includes(s.size)) {
+        return res.status(400).json({ message: `Size không hợp lệ: ${s.size}` });
+      }
+      if (typeof s.quantity !== "number" || s.quantity < 0) {
+        return res.status(400).json({ message: `Số lượng cho size ${s.size} phải là số không âm.` });
+      }
+    }
+
     const product = new Product(payload);
     const savedProduct = await product.save();
     res.json(savedProduct);
@@ -326,6 +340,22 @@ app.put("/products/:id", async (req, res) => {
     const payload = { ...req.body };
     if (!payload.slug && payload.product_name) {
       payload.slug = await buildUniqueSlug(payload.product_name, req.params.id);
+    }
+
+    // Validate sizes array if present
+    if (payload.sizes) {
+      if (!Array.isArray(payload.sizes) || payload.sizes.length === 0) {
+        return res.status(400).json({ message: "Sản phẩm phải có ít nhất một size với số lượng." });
+      }
+      const validSizes = ["S", "M", "L", "XL"];
+      for (const s of payload.sizes) {
+        if (!s.size || !validSizes.includes(s.size)) {
+          return res.status(400).json({ message: `Size không hợp lệ: ${s.size}` });
+        }
+        if (typeof s.quantity !== "number" || s.quantity < 0) {
+          return res.status(400).json({ message: `Số lượng cho size ${s.size} phải là số không âm.` });
+        }
+      }
     }
 
     const product = await Product.findByIdAndUpdate(

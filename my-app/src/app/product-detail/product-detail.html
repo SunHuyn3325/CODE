@@ -43,41 +43,43 @@
       </div>-->
 
       <!-- Size -->
+
       <div class="product-option" *ngIf="product.sizes?.length">
-
         <div class="size-header">
-
-  <label>Kích thước:</label>
-
-  <div class="size-links">
-
-    <button class="link-btn" (click)="openSizeGuide()">
-      Hướng dẫn chọn size
-    </button>
-
-  </div>
-
-</div>
-
+          <label>Kích thước:</label>
+          <div class="size-links">
+            <button class="link-btn" (click)="openSizeGuide()">Hướng dẫn chọn size</button>
+          </div>
+        </div>
         <div class="size-options">
-          <button *ngFor="let s of product.sizes">
-            {{s.size}}
+              <button *ngFor="let s of product.sizes"
+              [class.selected]="selectedSize === s.size"
+              [disabled]="s.stock === 0"
+              (click)="selectSize(s.size)">
+            {{s.size}} <span *ngIf="s.stock === 0">(Hết)</span>
           </button>
         </div>
-
+        <div *ngIf="selectedSize">
+          <span>Số lượng còn lại: {{getSelectedSizeQuantity()}}</span>
+        </div>
       </div>
 
       <!-- Quantity -->
       <div class="product-option">
-
         <label>Số lượng</label>
-
         <div class="quantity-box">
-
-        <button class="qty-btn" (click)="decrease()">−</button>
-
-        <input
+          <button class="qty-btn" (click)="decrease()" [disabled]="quantity <= 1">−</button>
+          <input
             class="qty-input"
+            type="number"
+            [(ngModel)]="quantity"
+            [min]="1"
+            [max]="getSelectedSizeQuantity()"
+            [disabled]="!selectedSize"
+          />
+          <button class="qty-btn" (click)="increase()" [disabled]="quantity >= getSelectedSizeQuantity()">+</button>
+        </div>
+      </div>
             type="number"
             [(ngModel)]="quantity"
             min="1"

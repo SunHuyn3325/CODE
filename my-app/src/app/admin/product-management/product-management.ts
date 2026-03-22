@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProductApiService } from '../../product-api.service';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-product-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './product-management.html',
   styleUrls: ['./product-management.css'],
 })
@@ -23,6 +23,12 @@ export class ProductManagement implements OnInit {
   uploadingImageAt: number | null = null;
   isEditing = false;
   editingProductId: string | null = null;
+  sizesInput = [
+    { size: 'S', quantity: 0 },
+    { size: 'M', quantity: 0 },
+    { size: 'L', quantity: 0 },
+    { size: 'XL', quantity: 0 }
+  ];
 
   currentPage = 1;
   pageSize = 10;
@@ -42,7 +48,6 @@ export class ProductManagement implements OnInit {
       short_description: [''],
       description: [''],
       unit_price: [0, [Validators.required, Validators.min(0)]],
-      stocked_quantity: [0, [Validators.required, Validators.min(0)]],
       discount: [0],
       rating: [4],
       material: [''],
@@ -100,7 +105,12 @@ export class ProductManagement implements OnInit {
       this.showError('❌ Vui lòng điền đầy đủ: Tên sản phẩm và Danh mục.');
       return;
     }
-    const data = { ...this.productForm.value, images: this.images.filter(img => img) };
+    const sizes = this.sizesInput.filter(s => typeof s.quantity === 'number' && s.quantity > 0);
+    if (sizes.length === 0) {
+      this.showError('Vui lòng nhập số lượng cho ít nhất 1 size.');
+      return;
+    }
+    const data = { ...this.productForm.value, images: this.images.filter(img => img), sizes };
     this.productService.addProduct(data).subscribe({
       next: (res: any) => {
         this.products.unshift(res); // thêm vào đầu danh sách
@@ -130,12 +140,24 @@ export class ProductManagement implements OnInit {
       short_description: product.short_description || '',
       description: product.description || '',
       unit_price: product.unit_price || 0,
-      stocked_quantity: product.stocked_quantity || 0,
       discount: product.discount || 0,
       rating: product.rating || 4,
       material: product.material || '',
       origin: product.origin || '',
     });
+    // Gán lại size
+    this.sizesInput = [
+      { size: 'S', quantity: 0 },
+      { size: 'M', quantity: 0 },
+      { size: 'L', quantity: 0 },
+      { size: 'XL', quantity: 0 }
+    ];
+    if (Array.isArray(product.sizes)) {
+      for (const s of product.sizes) {
+        const idx = this.sizesInput.findIndex(x => x.size === s.size);
+        if (idx !== -1) this.sizesInput[idx].quantity = s.quantity;
+      }
+    }
     this.images = product.images ? [...product.images] : [];
     this.imageFileNames = this.images.map((img) => {
       const last = img.split('/').pop() || img;
@@ -155,7 +177,12 @@ export class ProductManagement implements OnInit {
       this.showError('❌ Vui lòng điền đầy đủ: Tên sản phẩm và Danh mục.');
       return;
     }
-    const data = { ...this.productForm.value, images: this.images.filter(img => img) };
+    const sizes = this.sizesInput.filter(s => typeof s.quantity === 'number' && s.quantity > 0);
+    if (sizes.length === 0) {
+      this.showError('Vui lòng nhập số lượng cho ít nhất 1 size.');
+      return;
+    }
+    const data = { ...this.productForm.value, images: this.images.filter(img => img), sizes };
     this.productService.updateProduct(this.editingProductId, data).subscribe({
       next: (res: any) => {
         const idx = this.products.findIndex(p => p._id === this.editingProductId);
@@ -174,10 +201,16 @@ export class ProductManagement implements OnInit {
   cancelEdit() {
     this.isEditing = false;
     this.editingProductId = null;
-    this.productForm.reset({ unit_price: 0, stocked_quantity: 0, discount: 0, rating: 4 });
+    this.productForm.reset({ unit_price: 0, discount: 0, rating: 4 });
     this.images = [];
     this.imageFileNames = [];
     this.uploadingImageAt = null;
+    this.sizesInput = [
+      { size: 'S', quantity: 0 },
+      { size: 'M', quantity: 0 },
+      { size: 'L', quantity: 0 },
+      { size: 'XL', quantity: 0 }
+    ];
   }
 
   // =====================

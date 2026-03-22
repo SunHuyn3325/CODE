@@ -24,11 +24,26 @@ export class ProductDetail implements OnInit {
   selectedImage: string = '';
   quantity: number = 1;
 
+  selectedSize: string | null = null;
+
   relatedProducts: Product[] = [];
   viewedProducts: Product[] = [];
 
   showSizeGuide = false;
   isWishlisted = false;
+  // Chọn size
+  selectSize(size: string) {
+    this.selectedSize = size;
+    // Reset lại số lượng khi chọn size mới
+    this.quantity = 1;
+  }
+
+  // Lấy số lượng còn lại của size đã chọn
+  getSelectedSizeQuantity(): number {
+    if (!this.product?.sizes || !this.selectedSize) return 0;
+    const found = this.product.sizes.find(s => s.size === this.selectedSize);
+    return found ? found.stock : 0;
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -76,51 +91,36 @@ export class ProductDetail implements OnInit {
   loadRelatedProducts(dept: string, currentId: string) {
 
     this.productService.getProducts().subscribe((data: any) => {
-
       this.relatedProducts = data
-        .filter((p: any) =>
-          p.product_dept === dept && p._id !== currentId
-        )
+        .filter((p: any) => p.product_dept === dept && p._id !== currentId)
         .slice(0, 4);
-
     });
-
   }
 
   // lưu sản phẩm đã xem
   saveViewedProduct(product: Product) {
-
     if (typeof localStorage === 'undefined') return;
-
     let viewed = JSON.parse(
       localStorage.getItem('viewedProducts') || '[]'
     );
-
     // xóa nếu đã tồn tại
     viewed = viewed.filter((p: any) => p._id !== product._id);
-
     // thêm vào đầu
     viewed.unshift(product);
-
     // chỉ giữ 4 sản phẩm
     viewed = viewed.slice(0, 4);
-
     localStorage.setItem(
       'viewedProducts',
       JSON.stringify(viewed)
     );
-
   }
 
   // load sản phẩm đã xem
   loadViewedProducts() {
-
     if (typeof localStorage === 'undefined') return;
-
     this.viewedProducts = JSON.parse(
       localStorage.getItem('viewedProducts') || '[]'
     );
-
   }
   addToCart() {
     const userRaw = localStorage.getItem('user');

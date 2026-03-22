@@ -12,10 +12,7 @@ const ProductSchema = new mongoose.Schema({
     unique: true
   },
 
-  // mô tả ngắn
-  short_description: {
-    type: String
-  },
+
 
   // mô tả chi tiết
   description: {
@@ -34,17 +31,21 @@ const ProductSchema = new mongoose.Schema({
     default: 0
   },
 
-  // tổng số lượng
-  stocked_quantity: {
-    type: Number,
-    default: 0
-  },
 
-  // size và stock theo size
+
+  // Danh sách size và số lượng tồn kho cho từng size
   sizes: [
     {
-      size: String,
-      stock: Number
+      size: {
+        type: String,
+        enum: ["S", "M", "L", "XL"],
+        required: true
+      },
+      quantity: {
+        type: Number,
+        required: true,
+        min: 0
+      }
     }
   ],
 

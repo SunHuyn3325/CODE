@@ -59,15 +59,20 @@
           placeholder="Nhập mô tả chi tiết sản phẩm..."></textarea>
       </div>
 
-      <!-- Row 2: Giá + Tồn kho -->
+      <!-- Row 2: Giá + Size/Quantity -->
       <div class="row">
         <div class="col">
           <label>Giá (VNĐ) *</label>
           <input type="number" formControlName="unit_price" min="0"/>
         </div>
         <div class="col">
-          <label>Số lượng tồn kho *</label>
-          <input type="number" formControlName="stocked_quantity" min="0"/>
+          <label>Số lượng theo size *</label>
+          <div class="size-qty-group">
+            <div class="size-qty-item" *ngFor="let sz of ['S','M','L','XL']; let i = index">
+              <label>{{sz}}</label>
+              <input type="number" min="0" [(ngModel)]="sizesInput[i].quantity" [attr.data-size]="sz" style="width:60px;display:inline-block;"/>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -162,8 +167,14 @@
             {{ product.unit_price | currency:'VND':'symbol':'1.0-0' }}
           </p>
           <p class="meta">
-            Tồn: {{ product.stocked_quantity }} |
-            Giảm: {{ product.discount || 0 }}%
+            Size:
+            <span *ngIf="product.sizes?.length; else noSize">
+              <span *ngFor="let s of product.sizes; let last = last">
+                {{s.size}}: {{s.quantity}}{{!last ? ', ' : ''}}
+              </span>
+            </span>
+            <ng-template #noSize>Không có size</ng-template>
+            | Giảm: {{ product.discount || 0 }}%
           </p>
         </div>
 

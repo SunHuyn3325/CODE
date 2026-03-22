@@ -351,8 +351,11 @@ export class BlogManagement implements OnInit {
   }
 
   private setDefaultAuthor(): void {
-    const userRaw = localStorage.getItem('user');
-    const user = userRaw ? JSON.parse(userRaw) : null;
+    let user = null;
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      const userRaw = localStorage.getItem('user');
+      user = userRaw ? JSON.parse(userRaw) : null;
+    }
     this.blogForm.authorId = user?._id || '';
     this.blogForm.authorName = user?.profileName || 'Admin';
   }
