@@ -1,16 +1,83 @@
 <div class="product-detail-modern" *ngIf="product">
-  <div class="product-detail-main">
-    <div class="product-detail-gallery">
-      <img class="main-image" [src]="getImageSrc(selectedImage || product.images?.[0])" alt="Ảnh sản phẩm">
-      <div class="thumb-list">
-        <img *ngFor="let img of product.images; let i = index"
-             [src]="getImageSrc(img)"
+  <div class="product-detail-main twocol">
+    <div class="gallery-box gallery-left">
+      <div class="gallery-main-img-wrapper big-gallery square-img">
+        <img class="gallery-main-img" [src]="getImageSrc(selectedImage || product.images?.[0])" alt="Ảnh sản phẩm">
+        <div *ngIf="product?.stocked_quantity === 0" class="gallery-overlay">
+          Hết Hàng
+        </div>
+      </div>
+      <div class="gallery-thumbs thumbs-large">
+        <div *ngFor="let img of product.images; let i = index"
+             class="gallery-thumb-wrapper"
              [class.selected]="selectedImage === img || (!selectedImage && i === 0)"
-             (click)="selectedImage = img"
-             alt="Ảnh phụ">
+             (click)="selectedImage = img">
+          <img class="gallery-thumb" [src]="getImageSrc(img)" alt="Ảnh phụ">
+        </div>
       </div>
     </div>
-    <div class="product-detail-info">
+    <div class="product-detail-info info-right styled-info">
+      <h1 class="product-title">{{ product?.product_name }}</h1>
+      <div class="product-code">Mã SP: {{ product?._id }}</div>
+      <div class="product-price">{{ product?.unit_price | number }}₫</div>
+      <div class="product-option"><b>Màu sắc:</b> {{ product?.color }}</div>
+      <div class="product-option">
+        <b>Kích thước:</b>
+        <div class="size-options size-square">
+          <button *ngFor="let size of product?.sizes"
+                  [class.selected]="selectedSize === size.size"
+                  [disabled]="size.stock === 0"
+                  (click)="selectSize(size.size)">
+            {{ size.size }}
+          </button>
+        </div>
+      </div>
+      <div class="qty-row">
+        <span class="qty-label">Số lượng</span>
+        <div class="qty-box">
+          <button class="qty-btn" (click)="decrease()">-</button>
+          <span class="qty-value">{{ quantity }}</span>
+          <button class="qty-btn" (click)="increase()">+</button>
+        </div>
+      </div>
+      <div class="product-action-row">
+        <button class="btn-cart" (click)="addToCart()">Thêm vào giỏ</button>
+        <button class="btn-buy" (click)="buyNow()">Mua ngay</button>
+      </div>
+      <div class="product-info-section styled-desc">
+        <h2>Thông tin sản phẩm</h2>
+        <div *ngIf="product?.description; else noDesc">{{ product?.description }}</div>
+        <ng-template #noDesc><span style="color:#aaa">Chưa có mô tả.</span></ng-template>
+        <div class="product-extra-info">
+          <div *ngIf="product?.material"><b>Chất liệu:</b> {{ product?.material }}</div>
+          <div *ngIf="product?.origin"><b>Xuất xứ:</b> {{ product?.origin }}</div>
+        </div>
+        <div class="product-laundry-note">
+          <h3>Lưu ý giặt ủi</h3>
+          <ul>
+            <li>Không giặt với nước nóng</li>
+            <li>Không dùng chất tẩy mạnh</li>
+            <li>Ủi ở nhiệt độ thấp</li>
+          </ul>
+        </div>
+      </div>
+      <div class="product-support-row styled-support">
+        <div class="support-item">
+          <span class="fa fa-phone"></span>
+          <span>0962 731 333</span>
+        </div>
+        <span class="support-sep">|</span>
+        <span class="support-text">Hỗ trợ mua hàng 24/7</span>
+      </div>
+      <div class="product-support-row styled-support">
+        <div class="support-item">
+          <span class="fa fa-refresh"></span>
+          <span>Chính sách đổi hàng</span>
+        </div>
+        <span class="support-sep">|</span>
+        <a class="support-link" href="#">Tìm hiểu thêm</a>
+      </div>
+    </div>
       <h1 class="product-title">{{ product.product_name }}</h1>
       <div class="product-code">Mã sản phẩm: {{ product._id }}</div>
       <div class="product-price">{{ product.unit_price | number }}₫</div>
@@ -40,11 +107,11 @@
       </div>
       <div class="product-info-section">
         <h2>Mô tả sản phẩm</h2>
-        <div *ngIf="product && product.description; else noDesc">{{ product?.description }}</div>
+        <div *ngIf="product?.description; else noDesc">{{ product?.description }}</div>
         <ng-template #noDesc><span style="color:#aaa">Chưa có mô tả.</span></ng-template>
         <div class="product-extra-info">
-          <div *ngIf="product && product.material"><b>Chất liệu:</b> {{ product?.material }}</div>
-          <div *ngIf="product && product.origin"><b>Xuất xứ:</b> {{ product?.origin }}</div>
+          <div *ngIf="product?.material"><b>Chất liệu:</b> {{ product?.material }}</div>
+          <div *ngIf="product?.origin"><b>Xuất xứ:</b> {{ product?.origin }}</div>
         </div>
         <div class="product-laundry-note">
           <h3>Lưu ý giặt ủi</h3>
@@ -83,27 +150,7 @@
       </div>
     </div>
   </div>
-</div>
 
-      <div class="product-info-section" style="margin-top:24px;">
-        <h2 style="font-size:1.2em; font-weight:700; margin-bottom:8px;">Thông tin sản phẩm</h2>
-        <div *ngIf="product.description" style="margin-bottom:8px;">{{ product.description }}</div>
-        <div *ngIf="!product.description" style="color:#aaa; margin-bottom:8px;">Chưa có mô tả.</div>
-        <div *ngIf="product.material || product.origin || product.suitableFor" class="product-extra-info" style="margin-bottom:8px;">
-          <div *ngIf="product.origin"><strong>Xuất xứ:</strong> {{ product.origin }}</div>
-          <div *ngIf="product.material"><strong>Chất liệu:</strong> {{ product.material }}</div>
-          <div *ngIf="product.suitableFor"><strong>Phù hợp cho:</strong> {{ product.suitableFor }}</div>
-        </div>
-        <div class="product-laundry-note" style="margin-top:12px;">
-          <h3 style="font-size:1.05em; font-weight:600; margin-bottom:4px;">Lưu ý giặt ủi</h3>
-          <ul style="margin:0; padding-left:18px; color:#666; font-size:0.98em;">
-            <li>Nên giặt tay nhẹ nhàng để giữ form áo</li>
-            <li>Không sử dụng chất tẩy mạnh</li>
-            <li>Phơi nơi thoáng mát, tránh ánh nắng gắt</li>
-            <li>Ủi ở nhiệt độ thấp hoặc ủi mặt trong của áo</li>
-            <li>Có thể giặt khô để giữ chất lượng vải tốt nhất</li>
-          </ul>
-        </div>
 
       <div class="size-popup" *ngIf="showSizeGuide">
         <div class="size-popup-content">
