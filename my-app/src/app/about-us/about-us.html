@@ -139,3 +139,36 @@
   </div>
 
 </section>
+
+<!-- Blog Section -->
+<section class="about-blog-section">
+  <div class="blog-container">
+    <h2 class="blog-title">Những Bài Viết Về Sắc</h2>
+    <p class="blog-subtitle">Khám phá những câu chuyện về văn hóa, lịch sử và giá trị truyền thống Việt Nam</p>
+
+    <div *ngIf="featuredBlogs.length > 0; else noBlog" class="blog-grid">
+      <div *ngFor="let blog of featuredBlogs" class="blog-card">
+        <div class="blog-image" *ngIf="blog.thumbnail">
+          <img [src]="blog.thumbnail" [alt]="blog.title" />
+        </div>
+        <div class="blog-content">
+          <h3 class="blog-item-title">{{ blog.title }}</h3>
+          <p class="blog-excerpt">{{ blog.excerpt || blog.content.substring(0, 100) + '...' }}</p>
+          <div class="blog-meta">
+            <span class="blog-date">{{ blog.createdAt | date: 'dd/MM/yyyy' }}</span>
+            <span class="blog-author" *ngIf="blog.authorName">Bởi {{ blog.authorName }}</span>
+          </div>
+          <a [routerLink]="['/blog', blog._id]" class="blog-link">Đọc thêm →</a>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noBlog>
+      <p class="no-blog">Hiện chưa có bài viết nào. Vui lòng quay lại sau!</p>
+    </ng-template>
+
+    <div class="view-all-blogs">
+      <a routerLink="/blogs" class="btn-view-all">Xem tất cả bài viết</a>
+    </div>
+  </div>
+</section>

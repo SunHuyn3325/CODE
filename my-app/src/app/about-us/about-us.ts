@@ -1,15 +1,42 @@
-import { Component, AfterViewInit, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-about-us',
-  imports: [],
+  imports: [CommonModule, RouterModule],
   templateUrl: './about-us.html',
   styleUrl: './about-us.css',
 })
-export class AboutUs implements AfterViewInit, OnDestroy {
+export class AboutUs implements AfterViewInit, OnDestroy, OnInit {
   private observer?: IntersectionObserver;
   private platformId = inject(PLATFORM_ID);
+  private http = inject(HttpClient);
+
+  blogs: any[] = [];
+  featuredBlogs: any[] = [];
+
+  ngOnInit() {
+    this.loadPublishedBlogs();
+  }
+
+  loadPublishedBlogs() {
+    this.http.get<any[]>('http://localhost:3000/blogs').subscribe({
+      next: (data) => {
+        // Lọc những blog đã xuất bản
+        this.blogs = data.filter((blog: any) => blog.status === 'published');
+        // Lấy 3 bài blog mới nhất để hiển thị
+        this.featuredBlogs = this.blogs.sort((a: any, b: any) => {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        }).slice(0, 3);
+      },
+      error: (err) => {
+        console.error('Error loading blogs:', err);
+      }
+    });
+  }
 
   ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
