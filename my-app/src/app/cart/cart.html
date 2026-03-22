@@ -1,65 +1,129 @@
 <div class="checkout-container">
   <!-- LEFT: FORM -->
   <div class="checkout-left">
-    <h2>Thông tin giao hàng</h2>
+    <div class="form-section">
+      <h2 class="section-title">Thông tin giao hàng</h2>
 
-    <input type="text" placeholder="Họ và tên" [(ngModel)]="form.name" />
-    <input type="text" placeholder="Số điện thoại" [(ngModel)]="form.phone" />
-    <input type="email" placeholder="Email" [(ngModel)]="form.email" />
-    <input type="text" placeholder="Địa chỉ" [(ngModel)]="form.address" />
+      <div class="form-group">
+        <input type="text" class="form-input" placeholder="Họ và tên..." [(ngModel)]="form.name" />
+      </div>
+      
+      <div class="form-group">
+        <input type="text" class="form-input" placeholder="Số điện thoại..." [(ngModel)]="form.phone" />
+      </div>
+      
+      <div class="form-group">
+        <input type="email" class="form-input" placeholder="Email..." [(ngModel)]="form.email" />
+      </div>
+      
+      <div class="form-group">
+        <input type="text" class="form-input" placeholder="Địa chỉ..." [(ngModel)]="form.address" />
+      </div>
 
-    <div class="address-select">
-      <select (change)="onProvinceChange($event)">
-        <option>Chọn Tỉnh, Thành phố</option>
-        <option *ngFor="let p of provinces" [value]="p.code">{{p.name}}</option>
-      </select>
+      <div class="address-select">
+        <select class="form-select" (change)="onProvinceChange($event)">
+          <option>Bến Tre</option>
+          <option *ngFor="let p of provinces" [value]="p.code">{{p.name}}</option>
+        </select>
 
-      <select (change)="onDistrictChange($event)">
-        <option>Chọn Quận, Huyện</option>
-        <option *ngFor="let d of districts" [value]="d.code">{{d.name}}</option>
-      </select>
+        <select class="form-select" (change)="onDistrictChange($event)">
+          <option>Huyện Chợ Lách</option>
+          <option *ngFor="let d of districts" [value]="d.code">{{d.name}}</option>
+        </select>
 
-      <select (change)="onWardChange($event)">
-        <option>Chọn Phường, Xã</option>
-        <option *ngFor="let w of wards" [value]="w.code">{{w.name}}</option>
-      </select>
-    </div>
-
-    <h3>Phương thức vận chuyển</h3>
-
-    <h3>Phương thức thanh toán</h3>
-    <div class="payment-box">
-      <input type="radio" checked />
-      <span>Thanh toán online qua VNPay</span>
-    </div>
-  </div>
-
-  <!-- RIGHT: ORDER -->
-  <div class="checkout-right">
-    <div class="cart-item" *ngFor="let item of cart">
-
-    <img [src]="resolveAssetImage(item.image || (item.images && item.images[0]))">
-
-    <div class="info">
-      <p class="name">{{ item.name }}</p>
-
-      <p class="variant">
-        {{ item.color }} / {{ item.size }}
-      </p>
-
-      <div class="quantity-box">
-        <button (click)="decrease(item)">-</button>
-        <span>{{ item.quantity }}</span>
-        <button (click)="increase(item)">+</button>
+        <select class="form-select" (change)="onWardChange($event)">
+          <option>Xã Sơn Định</option>
+          <option *ngFor="let w of wards" [value]="w.code">{{w.name}}</option>
+        </select>
       </div>
     </div>
 
-    <div class="price">
-      {{ item.price | currency:'VND' }}
+    <div class="form-section">
+      <h3 class="section-subtitle">Phương thức vận chuyển</h3>
+      <div class="shipping-option">
+        <input type="radio" id="shipping1" name="shipping" checked />
+        <label for="shipping1" class="shipping-label">
+          <span class="shipping-text">Giao hàng tận nơi (35,000đ)</span>
+        </label>
+      </div>
     </div>
 
+    <div class="form-section">
+      <h3 class="section-subtitle">Phương thức thanh toán</h3>
+      <div class="payment-option">
+        <input type="radio" id="payment1" name="payment" checked />
+        <label for="payment1" class="payment-label">
+          <div class="payment-content">
+            <div class="payment-icon">💳</div>
+            <span class="payment-text">Thanh toán online qua cổng VNPay (ATM/Visa/MasterCard/JCB/QR Pay trên Mobile Banking)</span>
+          </div>
+        </label>
+      </div>
+    </div>
   </div>
 
-    <button (click)="submitOrder()">Đặt hàng</button>
+  <!-- RIGHT: CART -->
+  <div class="checkout-right">
+    <div *ngIf="cart.length === 0" class="empty-cart">
+      <h3>Giỏ hàng trống</h3>
+      <p>Hãy thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm!</p>
+    </div>
+
+    <div class="cart-items" *ngIf="cart.length > 0">
+      <div class="cart-item" *ngFor="let item of cart">
+        <!-- LEFT: Product Image -->
+        <div class="item-image">
+          <img [src]="resolveAssetImage(item.image || (item.images && item.images[0]))" alt="{{item.name}}">
+        </div>
+        
+        <!-- CENTER: Product Information -->
+        <div class="item-info">
+          <h4 class="item-name">{{ item.name }}</h4>
+          <p class="item-size">Size: {{ item.size || 'M' }}</p>
+          <button class="delete-icon" (click)="removeItem(item)" [disabled]="loading">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <!-- RIGHT: Price + Quantity Controls -->
+        <div class="item-right">
+          <div class="item-price">{{ item.price | number }}đ</div>
+          <div class="quantity-selector">
+            <button class="qty-btn" (click)="decrease(item)" [disabled]="loading">−</button>
+            <span class="qty-number">{{ item.quantity }}</span>
+            <button class="qty-btn" (click)="increase(item)" [disabled]="loading">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="voucher-section" *ngIf="cart.length > 0">
+      <input type="text" class="voucher-input" placeholder="Nhập mã giảm giá">
+      <button class="voucher-btn">ÁP DỤNG VOUCHER</button>
+    </div>
+
+    <div class="order-summary" *ngIf="cart.length > 0">
+      <div class="summary-row">
+        <span class="summary-label">Tạm tính:</span>
+        <span class="summary-value">{{ total | number }}đ</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">Phí vận chuyển:</span>
+        <span class="summary-value">35,000đ</span>
+      </div>
+      <div class="summary-row total-row">
+        <span class="summary-label">Tổng:</span>
+        <span class="summary-value total-value">{{ (total + 35000) | number }}đ</span>
+      </div>
+    </div>
+
+    <button class="order-button" (click)="submitOrder()" [disabled]="loading || cart.length === 0">
+      <span *ngIf="!loading">Đặt hàng</span>
+      <span *ngIf="loading">Đang xử lý...</span>
+    </button>
   </div>
 </div>

@@ -757,37 +757,24 @@ export class BlogDetail implements OnInit, OnDestroy, AfterViewInit {
         : undefined;
 
     const cartItem = {
-      id: createId(),
-      sku: product.sku || product._id || product.id,
-      name: product.name || product.productName || '',
-      productName: product.productName || product.name || '',
-      price: product.price, // Đã là giá sau giảm nếu có promotion (từ map ở line 314)
+      name: product.productName || product.name || '',
+      price: product.price,
       image: product.image || (product.images && product.images[0]) || '',
-      category: product.category || '',
-      subcategory: product.subcategory || '',
-      unit: product.unit || '',
-      selected: true,
-      originalPrice: originalPrice,
-      hasPromotion: hasPromotion,
-      stock: (product as any).stock ?? (product as any).Stock, // Thêm stock vào cartItem để kiểm tra
+      quantity: 1
     };
 
-    // Kiểm tra tồn kho trước khi thêm vào giỏ
-    const canAdd = await this.cartService.checkStockBeforeAdd(
-      cartItem,
-      1,
-      (product as any).stock ?? (product as any).Stock,
-      false // Không phải "Mua ngay"
-    );
-
-    if (!canAdd) {
-      return; // Không thêm vào giỏ nếu không đủ tồn kho
-    }
-
-    // Thêm vào giỏ hàng thông qua CartService
-    // Toast sẽ được hiển thị tự động từ CartService
-    this.cartService.addToCart(cartItem);
-    console.log(' Added to cart:', cartItem.name);
+    // Thêm vào giỏ hàng thông qua CartService API
+    this.cartService.addToCart(cartItem).subscribe({
+      next: () => {
+        console.log('Added to cart:', cartItem.name);
+        // Toast notification có thể thêm ở đây nếu cần
+        alert('Đã thêm sản phẩm vào giỏ hàng!');
+      },
+      error: (err) => {
+        console.error('Error adding to cart:', err);
+        alert('Có lỗi khi thêm sản phẩm vào giỏ hàng!');
+      }
+    });
   }
 
   // Expose Math for template

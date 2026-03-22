@@ -9,6 +9,7 @@ import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { CartApiService } from '../cart-api.service';
+import { CartService } from '../services/cart.service';
 import { WishlistApiService } from '../wishlist-api.service';
 
 @Component({
@@ -24,18 +25,37 @@ export class ProductDetail implements OnInit {
   // ...existing code...
 
   buyNow() {
-    // Chuyển hướng sang trang thanh toán với sản phẩm và size đã chọn
+    // Kiểm tra size đã chọn
     if (!this.selectedSize) {
       alert('Vui lòng chọn size trước khi mua!');
       return;
     }
-    if (!this.product || !this.cartService || !this.router) return;
-    this.cartService.addToCart({
-      ...this.product,
-      selectedSize: this.selectedSize,
+    
+    if (!this.product) {
+      alert('Không tìm thấy thông tin sản phẩm!');
+      return;
+    }
+
+    // Tạo đối tượng theo định dạng CartService API
+    const cartItem = {
+      name: `${this.product.product_name} - Size ${this.selectedSize}`,
+      price: this.product.unit_price,
+      image: this.product.images?.[0] || '',
       quantity: this.quantity
+    };
+
+    // Sử dụng CartService API để thêm vào giỏ hàng backend
+    this.localCartService.addToCart(cartItem).subscribe({
+      next: () => {
+        console.log('Added to cart for buy now');
+        // Chuyển hướng đến trang giỏ hàng
+        this.router.navigate(['/cart'], { queryParams: { buyNow: 1 } });
+      },
+      error: (err) => {
+        console.error('Error adding to cart for buy now:', err);
+        alert('Có lỗi khi thêm sản phẩm vào giỏ hàng!');
+      }
     });
-    this.router.navigate(['/cart'], { queryParams: { buyNow: 1 } });
   }
 
   product!: Product;
@@ -68,6 +88,7 @@ export class ProductDetail implements OnInit {
     private productService: ProductApiService,
     private cdr: ChangeDetectorRef,
     private cartService: CartApiService,
+    private localCartService: CartService,
     private router: Router,
     private wishlistService: WishlistApiService,
   ) {}
@@ -145,6 +166,13 @@ export class ProductDetail implements OnInit {
       alert('Tính năng này chỉ hoạt động trên trình duyệt.');
       return;
     }
+    
+    // Kiểm tra size đã chọn
+    if (!this.selectedSize) {
+      alert('Vui lòng chọn size trước khi thêm vào giỏ hàng!');
+      return;
+    }
+    
     const userRaw = localStorage.getItem('user');
     if (!userRaw) {
       alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng và nhận voucher ưu đãi.');
@@ -152,19 +180,23 @@ export class ProductDetail implements OnInit {
       return;
     }
 
-    const userId = JSON.parse(userRaw)._id;
-
-    const item = {
-      userId: userId,
-      productId: this.product._id,
-      name: this.product.product_name,
+    // Tạo đối tượng theo định dạng CartService API
+    const cartItem = {
+      name: `${this.product.product_name} - Size ${this.selectedSize}`,
       price: this.product.unit_price,
-      image: this.selectedImage,
+      image: this.product.images?.[0] || '',
       quantity: this.quantity
     };
 
-    this.cartService.addToCart(item).subscribe(() => {
-      alert('Đã thêm vào giỏ hàng');
+    // Sử dụng CartService API để thêm vào backend
+    this.localCartService.addToCart(cartItem).subscribe({
+      next: () => {
+        alert('Đã thêm vào giỏ hàng');
+      },
+      error: (err) => {
+        console.error('Lỗi thêm vào giỏ hàng:', err);
+        alert('Có lỗi khi thêm vào giỏ hàng. Vui lòng thử lại!');
+      }
     });
   }
 

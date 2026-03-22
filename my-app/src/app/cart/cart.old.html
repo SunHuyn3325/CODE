@@ -1,0 +1,93 @@
+<div class="checkout-container">
+  <!-- LEFT: FORM -->
+  <div class="checkout-left">
+    <h2>Thông tin giao hàng</h2>
+
+    <input type="text" placeholder="Họ và tên" [(ngModel)]="form.name" />
+    <input type="text" placeholder="Số điện thoại" [(ngModel)]="form.phone" />
+    <input type="email" placeholder="Email" [(ngModel)]="form.email" />
+    <input type="text" placeholder="Địa chỉ" [(ngModel)]="form.address" />
+
+    <div class="address-select">
+      <select (change)="onProvinceChange($event)">
+        <option>Chọn Tỉnh, Thành phố</option>
+        <option *ngFor="let p of provinces" [value]="p.code">{{p.name}}</option>
+      </select>
+
+      <select (change)="onDistrictChange($event)">
+        <option>Chọn Quận, Huyện</option>
+        <option *ngFor="let d of districts" [value]="d.code">{{d.name}}</option>
+      </select>
+
+      <select (change)="onWardChange($event)">
+        <option>Chọn Phường, Xã</option>
+        <option *ngFor="let w of wards" [value]="w.code">{{w.name}}</option>
+      </select>
+    </div>
+
+    <h3>Phương thức vận chuyển</h3>
+
+    <h3>Phương thức thanh toán</h3>
+    <div class="payment-box">
+      <input type="radio" checked />
+      <span>Thanh toán online qua VNPay</span>
+    </div>
+  </div>
+
+  <!-- RIGHT: ORDER -->
+  <div class="checkout-right">
+    <div class="cart-header">
+      <h2>🛒 Giỏ hàng của bạn</h2>
+    </div>
+
+    <div *ngIf="cart.length === 0" class="empty-cart">
+      <h3>Giỏ hàng trống</h3>
+      <p>Hãy thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm!</p>
+    </div>
+
+    <div class="cart-item" *ngFor="let item of cart">
+
+    <img [src]="resolveAssetImage(item.image || (item.images && item.images[0]))">
+
+    <div class="info">
+      <p class="name">{{ item.name }}</p>
+
+      <p class="variant">
+        {{ item.color }} / {{ item.size }}
+      </p>
+
+      <div class="quantity-selector">
+        <button class="qty-btn decrease-btn" (click)="decrease(item)" [disabled]="loading">
+          <i class="qty-icon">−</i>
+        </button>
+        <div class="qty-input-wrapper">
+          <span class="qty-value">{{ item.quantity }}</span>
+        </div>
+        <button class="qty-btn increase-btn" (click)="increase(item)" [disabled]="loading">
+          <i class="qty-icon">+</i>
+        </button>
+      </div>
+      <button class="remove-item-btn" (click)="removeItem(item)" [disabled]="loading">
+        🗑️ Xóa
+      </button>
+    </div>
+
+    <div class="price">
+      {{ item.price | currency:'VND' }}
+    </div>
+
+  </div>
+
+    <div class="cart-summary" *ngIf="cart.length > 0">
+      <div class="summary-row">
+        <span>Tổng cộng:</span>
+        <span class="total-amount">{{ total | currency:'VND' }}</span>
+      </div>
+    </div>
+
+    <button class="order-button" (click)="submitOrder()" [disabled]="loading || cart.length === 0">
+      <span *ngIf="!loading">🛒 Đặt hàng</span>
+      <span *ngIf="loading">⏳ Đang xử lý...</span>
+    </button>
+  </div>
+</div>

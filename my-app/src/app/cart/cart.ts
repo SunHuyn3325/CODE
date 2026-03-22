@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LocationApiService } from '../location-api.service';
 import { OrderApiService } from '../order-api.service';
+import { CartService } from '../services/cart.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -11,7 +13,7 @@ import { OrderApiService } from '../order-api.service';
   templateUrl: './cart.html',
   styleUrls: ['./cart.css'],
 })
-export class Cart implements OnInit {
+export class Cart implements OnInit, OnDestroy {
 
   provinces: any[] = [];
   districts: any[] = [];
@@ -30,10 +32,14 @@ export class Cart implements OnInit {
 
   cart: any[] = [];
   total = 0;
+  loading = false;
+  
+  private cartSubscription?: Subscription;
 
   constructor(
     private locationService: LocationApiService,
-    private orderService: OrderApiService
+    private orderService: OrderApiService,
+    private cartService: CartService
   ) {}
 
   ngOnInit() {
@@ -41,14 +47,21 @@ export class Cart implements OnInit {
       this.provinces = res;
     });
 
-    this.loadCart();
+    // Lắng nghe thay đổi giỏ hàng real-time
+    this.cartSubscription = this.cartService.cart$.subscribe(cart => {
+      this.cart = cart;
+      this.calculateTotal();
+      console.log('Cart updated from API:', cart.length, 'items');
+    });
+
+    // Load giỏ hàng từ API khi khởi tạo
+    this.cartService.loadCartFromAPI();
   }
-
-  loadCart() {
-    const cartData = JSON.parse(localStorage.getItem('cart') || '[]');
-    this.cart = cartData;
-
-    this.calculateTotal();
+  
+  ngOnDestroy() {
+    if (this.cartSubscription) {
+      this.cartSubscription.unsubscribe();
+    }
   }
 
   calculateTotal() {
@@ -57,18 +70,50 @@ export class Cart implements OnInit {
     }, 0);
   }
 
-  // ✅ FIX BUTTON + -
+  // Sử dụng CartService API thay vì thao tác localStorage
   increase(item: any) {
-    item.quantity++;
-    this.calculateTotal();
-    localStorage.setItem('cart', JSON.stringify(this.cart));
+    this.loading = true;
+    this.cartService.updateQuantity(item._id, item.quantity + 1).subscribe({
+      next: () => {
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error increasing quantity:', err);
+        this.loading = false;
+        alert('Có lỗi khi cập nhật số lượng');
+      }
+    });
   }
 
   decrease(item: any) {
     if (item.quantity > 1) {
-      item.quantity--;
-      this.calculateTotal();
-      localStorage.setItem('cart', JSON.stringify(this.cart));
+      this.loading = true;
+      this.cartService.updateQuantity(item._id, item.quantity - 1).subscribe({
+        next: () => {
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Error decreasing quantity:', err);
+          this.loading = false;
+          alert('Có lỗi khi cập nhật số lượng');
+        }
+      });
+    }
+  }
+  
+  removeItem(item: any) {
+    if (confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
+      this.loading = true;
+      this.cartService.removeFromCart(item._id).subscribe({
+        next: () => {
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Error removing item:', err);
+          this.loading = false;
+          alert('Có lỗi khi xóa sản phẩm');
+        }
+      });
     }
   }
 
@@ -107,26 +152,53 @@ export class Cart implements OnInit {
       return;
     }
 
-    const order = {
+    if (this.cart.length === 0) {
+      alert('Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi đặt hàng.');
+      return;
+    }
+
+    const orderData = {
       customer: this.form,
       address: {
         province: this.selectedProvince,
         district: this.selectedDistrict,
         ward: this.selectedWard
       },
-      cart: this.cart,
-      total: this.total,
-      isGuest: true
+      shippingAddress: `${this.form.address}, ${this.selectedWard}, ${this.selectedDistrict}, ${this.selectedProvince}`
     };
 
-    this.orderService.createOrder(order).subscribe({
-      next: () => {
-        alert('Đặt hàng thành công');
-        localStorage.removeItem('cart');
-        this.cart = [];
-        this.total = 0;
+    this.loading = true;
+    
+    // Chuẩn bị dữ liệu customer info cho backend
+    const customerInfo = {
+      name: this.form.name,
+      email: this.form.email,
+      phone: this.form.phone,
+      address: `${this.form.address}, ${this.selectedWard}, ${this.selectedDistrict}, ${this.selectedProvince}`
+    };
+    
+    // Sử dụng CartService để tạo order từ giỏ hàng backend
+    this.cartService.createOrderFromCart(customerInfo).subscribe({
+      next: (response) => {
+        this.loading = false;
+        alert(`Đặt hàng thành công! Mã đơn hàng: ${response.orderId || response._id}`);
+        
+        // Reset form
+        this.form = { name: '', phone: '', email: '', address: '' };
+        this.selectedProvince = null;
+        this.selectedDistrict = null;
+        this.selectedWard = null;
+        this.districts = [];
+        this.wards = [];
+        
+        // Giỏ hàng đã tự động clear trong CartService
+        console.log('Order created successfully:', response);
       },
-      error: () => alert('Lỗi đặt hàng')
+      error: (err) => {
+        this.loading = false;
+        console.error('Error creating order:', err);
+        alert('Lỗi đặt hàng. Vui lòng thử lại.');
+      }
     });
   }
 }

@@ -43,10 +43,16 @@
 
       <div class="qty-row">
         <span class="option-label">Số lượng:</span>
-        <div class="qty-box">
-          <button class="qty-btn" (click)="decrease()">−</button>
-          <span class="qty-value">{{ quantity }}</span>
-          <button class="qty-btn" (click)="increase()">+</button>
+        <div class="quantity-selector-product">
+          <button class="qty-btn-product decrease-btn" (click)="decrease()">
+            <i class="qty-icon">−</i>
+          </button>
+          <div class="qty-input-wrapper-product">
+            <span class="qty-value-product">{{ quantity }}</span>
+          </div>
+          <button class="qty-btn-product increase-btn" (click)="increase()">
+            <i class="qty-icon">+</i>
+          </button>
         </div>
       </div>
 

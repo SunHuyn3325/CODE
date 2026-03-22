@@ -803,6 +803,50 @@ app.delete("/cart/user/:userId", async (req, res) => {
   }
 });
 
+// Create order from cart
+app.post("/order/from-cart", async (req, res) => {
+  try {
+    const { userId, customerInfo } = req.body;
+    
+    // Get cart items
+    const cartItems = await Cart.find({ userId });
+    
+    if (cartItems.length === 0) {
+      return res.status(400).json({ message: "Cart is empty" });
+    }
+    
+    // Calculate total
+    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    // Create order with correct Order model structure
+    const order = new Order({
+      user: userId, // ObjectId reference
+      userName: customerInfo.name,
+      orderItems: cartItems.map(item => ({
+        name: item.name,
+        qty: item.quantity,
+        price: item.price,
+        image: item.image,
+        // product: null // We don't have product ID from cart
+      })),
+      totalPrice: total,
+      status: "pending"
+    });
+    
+    await order.save();
+    
+    // Clear cart after successful order
+    await Cart.deleteMany({ userId });
+    
+    res.json({ 
+      message: "Order created successfully",
+      orderId: order._id,
+      order: order
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 app.listen(port, ()=>{
     console.log(`Server running at http://localhost:${port}`)
