@@ -164,7 +164,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage })
 
-const mongoUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/contactdb";
+const mongoUri = process.env.MONGODB_URI || "mongodb+srv://sac_admin:admin1234@admindb.d3miums.mongodb.net/";
 mongoose.connect(mongoUri)
   .then(() => console.log("MongoDB connected to:", mongoUri))
   .catch(err => console.log("MongoDB connection error:", err));
