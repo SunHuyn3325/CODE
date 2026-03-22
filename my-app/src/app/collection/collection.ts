@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
@@ -16,6 +16,7 @@ export class Collection implements OnInit, OnDestroy {
   collectionTitle: string = '';
   album: string[] = [];
   private destroy$ = new Subject<void>();
+  @ViewChild('heroVideo') videoElement!: ElementRef<HTMLVideoElement>;
 
 
   private data: any = {
@@ -77,6 +78,14 @@ export class Collection implements OnInit, OnDestroy {
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
+    // Mute video
+    setTimeout(() => {
+      if (this.videoElement?.nativeElement) {
+        this.videoElement.nativeElement.muted = true;
+        this.videoElement.nativeElement.volume = 0;
+      }
+    }, 100);
+
     this.route.params
       .pipe(takeUntil(this.destroy$))
       .subscribe(params => {
