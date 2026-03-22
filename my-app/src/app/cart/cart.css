@@ -95,17 +95,77 @@
 .shipping-label,
 .payment-label {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   cursor: pointer;
   padding: 16px;
   border: 1px solid #ddd;
   border-radius: 8px;
   transition: border-color 0.2s ease;
+  position: relative;
+  padding-left: 56px; /* space for custom round control */
 }
 
 .shipping-label:hover,
 .payment-label:hover {
+  border-color: #6c7c3a;
+}
+
+/* Custom round radio control (replace default radio) */
+.shipping-option input[type="radio"],
+.payment-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.shipping-label::before,
+.payment-label::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  background: #fff;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+}
+
+/* inner dot shown when checked */
+.shipping-label::after,
+.payment-label::after {
+  content: "";
+  position: absolute;
+  left: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background 0.15s ease;
+}
+
+/* default styles handled by .shipping-label::before and .payment-label::before */
+
+.shipping-option input[type="radio"]:checked + .shipping-label::before,
+.payment-option input[type="radio"]:checked + .payment-label::before {
+  border-color: #6c7c3a;
+  background: #6c7c3a;
+}
+
+.shipping-option input[type="radio"]:checked + .shipping-label::after,
+.payment-option input[type="radio"]:checked + .payment-label::after {
+  background: #fff;
+}
+
+.shipping-label:hover::before,
+.payment-label:hover::before {
   border-color: #6c7c3a;
 }
 
@@ -437,4 +497,35 @@
   .voucher-section {
     flex-direction: column;
   }
+}
+
+/* Toast notification (bottom center) */
+.app-toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 18px;
+  z-index: 3000;
+  min-width: 280px;
+  max-width: 720px;
+  padding: 8px;
+  display: flex;
+  justify-content: center;
+  pointer-events: auto;
+}
+.app-toast .app-toast-inner {
+  padding: 12px 18px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  font-weight: 700;
+}
+.app-toast.success .app-toast-inner {
+  background: linear-gradient(90deg,#e9fff0,#f0fff6);
+  color: #0f7a3f;
+  border: 1px solid rgba(15,122,63,0.08);
+}
+.app-toast.error .app-toast-inner {
+  background: linear-gradient(90deg,#fff5f5,#fff8f8);
+  color: #c0392b;
+  border: 1px solid rgba(192,57,43,0.08);
 }

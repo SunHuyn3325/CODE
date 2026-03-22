@@ -21,46 +21,63 @@
       </div>
 
       <div class="address-select">
-        <select class="form-select" (change)="onProvinceChange($event)">
-          <option>Bến Tre</option>
+        <select class="form-select" (change)="onProvinceChange($event)" [(ngModel)]="selectedProvince">
+          <option value="" disabled selected>Chọn tỉnh/thành phố</option>
           <option *ngFor="let p of provinces" [value]="p.code">{{p.name}}</option>
         </select>
 
-        <select class="form-select" (change)="onDistrictChange($event)">
-          <option>Huyện Chợ Lách</option>
-          <option *ngFor="let d of districts" [value]="d.code">{{d.name}}</option>
-        </select>
-
-        <select class="form-select" (change)="onWardChange($event)">
-          <option>Xã Sơn Định</option>
+        <select class="form-select" (change)="onWardChange($event)" [(ngModel)]="selectedWard" [disabled]="!selectedProvince">
+          <option value="" disabled selected>Chọn phường/xã</option>
           <option *ngFor="let w of wards" [value]="w.code">{{w.name}}</option>
         </select>
+      </div>
+
+      <!-- Toast notification -->
+      <div class="app-toast" *ngIf="toastVisible" [ngClass]="{'success': toastType==='success', 'error': toastType==='error'}">
+        <div class="app-toast-inner">{{ toastMessage }}</div>
       </div>
     </div>
 
     <div class="form-section">
       <h3 class="section-subtitle">Phương thức vận chuyển</h3>
-      <div class="shipping-option">
-        <input type="radio" id="shipping1" name="shipping" checked />
-        <label for="shipping1" class="shipping-label">
-          <span class="shipping-text">Giao hàng tận nơi (35,000đ)</span>
-        </label>
-      </div>
+      <ng-container *ngIf="selectedProvince; else chooseProvince">
+        <div class="shipping-option">
+          <input type="radio" id="shipping1" name="shipping" checked />
+          <label for="shipping1" class="shipping-label">
+            <span class="shipping-text">Giao hàng tận nơi ({{ shippingFee | number }}đ)</span>
+          </label>
+        </div>
+      </ng-container>
+      <ng-template #chooseProvince>
+        <div class="shipping-placeholder">Vui lòng chọn tỉnh/thành phố để xem phí vận chuyển</div>
+      </ng-template>
     </div>
 
     <div class="form-section">
       <h3 class="section-subtitle">Phương thức thanh toán</h3>
       <div class="payment-option">
-        <input type="radio" id="payment1" name="payment" checked />
-        <label for="payment1" class="payment-label">
+      <input type="radio" id="payment1" name="payment" [(ngModel)]="paymentMethod" [value]="'online'" checked />
+      <label for="payment1" class="payment-label">
           <div class="payment-content">
             <div class="payment-icon">💳</div>
             <span class="payment-text">Thanh toán online qua cổng VNPay (ATM/Visa/MasterCard/JCB/QR Pay trên Mobile Banking)</span>
           </div>
         </label>
       </div>
+      <div class="payment-option">
+        <input type="radio" id="payment2" name="payment" [(ngModel)]="paymentMethod" [value]="'cod'" />
+        <label for="payment2" class="payment-label">
+          <div class="payment-content">
+            <div class="payment-icon">💵</div>
+            <span class="payment-text">Thanh toán khi nhận hàng (COD) — Trả tiền khi nhận</span>
+          </div>
+        </label>
+      </div>
     </div>
   </div>
+
+  <!-- QR modal component -->
+  <app-qr #qr (paymentConfirmed)="onQrConfirmed()"></app-qr>
 
   <!-- RIGHT: CART -->
   <div class="checkout-right">
@@ -79,7 +96,6 @@
         <!-- CENTER: Product Information -->
         <div class="item-info">
           <h4 class="item-name">{{ item.name }}</h4>
-          <p class="item-size">Size: {{ item.size || 'M' }}</p>
           <button class="delete-icon" (click)="removeItem(item)" [disabled]="loading">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 6h18"></path>
@@ -113,11 +129,11 @@
       </div>
       <div class="summary-row">
         <span class="summary-label">Phí vận chuyển:</span>
-        <span class="summary-value">35,000đ</span>
+        <span class="summary-value">{{ shippingFee | number }}đ</span>
       </div>
       <div class="summary-row total-row">
         <span class="summary-label">Tổng:</span>
-        <span class="summary-value total-value">{{ (total + 35000) | number }}đ</span>
+        <span class="summary-value total-value">{{ (total + shippingFee) | number }}đ</span>
       </div>
     </div>
 

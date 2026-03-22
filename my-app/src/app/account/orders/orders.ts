@@ -19,7 +19,10 @@ export class OrdersComponent implements OnInit {
   userId: string = '';
 
   constructor(private orderApiService: OrderApiService) {
-    this.userId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
+    // Kiểm tra localStorage có tồn tại (tránh lỗi SSR)
+    if (typeof localStorage !== 'undefined') {
+      this.userId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
+    }
   }
 
   ngOnInit(): void {

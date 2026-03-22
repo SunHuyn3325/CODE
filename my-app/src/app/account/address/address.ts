@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AddressService } from '../../address.service';
@@ -10,7 +10,6 @@ interface AccountAddress {
   phone: string;
   address: string;
   ward: string;
-  district: string;
   city: string;
 }
 
@@ -31,7 +30,6 @@ export class AddressComponent implements OnInit {
     phone: '',
     address: '',
     ward: '',
-    district: '',
     city: '',
   };
 
@@ -40,23 +38,21 @@ export class AddressComponent implements OnInit {
     phone: '',
     address: '',
     ward: '',
-    district: '',
     city: '',
   };
 
   // 👉 DROPDOWN DATA
   provinces: any[] = [];
-  districts: any[] = [];
   wards: any[] = [];
 
   selectedProvince: any;
-  selectedDistrict: any;
   selectedWard: any;
 
   constructor(
     private addressService: AddressService,
     private locationService: LocationApiService,
     @Inject(PLATFORM_ID) private platformId: Object
+    , private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -74,16 +70,18 @@ export class AddressComponent implements OnInit {
     });
 
     // load user
-    const userRaw = localStorage.getItem('user');
-    if (!userRaw) return;
+    if (typeof localStorage !== 'undefined') {
+      const userRaw = localStorage.getItem('user');
+      if (!userRaw) return;
 
-    try {
-      const user = JSON.parse(userRaw);
-      this.userId = user._id || user.id || '';
-      this.address.userId = this.userId;
-      this.loadAddress();
-    } catch {
-      this.userId = '';
+      try {
+        const user = JSON.parse(userRaw);
+        this.userId = user._id || user.id || '';
+        this.address.userId = this.userId;
+        this.loadAddress();
+      } catch {
+        this.userId = '';
+      }
     }
   }
 
@@ -93,15 +91,13 @@ export class AddressComponent implements OnInit {
     this.addressService.getAddressByUser(this.userId).subscribe({
       next: (res: any) => {
         const value = Array.isArray(res) ? res[0] : res;
-
-        if (value && (value.address || value.city)) {
+        if (value && (value.city || value.address)) {
           this.address = {
             _id: value._id,
             userId: this.userId,
             phone: value.phone || '',
             address: value.address || '',
             ward: value.ward || '',
-            district: value.district || '',
             city: value.city || '',
           };
         } else {
@@ -117,36 +113,81 @@ export class AddressComponent implements OnInit {
   startEdit() {
     this.formAddress = { ...this.address };
     this.isEditing = true;
+
+    const setupProvinceWard = () => {
+      if (this.address.city) {
+        const provinceObj = this.provinces.find(p => p.name === this.address.city || p.name?.includes(this.address.city));
+        if (provinceObj && provinceObj.code) {
+          this.selectedProvince = provinceObj.code;
+          this.locationService.getDistricts(provinceObj.code).subscribe(districts => {
+            this.wards = [];
+            districts.forEach((d: any) => {
+              if (d.wards) this.wards = this.wards.concat(d.wards);
+            });
+            this.wards.sort((a: any, b: any) => a.name.localeCompare(b.name));
+            if (this.address.ward) {
+              const wardObj = this.wards.find((w: any) => w.name === this.address.ward);
+              if (wardObj) this.selectedWard = wardObj.code;
+            }
+            this.defChangeRec();
+          });
+        } else {
+          // if province not found by name, still trigger change detection
+          this.defChangeRec();
+        }
+      } else {
+        this.defChangeRec();
+      }
+    };
+
+    if (this.provinces && this.provinces.length) {
+      setupProvinceWard();
+    } else {
+      // load provinces now and then setup
+      this.locationService.getProvinces().subscribe({
+        next: (data) => {
+          this.provinces = data;
+          setupProvinceWard();
+        },
+        error: () => setupProvinceWard()
+      });
+    }
   }
 
   cancelEdit() {
     this.isEditing = false;
   }
 
-  // 👉 CHỌN TỈNH
+  // 👉 CHỌN TỈNH (load wards directly from districts list)
   onProvinceChange(event: any) {
     const code = Number(event.target.value);
 
     this.selectedProvince = this.provinces.find(p => p.code === code);
     this.formAddress.city = this.selectedProvince?.name || '';
 
-    this.locationService.getDistricts(code).subscribe(data => {
-      this.districts = data;
+    if (code) {
+      this.locationService.getDistricts(code).subscribe(districts => {
+        this.wards = [];
+        districts.forEach((d: any) => {
+          if (d.wards) this.wards = this.wards.concat(d.wards);
+        });
+        this.wards.sort((a: any, b: any) => a.name.localeCompare(b.name));
+      });
+    } else {
       this.wards = [];
-    });
+    }
   }
 
-  // 👉 CHỌN QUẬN
-  onDistrictChange(event: any) {
-    const code = Number(event.target.value);
-
-    this.selectedDistrict = this.districts.find(d => d.code === code);
-    this.formAddress.district = this.selectedDistrict?.name || '';
-
-    this.locationService.getWards(code).subscribe(data => {
-      this.wards = data;
-    });
+  // Force change detection so autofilled values appear immediately
+  defChangeRec() {
+    try {
+      this.cdr.detectChanges();
+    } catch (e) {
+      // ignore
+    }
   }
+
+  // removed district selection (wards loaded from province)
 
   // 👉 CHỌN PHƯỜNG
   onWardChange(event: any) {

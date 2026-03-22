@@ -806,7 +806,7 @@ app.delete("/cart/user/:userId", async (req, res) => {
 // Create order from cart
 app.post("/order/from-cart", async (req, res) => {
   try {
-    const { userId, customerInfo } = req.body;
+    const { userId, customerInfo, paymentMethod } = req.body;
     
     // Get cart items
     const cartItems = await Cart.find({ userId });
@@ -830,7 +830,8 @@ app.post("/order/from-cart", async (req, res) => {
         // product: null // We don't have product ID from cart
       })),
       totalPrice: total,
-      status: "pending"
+      status: "pending",
+      paymentMethod: paymentMethod || (customerInfo && customerInfo.paymentMethod) || 'online'
     });
     
     await order.save();

@@ -31,8 +31,6 @@ export class SidebarCustomer implements OnInit {
     { id: 'profile', label: 'Tài khoản cá nhân', route: '/account/profile' },
     { id: 'address', label: 'Sổ địa chỉ', route: '/account/address' },
     { id: 'orders', label: 'Đơn hàng', route: '/account/orders' },
-    { id: 'returns', label: 'Đổi trả', route: '/account/returns' },
-    { id: 'reviews', label: 'Đánh giá', route: '/account/reviews' },
     { id: 'wishlist', label: 'Yêu thích', route: '/account/wishlist' },
   ];
 

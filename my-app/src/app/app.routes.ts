@@ -12,8 +12,6 @@ import { AccountLayout } from './account/account-layout/account-layout';
 import { PersonalInformation } from './account/personal-information/personal-information';
 import { AddressComponent } from './account/address/address';
 import { OrdersComponent } from './account/orders/orders';
-import { ReturnManagementComponent } from './account/return-management/return-management';
-import { ReviewsComponent } from './account/reviews/reviews';
 import { Wishlist } from './account/wishlist/wishlist';
 import { ProductDetail } from './product-detail/product-detail';
 import { Cart } from './cart/cart';
@@ -49,8 +47,6 @@ export const routes: Routes = [
       { path: 'profile', component: PersonalInformation },
       { path: 'address', component: AddressComponent },
       { path: 'orders', component: OrdersComponent },
-      { path: 'returns', component: ReturnManagementComponent },
-      { path: 'reviews', component: ReviewsComponent },
       { path: 'wishlist', component: Wishlist },
       { path: '**', redirectTo: 'profile' }
     ]

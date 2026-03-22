@@ -24,6 +24,10 @@ interface OrderRequest {
   };
 }
 
+interface OrderRequestV2 extends OrderRequest {
+  paymentMethod?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -108,10 +112,11 @@ export class CartService {
   }
 
   // Create order from cart
-  createOrderFromCart(customerInfo: { name: string; email: string; phone: string; address: string }): Observable<any> {
-    const orderRequest: OrderRequest = {
+  createOrderFromCart(customerInfo: { name: string; email: string; phone: string; address: string, paymentMethod?: string }, paymentMethod?: string): Observable<any> {
+    const orderRequest: OrderRequestV2 = {
       userId: this.currentUserId,
-      customerInfo
+      customerInfo: customerInfo,
+      paymentMethod: paymentMethod
     };
 
     return this.http.post(`${this.apiUrl}/order/from-cart`, orderRequest).pipe(

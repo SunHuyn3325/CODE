@@ -139,7 +139,7 @@
   <div class="product-list">
     <div class="list-header">
         <div class="product-list-header-flex-2rows">
-          <div class="header-row-flex">
+          <div class="header-row-2col">
             <h3 class="product-list-title">Danh sách sản phẩm ({{ filteredProducts.length }})</h3>
             <label class="select-all-label select-all-align-right">
               <input type="checkbox"
@@ -148,16 +148,16 @@
               Chọn tất cả trang này
             </label>
           </div>
-          <div class="filter-row filter-row-below">
-            <input type="text" [(ngModel)]="searchProduct" placeholder="Tìm kiếm sản phẩm..." class="search-input" />
-            <select [(ngModel)]="filterCategory" class="category-select">
+          <div class="header-filters-row">
+            <input type="text" [(ngModel)]="searchProduct" placeholder="Tìm kiếm sản phẩm..." />
+            <select [(ngModel)]="filterCategory">
               <option value="">Tất cả danh mục</option>
               <option value="ao-dai">Áo dài</option>
               <option value="viet-phuc">Việt phục</option>
               <option value="ao-ba-ba">Áo bà ba</option>
               <option value="phu-kien">Phụ kiện</option>
             </select>
-            <button class="btn btn-primary btn-filter" (click)="applyProductFilter()">Lọc</button>
+            <button class="btn btn-primary" (click)="applyProductFilter()">Lọc</button>
             <button class="btn btn-primary delete-selected-btn"
               [disabled]="selectedProducts.length === 0"
               (click)="deleteSelectedProducts()">

@@ -16,9 +16,6 @@
       <strong>Phường/Xã:</strong> {{ address.ward || 'Chưa cập nhật' }}
     </div>
     <div class="line">
-      <strong>Quận/Huyện:</strong> {{ address.district || 'Chưa cập nhật' }}
-    </div>
-    <div class="line">
       <strong>Tỉnh/Thành phố:</strong> {{ address.city || 'Chưa cập nhật' }}
     </div>
 
@@ -41,10 +38,11 @@
     </label>
 
     <label>
-      Số nhà, tên đường
+      Địa chỉ (số nhà, tên đường, khu phố)
       <input
         [(ngModel)]="formAddress.address"
-        placeholder="VD: 123 Lê Lợi"
+        name="address"
+        placeholder="VD: 123 Lê Lợi, Khu phố 2"
       />
     </label>
 
@@ -57,20 +55,6 @@
           <option value="">Chọn Tỉnh / Thành phố</option>
           <option *ngFor="let p of provinces" [value]="p.code">
             {{ p.name }}
-          </option>
-        </select>
-      </label>
-
-      <!-- QUẬN -->
-      <label>
-        Quận / Huyện
-        <select
-          (change)="onDistrictChange($event)"
-          [disabled]="!districts.length"
-        >
-          <option value="">Chọn Quận / Huyện</option>
-          <option *ngFor="let d of districts" [value]="d.code">
-            {{ d.name }}
           </option>
         </select>
       </label>
