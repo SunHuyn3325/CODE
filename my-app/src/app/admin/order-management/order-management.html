@@ -65,7 +65,12 @@
                 <td>{{order.userName || 'Guest'}}</td>
                 <td>{{order.totalPrice | number}} đ</td>
 
-                <td>{{order.isPaid}}</td>
+                <td>
+                  <input type="checkbox"
+                         [checked]="order.isPaid"
+                         (change)="togglePaid(order, $event.target.checked)"
+                         title="Đánh dấu đã thanh toán">
+                </td>
 
                 <td>{{order.createdAt | date:'dd/MM/yyyy'}}</td>
 
@@ -81,18 +86,64 @@
 
                 </td>
 
-                <td>
 
-                <button (click)="cancelOrder(order)" class="btn-danger">
-                Hủy đơn
-                </button>
+
+                <td class="order-actions">
+                  <div class="action-btn-group modern-btn-group">
+                    <button (click)="showOrderDetail(order)" class="modern-btn btn-detail" title="Xem chi tiết" aria-label="Xem chi tiết">
+                      <span class="material-icons" aria-hidden="true">visibility</span>
+                    </button>
+                    <button (click)="exportInvoice(order)" class="modern-btn btn-export" title="Xuất hoá đơn" aria-label="Xuất hoá đơn">
+                      <span class="material-icons" aria-hidden="true">description</span>
+                    </button>
+                    <button (click)="cancelOrder(order)" class="modern-btn btn-danger" title="Huỷ đơn" aria-label="Huỷ đơn">
+                      <span class="material-icons" aria-hidden="true">cancel</span>
+                    </button>
+                  </div>
                 </td>
-
             </tr>
         </tbody>
-    
-    
-</table>
+    </table>
+
+<!-- Modal chi tiết đơn hàng -->
+<div class="modal order-modal" *ngIf="selectedOrder">
+  <div class="modal-content order-modal-content">
+    <button class="close-btn" (click)="closeOrderDetail()" title="Đóng">×</button>
+    <h3>Chi tiết đơn hàng</h3>
+    <div class="order-info-grid">
+      <div><span class="label">Mã đơn:</span> <span>{{selectedOrder._id}}</span></div>
+      <div><span class="label">Khách hàng:</span> <span>{{selectedOrder.userName || 'Guest'}}</span></div>
+      <div><span class="label">Địa chỉ giao hàng:</span> <span>{{selectedOrder.shippingAddress}}</span></div>
+      <div><span class="label">Ngày đặt:</span> <span>{{selectedOrder.createdAt | date:'dd/MM/yyyy HH:mm'}}</span></div>
+      <div><span class="label">Trạng thái:</span> <span class="status-badge status-{{selectedOrder.status}}">{{selectedOrder.status}}</span></div>
+    </div>
+    <div class="order-products">
+      <div class="label">Danh sách sản phẩm:</div>
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th>Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Đơn giá</th>
+            <th>Thành tiền</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of selectedOrder.items">
+            <td>{{item.productName}}</td>
+            <td>{{item.quantity}}</td>
+            <td>{{item.price | number}} đ</td>
+            <td>{{item.price * item.quantity | number}} đ</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="order-total">
+      <span class="label">Tổng tiền:</span>
+      <span class="total-value">{{selectedOrder.totalPrice | number}} đ</span>
+    </div>
+  </div>
+</div>
 
 <div class="pagination">
 
