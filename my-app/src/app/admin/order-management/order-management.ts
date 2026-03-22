@@ -53,7 +53,7 @@ export class OrderManagement implements OnInit {
         this.filteredOrders = [...data];
         this.totalOrders = this.orders.length;
         this.totalPages = Math.ceil(this.totalOrders / this.pageSize);
-        this.cdr.detectChanges();
+
       },
       error: (err) => {
         console.error('Lỗi tải đơn hàng:', err);
@@ -159,7 +159,7 @@ export class OrderManagement implements OnInit {
   selectedOrder: any = null;
 
   showOrderDetail(order: any) {
-    this.selectedOrder = order;
+  this.selectedOrder = { ...order };
   }
 
   closeOrderDetail() {

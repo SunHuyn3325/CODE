@@ -17,4 +17,8 @@ export class FeedbackApiService {
   getFeedback(){
     return this.http.get(this.apiUrl);
   }
+
+  deleteFeedback(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
 }

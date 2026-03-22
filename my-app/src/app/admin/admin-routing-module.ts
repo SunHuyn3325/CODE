@@ -6,6 +6,7 @@ import { OrderManagement } from './order-management/order-management';
 import { UserManagement } from './user-management/user-management';
 import { ProductManagement } from './product-management/product-management';
 import { BlogManagement } from './blog-management/blog-management';
+import { FeedbackManagement } from './feedback-management/feedback-management';
 
 const routes: Routes = [
   {
@@ -17,6 +18,7 @@ const routes: Routes = [
       { path: 'users', component: UserManagement },
       { path: 'products', component: ProductManagement },
       { path: 'blogs', component: BlogManagement },
+      { path: 'feedbacks', component: FeedbackManagement },
 
       { path: '', redirectTo: 'mainpage', pathMatch: 'full' }
     ]

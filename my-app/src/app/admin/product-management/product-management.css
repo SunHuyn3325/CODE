@@ -1,3 +1,80 @@
+.product-list-header-flex-2rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 16px;
+}
+.header-row-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 32px;
+  margin-bottom: 12px;
+}
+.product-list-title {
+  margin: 0;
+  font-size: 2.3em;
+  font-weight: 700;
+  color: #40513b;
+}
+.header-filters-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 18px;
+  margin-left: 0;
+}
+.product-list-title {
+  margin-bottom: 0;
+  font-size: 1.45em;
+  font-weight: 700;
+  color: #40513b;
+}
+.product-list-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.product-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.product-filter-bar input[type="text"] {
+  padding: 7px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  min-width: 180px;
+}
+.product-filter-bar select {
+  padding: 7px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+.delete-selected-btn {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-weight: 600;
+  margin-left: 8px;
+  transition: background 0.2s;
+}
+.delete-selected-btn:hover:not(:disabled) {
+  background: #c0392b;
+}
+.delete-selected-btn:disabled {
+  background: #f3bdb7;
+  color: #fff;
+  cursor: not-allowed;
+}
 /* ==== Container & General ==== */
 .product-management {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
