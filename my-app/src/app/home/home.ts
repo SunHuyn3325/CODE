@@ -161,8 +161,8 @@ export class Home implements OnInit, OnDestroy {
       next: (res) => {
         const blogs = Array.isArray(res) ? res : (res?.data || []);
         this.latestBlogs = blogs
-          .filter((b: any) => b.status !== 'Draft' && b.status !== 'Archived')
-          .sort((a: any, b: any) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime())
+          .filter((b: any) => b.status === 'published')
+          .sort((a: any, b: any) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime())
           .slice(0, 3);
       },
       error: () => {

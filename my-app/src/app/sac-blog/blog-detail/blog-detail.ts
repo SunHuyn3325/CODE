@@ -14,19 +14,20 @@ import { AuthPopupService } from '../../services/auth-popup.service';
 
 // Interfaces - Khớp với MongoDB schema
 interface BlogPost {
-  id: string; // MongoDB: id
-  img: string; // MongoDB: img
-  title: string; // MongoDB: title
-  excerpt: string; // MongoDB: excerpt
-  pubDate: string | Date; // MongoDB: pubDate (Date)
-  author: string; // MongoDB: author
-  categoryTag: string; // MongoDB: categoryTag
-  content: string; // MongoDB: content
-  hashtags?: string[]; // MongoDB: hashtags (array of hashtag strings)
-  status?: string; // MongoDB: status (Active/Draft/Archived)
-  views?: number; // MongoDB: views
-  createdAt?: Date; // MongoDB: createdAt
-  updatedAt?: Date; // MongoDB: updatedAt
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  thumbnail: string;
+  category: string;
+  tags?: string[];
+  authorId: string;
+  authorName: string;
+  status?: string;
+  publishedAt?: string | Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 interface Product {
@@ -223,18 +224,18 @@ export class BlogDetail implements OnInit, OnDestroy, AfterViewInit {
       return id.trim().replace(/,$/, '').trim();
     };
 
-    const currentPostId = normalizeId(this.currentPost.id);
+    const currentPostId = normalizeId(this.currentPost._id);
     console.log(' [BlogDetail] Finding prev/next posts for ID:', currentPostId);
 
     // Normalize tất cả post IDs và filter out current post
     const normalizedPosts = allPosts.map((post) => ({
       ...post,
-      normalizedId: normalizeId(post.id),
+      normalizedId: normalizeId(post._id),
     }));
 
-    // Find prev/next posts - sort theo pubDate (mới nhất lên đầu)
+    // Find prev/next posts - sort theo publishedAt (mới nhất lên đầu)
     const sortedPosts = normalizedPosts.sort(
-      (a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime()
+      (a, b) => new Date(b.publishedAt || b.createdAt || 0).getTime() - new Date(a.publishedAt || a.createdAt || 0).getTime()
     );
 
     // Tìm index của current post bằng normalized ID
@@ -250,13 +251,13 @@ export class BlogDetail implements OnInit, OnDestroy, AfterViewInit {
       // Next post = bài mới hơn (index thấp hơn trong mảng đã sort giảm dần)
       if (currentIndex > 0) {
         this.nextPost = sortedPosts[currentIndex - 1];
-        console.log(' [BlogDetail] Next post:', this.nextPost?.title, 'ID:', this.nextPost?.id);
+        console.log(' [BlogDetail] Next post:', this.nextPost?.title, 'ID:', this.nextPost?._id);
       }
 
       // Prev post = bài cũ hơn (index cao hơn trong mảng đã sort giảm dần)
       if (currentIndex < sortedPosts.length - 1) {
         this.prevPost = sortedPosts[currentIndex + 1];
-        console.log(' [BlogDetail] Prev post:', this.prevPost?.title, 'ID:', this.prevPost?.id);
+        console.log(' [BlogDetail] Prev post:', this.prevPost?.title, 'ID:', this.prevPost?._id);
       }
     } else {
       console.warn(' [BlogDetail] Current post not found in sorted posts list');
@@ -265,12 +266,12 @@ export class BlogDetail implements OnInit, OnDestroy, AfterViewInit {
 
   // Load related products based on blog content keywords
   loadRelatedProducts(): void {
-    if (!this.currentPost || !this.currentPost.id) {
+    if (!this.currentPost || !this.currentPost._id) {
       this.relatedProducts = [];
       return;
     }
 
-    const normalizedPostId = this.currentPost.id.trim().replace(/,$/, '').trim();
+    const normalizedPostId = this.currentPost._id.trim().replace(/,$/, '').trim();
     const apiUrl = 'http://localhost:3000/api';
 
     // Call new API endpoint to get related products based on blog content keywords
@@ -394,12 +395,12 @@ export class BlogDetail implements OnInit, OnDestroy, AfterViewInit {
 
   // Fallback: Load products using old method (category tag only)
   private loadRelatedProductsFallback(): void {
-    if (!this.currentPost || !this.currentPost.categoryTag) {
+    if (!this.currentPost || !this.currentPost.category) {
       this.relatedProducts = [];
       return;
     }
 
-    const categoryTag = this.currentPost.categoryTag.toLowerCase().trim();
+    const categoryTag = this.currentPost.category.toLowerCase().trim();
     const apiUrl = '/api';
 
     // Load products, promotions, and targets in parallel
@@ -676,26 +677,26 @@ export class BlogDetail implements OnInit, OnDestroy, AfterViewInit {
   // Helper method to check if hashtags exist and have items
   hasHashtags(): boolean {
     return !!(
-      this.currentPost?.hashtags &&
-      Array.isArray(this.currentPost.hashtags) &&
-      this.currentPost.hashtags.length > 0
+      this.currentPost?.tags &&
+      Array.isArray(this.currentPost.tags) &&
+      this.currentPost.tags.length > 0
     );
   }
 
   // Helper method to get hashtags safely
   getHashtags(): string[] {
-    return this.currentPost?.hashtags && Array.isArray(this.currentPost.hashtags)
-      ? this.currentPost.hashtags
+    return this.currentPost?.tags && Array.isArray(this.currentPost.tags)
+      ? this.currentPost.tags
       : [];
   }
 
   // Helper method to check if should show category tag (when no hashtags)
   shouldShowCategoryTag(): boolean {
     return !!(
-      this.currentPost?.categoryTag &&
-      (!this.currentPost?.hashtags ||
-        !Array.isArray(this.currentPost.hashtags) ||
-        this.currentPost.hashtags.length === 0)
+      this.currentPost?.category &&
+      (!this.currentPost?.tags ||
+        !Array.isArray(this.currentPost.tags) ||
+        this.currentPost.tags.length === 0)
     );
   }
 
