@@ -1,6 +1,7 @@
 .dashboard{
     padding:30px;
-    background:#ebe1d8;
+    background:#fdf8f6;
+    font-family:'Montserrat', sans-serif;
 }
 
 /* header */
@@ -13,7 +14,8 @@
 }
 
 .dashboard-header h1{
-    color:#40513b;
+    color:#61202c;
+    font-family:'Montserrat', sans-serif;
 }
 
 /* buttons */
@@ -24,20 +26,35 @@
 }
 
 .btn-primary{
-    background:#a94053;
+    background:#8b2f3f;
     color:white;
     border:none;
     padding:10px 18px;
     border-radius:8px;
     cursor:pointer;
+    font-family:'Montserrat', sans-serif;
+    font-weight:600;
+    transition:all 0.2s;
+}
+
+.btn-primary:hover{
+    background:#61202c;
 }
 
 .btn-outline{
-    border:2px solid #a94053;
-    color:#a94053;
+    border:2px solid #8b2f3f;
+    color:#8b2f3f;
     background:transparent;
     padding:10px 18px;
     border-radius:8px;
+    font-family:'Montserrat', sans-serif;
+    font-weight:600;
+    transition:all 0.2s;
+}
+
+.btn-outline:hover{
+    background:#8b2f3f;
+    color:#fff;
 }
 
 /* grid */
@@ -59,7 +76,8 @@
 
 .card h3{
     margin-bottom:15px;
-    color:#40513b;
+    color:#61202c;
+    font-family:'Montserrat', sans-serif;
 }
 
 /* activity */
@@ -74,7 +92,7 @@
 }
 
 .activity-left{
-    color:#40513b
+    color:#61202c;
 }
 
 .admin-panels{
@@ -95,10 +113,11 @@
 /* header */
 
 .panel-header{
-    background:#40513b;
+    background:#8b2f3f;
     color:white;
     padding:12px 18px;
     font-weight:600;
+    font-family:'Montserrat', sans-serif;
 }
 
 /* item */
@@ -109,7 +128,7 @@
     align-items:center;
     padding:14px 18px;
     border-bottom:1px solid #eee;
-    color:#40513b;
+    color:#61202c;
 }
 
 .panel-item:last-child{
@@ -127,5 +146,10 @@
     border:none;
     cursor:pointer;
     font-size:16px;
-    color:#a94053;
+    color:#8b2f3f;
+    transition:color 0.2s;
+}
+
+.edit-btn:hover{
+    color:#61202c;
 }

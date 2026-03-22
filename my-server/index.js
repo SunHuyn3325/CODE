@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 const express = require("express")
 const mongoose = require("mongoose")
 const cors = require("cors")
@@ -27,10 +27,15 @@ const SMTP_PASS = process.env.SMTP_PASS || ""
 
 const mailTransport = SMTP_USER && SMTP_PASS
   ? nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
       auth: {
         user: SMTP_USER,
         pass: SMTP_PASS,
+      },
+      tls: {
+        rejectUnauthorized: false,
       },
     })
   : null
@@ -46,11 +51,83 @@ async function sendPasswordResetEmail(toEmail, resetLink) {
   }
 
   await mailTransport.sendMail({
-    from: SMTP_USER,
+    from: `"SẮC – Thời Trang" <${SMTP_USER}>`,
     to: toEmail,
-    subject: "Dat lai mat khau",
-    text: `Ban vua yeu cau dat lai mat khau. Link co hieu luc ${PASSWORD_RESET_EXPIRES_MINUTES} phut: ${resetLink}`,
-    html: `<p>Ban vua yeu cau dat lai mat khau.</p><p>Link co hieu luc <b>${PASSWORD_RESET_EXPIRES_MINUTES} phut</b>:</p><p><a href="${resetLink}">${resetLink}</a></p>`,
+    subject: "🔐 Đặt lại mật khẩu tài khoản SẮC của bạn",
+    text: `Xin chào,\n\nChúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản SẮC của bạn.\n\nTruy cập liên kết sau để đặt lại mật khẩu (có hiệu lực trong ${PASSWORD_RESET_EXPIRES_MINUTES} phút):\n${resetLink}\n\nNếu bạn không yêu cầu điều này, hãy bỏ qua email này — tài khoản của bạn vẫn an toàn.\n\nTrân trọng,\nĐội ngũ SẮC`,
+    html: `
+<!DOCTYPE html>
+<html lang="vi">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#fdf6f0;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#fdf6f0;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="560" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07);max-width:560px;width:100%;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#8b2f3f;padding:32px 40px;text-align:center;">
+              <h1 style="margin:0;color:#fff;font-size:28px;font-weight:700;letter-spacing:0.12em;">SẮC</h1>
+              <p style="margin:6px 0 0;color:rgba(255,222,228,0.85);font-size:12px;letter-spacing:0.2em;text-transform:uppercase;">Thời Trang Thuần Việt</p>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px 40px 32px;">
+              <p style="margin:0 0 8px;font-size:22px;font-weight:700;color:#1a1a1a;">Quên mật khẩu? 🔑</p>
+              <p style="margin:0 0 24px;font-size:15px;color:#555;line-height:1.7;">
+                Xin chào,<br>
+                Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản <strong style="color:#8b2f3f;">SẮC</strong> của bạn.
+              </p>
+              <p style="margin:0 0 28px;font-size:14px;color:#777;line-height:1.6;">
+                Bấm vào nút bên dưới để tạo mật khẩu mới. Liên kết chỉ có hiệu lực trong <strong>${PASSWORD_RESET_EXPIRES_MINUTES} phút</strong>.
+              </p>
+
+              <!-- Button -->
+              <table cellpadding="0" cellspacing="0" style="margin:0 auto 32px;">
+                <tr>
+                  <td style="border-radius:50px;background-color:#8b2f3f;">
+                    <a href="${resetLink}" style="display:inline-block;padding:14px 36px;color:#fff;font-size:15px;font-weight:600;text-decoration:none;letter-spacing:0.04em;border-radius:50px;">
+                      ✨ Đặt lại mật khẩu
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:0 0 8px;font-size:13px;color:#999;line-height:1.6;">
+                Nếu nút không hoạt động, hãy copy và dán liên kết này vào trình duyệt:
+              </p>
+              <p style="margin:0 0 32px;word-break:break-all;">
+                <a href="${resetLink}" style="font-size:12px;color:#8b2f3f;">${resetLink}</a>
+              </p>
+
+              <!-- Warning -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff8f8;border-left:3px solid #8b2f3f;border-radius:4px;">
+                <tr>
+                  <td style="padding:14px 16px;font-size:13px;color:#666;line-height:1.6;">
+                    ⚠️ <strong>Không phải bạn yêu cầu?</strong> Hãy bỏ qua email này — tài khoản của bạn vẫn hoàn toàn an toàn.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#fdf6f0;padding:24px 40px;text-align:center;border-top:1px solid #f0e8e0;">
+              <p style="margin:0 0 4px;font-size:13px;color:#aaa;">© 2026 SẮC – Thời Trang Thuần Việt</p>
+              <p style="margin:0;font-size:12px;color:#bbb;">Email này được gửi tự động, vui lòng không trả lời.</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
   })
 }
 

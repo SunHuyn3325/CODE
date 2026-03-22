@@ -18,8 +18,13 @@ import { UserApiService } from '../../user-api.service';
 export class Admin {
   pageTitle: string = 'Trang chủ';
   profileName: string = 'Admin';
+  sidebarCollapsed: boolean = false;
 
   constructor(private router: Router, private userApi: UserApiService) {}
+
+  toggleSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+  }
 
   confirmLogout() {
     if (confirm('Bạn có chắc muốn đăng xuất?')) {

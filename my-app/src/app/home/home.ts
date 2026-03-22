@@ -1,14 +1,17 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule, Router } from '@angular/router';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule, HttpClientModule],
   templateUrl: './home.html',
   styleUrls: ['./home.css'],
 })
 export class Home implements OnInit, OnDestroy {
+  latestBlogs: any[] = [];
   slides = [
     { image: '/assets/slide-1.png' },
     { image: '/assets/slide-2.png' },
@@ -55,9 +58,12 @@ export class Home implements OnInit, OnDestroy {
   cardsPerView = 3;
   private intervalId: any;
 
+  constructor(private http: HttpClient, private router: Router) {}
+
   ngOnInit() {
     this.updateCardsPerView();
     this.startAutoPlay();
+    this.loadLatestBlogs();
   }
 
   ngOnDestroy() {
@@ -148,5 +154,28 @@ export class Home implements OnInit, OnDestroy {
     if (this.currentTestimonialPage >= this.testimonialPages.length) {
       this.currentTestimonialPage = 0;
     }
+  }
+
+  loadLatestBlogs() {
+    this.http.get<any>('http://localhost:3000/blogs').subscribe({
+      next: (res) => {
+        const blogs = Array.isArray(res) ? res : (res?.data || []);
+        this.latestBlogs = blogs
+          .filter((b: any) => b.status !== 'Draft' && b.status !== 'Archived')
+          .sort((a: any, b: any) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime())
+          .slice(0, 3);
+      },
+      error: () => {
+        this.latestBlogs = [];
+      }
+    });
+  }
+
+  goToBlog(id: string) {
+    this.router.navigate(['/blog', id]);
+  }
+
+  formatBlogDate(date: string | Date): string {
+    return new Date(date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 }

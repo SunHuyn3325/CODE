@@ -1,31 +1,71 @@
 <div class="admin-layout">
 
     <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="logo">
-            <img src="/assets/Logo.png">
+    <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="/assets/Logo.png" alt="SẮC">
+            </div>
+            <button class="sidebar-toggle" (click)="toggleSidebar()">
+                <span class="toggle-icon">{{ sidebarCollapsed ? '☰' : '✕' }}</span>
+            </button>
         </div>
 
-        <ul class="menu">
-            <li routerLink="/admin/mainpage">Trang chủ</li>
-            <li>Xem trang web</li>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <a class="nav-item" routerLink="/admin/mainpage" routerLinkActive="active">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Trang chủ</span>
+                </a>
+                <a class="nav-item" href="/" target="_blank">
+                    <span class="nav-icon">🌐</span>
+                    <span class="nav-label">Xem trang web</span>
+                </a>
+            </div>
 
-            <li class="menu-title">Xác thực</li>
-            <li routerLink="/admin/users">Tài khoản</li>
-            <li>Nhóm</li>
+            <div class="nav-section">
+                <div class="nav-section-title">Xác thực</div>
+                <a class="nav-item" routerLink="/admin/users" routerLinkActive="active">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-label">Tài khoản</span>
+                </a>
+                <a class="nav-item" routerLink="/admin/groups" routerLinkActive="active">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-label">Nhóm</span>
+                </a>
+            </div>
 
-            <li class="menu-title">Chức năng</li>
+            <div class="nav-section">
+                <div class="nav-section-title">Chức năng</div>
+                <a class="nav-item" routerLink="/admin/products" routerLinkActive="active">
+                    <span class="nav-icon">🛍️</span>
+                    <span class="nav-label">Sản phẩm</span>
+                </a>
+                <a class="nav-item" routerLink="/admin/categories" routerLinkActive="active">
+                    <span class="nav-icon">📂</span>
+                    <span class="nav-label">Danh mục</span>
+                </a>
+                <a class="nav-item" routerLink="/admin/orders" routerLinkActive="active">
+                    <span class="nav-icon">📦</span>
+                    <span class="nav-label">Đơn hàng</span>
+                </a>
+                <a class="nav-item" routerLink="/admin/blogs" routerLinkActive="active">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">Blogs</span>
+                </a>
+                <a class="nav-item" routerLink="/admin/discounts" routerLinkActive="active">
+                    <span class="nav-icon">🏷️</span>
+                    <span class="nav-label">Giảm giá</span>
+                </a>
+            </div>
+        </nav>
 
-            <li routerLink="/admin/products">Sản phẩm</li>
-            <li routerLink="/admin/categories">Danh mục</li>
-
-            <li routerLink="/admin/orders" class="menu-link">
-                Đơn hàng
-            </li>
-
-            <li routerLink="/admin/blogs">Blogs</li>
-            <li routerLink="/admin/discounts">Giảm giá</li>
-        </ul>
+        <div class="sidebar-footer">
+            <div class="admin-badge">
+                <span class="admin-avatar">A</span>
+                <span class="nav-label">{{ profileName }}</span>
+            </div>
+        </div>
     </aside>
 
     <!-- Main -->
@@ -33,17 +73,14 @@
 
         <!-- Topbar -->
         <header class="topbar">
-            <div class="title">
-                {{ pageTitle || 'Trang quản trị SẮC' }}
+            <div class="topbar-left">
+                <button class="mobile-toggle" (click)="toggleSidebar()">☰</button>
+                <h1 class="page-title">{{ pageTitle || 'Trang quản trị SẮC' }}</h1>
             </div>
-            <div class="admin-user">
-                <span class="notification">🔔</span>
-                <span class="email">
-                    {{ profileName || 'admin@uel.edu.vn' }}
-                </span>
-                <button class="logout-btn" (click)="confirmLogout()">
-                    Đăng xuất
-                </button>
+            <div class="topbar-right">
+                <button class="topbar-icon-btn">🔔</button>
+                <span class="admin-name">{{ profileName || 'Admin' }}</span>
+                <button class="logout-btn" (click)="confirmLogout()">Đăng xuất</button>
             </div>
         </header>
 

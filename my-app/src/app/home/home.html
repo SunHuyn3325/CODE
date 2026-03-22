@@ -146,3 +146,34 @@
     </div>
   </div>
 </section>
+
+<!-- Blog Section -->
+<section class="home-blog-section" *ngIf="latestBlogs.length > 0">
+  <div class="home-blog-container">
+    <p class="home-blog-eyebrow">Từ nhật ký SẮC</p>
+    <h2 class="home-blog-title">Bài viết mới nhất</h2>
+    <p class="home-blog-subtitle">Khám phá câu chuyện, cảm hứng và bí quyết phối đồ cùng SẮC.</p>
+
+    <div class="home-blog-grid">
+      <article class="home-blog-card" *ngFor="let blog of latestBlogs" (click)="goToBlog(blog.id)">
+        <div class="home-blog-card-img">
+          <img [src]="blog.img" [alt]="blog.title">
+          <span class="home-blog-card-tag">{{ blog.categoryTag }}</span>
+        </div>
+        <div class="home-blog-card-body">
+          <div class="home-blog-card-meta">
+            <span>{{ blog.author }}</span>
+            <span class="home-blog-card-dot">·</span>
+            <span>{{ formatBlogDate(blog.pubDate) }}</span>
+          </div>
+          <h3 class="home-blog-card-title">{{ blog.title }}</h3>
+          <p class="home-blog-card-excerpt">{{ blog.excerpt }}</p>
+        </div>
+      </article>
+    </div>
+
+    <div class="home-blog-cta">
+      <a routerLink="/blog" class="home-blog-cta-btn">Xem tất cả bài viết</a>
+    </div>
+  </div>
+</section>

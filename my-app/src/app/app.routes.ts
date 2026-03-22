@@ -18,7 +18,7 @@ import { ProductDetail } from './product-detail/product-detail';
 import { Cart } from './cart/cart';
 import { Collection } from './collection/collection';
 import { LettersComponent } from './letters/letters';
-import { BlogDetail } from './blog-detail/blog-detail';
+import { BlogDetail } from './sac-blog/blog-detail/blog-detail';
 import { ForgotPasswordGmail } from './account/forgot-password-gmail/forgot-password-gmail';
 import { ForgotPasswordReset } from './account/forgot-password-reset/forgot-password-reset';
 

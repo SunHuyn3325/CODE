@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -70,22 +70,6 @@ export class Collection implements OnInit {
     }
   };
 
-
-  @HostListener('window:scroll', ['$event'])
-  onWindowScroll(_event: any) {
-    const sections = document.querySelectorAll('.parallax-section');
-    sections.forEach((section: any) => {
-      const bg = section.querySelector('.parallax-bg');
-      if (bg) {
-        const speed = 0.5;
-        const rect = section.getBoundingClientRect();
-        if (rect.top < window.innerHeight && rect.bottom > 0) {
-          const shift = rect.top * speed;
-          bg.style.transform = `translateY(${shift}px)`;
-        }
-      }
-    });
-  }
 
   constructor(private route: ActivatedRoute) {}
 
