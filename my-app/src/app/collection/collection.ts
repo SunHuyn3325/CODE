@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 
 @Component({
@@ -10,9 +12,10 @@ import { CommonModule } from '@angular/common';
   templateUrl: './collection.html',
   styleUrl: './collection.css',
 })
-export class Collection implements OnInit {
+export class Collection implements OnInit, OnDestroy {
   collectionTitle: string = '';
   album: string[] = [];
+  private destroy$ = new Subject<void>();
 
 
   private data: any = {
@@ -58,14 +61,14 @@ export class Collection implements OnInit {
     'y-hien': {
       title: 'Ý Hiên',
       images: [
-        'public/assets/yhien1.png',
-        'public/assets/yhien2.png',
-        'public/assets/yhien3.png',
-        'public/assets/yhien4.png',
-        'public/assets/yhien5.png',
-        'public/assets/yhien6.png',
-        'public/assets/yhien7.png',
-        'public/assets/yhien8.png'
+        '/assets/yhien1.png',
+        '/assets/yhien2.png',
+        '/assets/yhien3.png',
+        '/assets/yhien4.png',
+        '/assets/yhien5.png',
+        '/assets/yhien6.png',
+        '/assets/yhien7.png',
+        '/assets/yhien8.png'
       ]
     }
   };
@@ -74,13 +77,24 @@ export class Collection implements OnInit {
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
-      const id = params['id'] || params['collectionName'];
-      if (this.data[id]) {
-        this.collectionTitle = this.data[id].title;
-        this.album = this.data[id].images;
-      }
-    });
+    this.route.params
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        const id = params['id'] || params['collectionName'];
+        if (this.data[id]) {
+          this.collectionTitle = this.data[id].title;
+          this.album = this.data[id].images;
+        } else {
+          // Se a coleção não for encontrada, limpar os dados
+          this.collectionTitle = '';
+          this.album = [];
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
 
