@@ -46,11 +46,6 @@
         </div>
       </div>
 
-      <!-- Mô tả ngắn -->
-      <div class="row full">
-        <label>Mô tả ngắn</label>
-        <input type="text" formControlName="short_description" placeholder="Mô tả ngắn hiển thị trên thẻ..."/>
-      </div>
 
       <!-- Mô tả chi tiết -->
       <div class="row full">
@@ -68,9 +63,21 @@
         <div class="col">
           <label>Số lượng theo size *</label>
           <div class="size-qty-group">
-            <div class="size-qty-item" *ngFor="let sz of ['S','M','L','XL']; let i = index">
-              <label>{{sz}}</label>
-              <input type="number" min="0" [(ngModel)]="sizesInput[i].quantity" [attr.data-size]="sz" style="width:60px;display:inline-block;"/>
+            <div class="size-qty-item">
+              <label>S</label>
+              <input type="number" min="0" formControlName="quantityS" [attr.data-size]="'S'" style="width:60px;display:inline-block;"/>
+            </div>
+            <div class="size-qty-item">
+              <label>M</label>
+              <input type="number" min="0" formControlName="quantityM" [attr.data-size]="'M'" style="width:60px;display:inline-block;"/>
+            </div>
+            <div class="size-qty-item">
+              <label>L</label>
+              <input type="number" min="0" formControlName="quantityL" [attr.data-size]="'L'" style="width:60px;display:inline-block;"/>
+            </div>
+            <div class="size-qty-item">
+              <label>XL</label>
+              <input type="number" min="0" formControlName="quantityXL" [attr.data-size]="'XL'" style="width:60px;display:inline-block;"/>
             </div>
           </div>
         </div>

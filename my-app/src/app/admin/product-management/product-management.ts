@@ -45,13 +45,16 @@ export class ProductManagement implements OnInit {
     this.productForm = this.fb.group({
       product_name: ['', Validators.required],
       product_dept: ['', Validators.required],
-      short_description: [''],
       description: [''],
       unit_price: [0, [Validators.required, Validators.min(0)]],
       discount: [0],
       rating: [4],
       material: [''],
       origin: [''],
+      quantityS: [0, [Validators.required, Validators.min(0)]],
+      quantityM: [0, [Validators.required, Validators.min(0)]],
+      quantityL: [0, [Validators.required, Validators.min(0)]],
+      quantityXL: [0, [Validators.required, Validators.min(0)]],
     });
   }
 
