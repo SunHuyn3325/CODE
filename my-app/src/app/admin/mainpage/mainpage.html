@@ -1,97 +1,71 @@
-<div class="dashboard">
 
-  <!-- Header -->
-  <div class="dashboard-header">
-    <div>
-      <h1>Xin chào, Admin</h1>
-    </div>
 
-    <div class="actions">
-      <button class="btn-primary">Trở về trang web</button>
-      <button class="btn-outline">Đổi mật khẩu</button>
-    </div>
-  </div>
+<div class="admin-layout">
 
-  <div class="dashboard-grid">
 
-    <!-- Hoạt động -->
-    <div class="card activity">
-
-        <h3>Hoạt động gần đây</h3>
-
-        <div class="activity-item" *ngFor="let item of recentActivities">
-            <div>{{item.module}}</div>
-            <div class="highlight">{{item.action}}</div>
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Quick Stats -->
+    <section class="quick-stats">
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa fa-box"></i></div>
+        <div class="stat-info">
+          <div class="stat-number">120</div>
+          <div class="stat-label">Sản phẩm</div>
         </div>
-    </div>
-
-    <!-- Right side -->
-    <div class="admin-panels">
-
-  <!-- Xác thực -->
-  <div class="panel">
-    <div class="panel-header">
-      Xác thực
-    </div>
-
-    <div class="panel-item">
-      <span>Nhóm</span>
-      <button class="edit-btn">✏️</button>
-    </div>
-
-    <div class="panel-item">
-      <span>Tài khoản</span>
-      <button class="edit-btn">✏️</button>
-    </div>
-
-  </div>
-
-
-  <!-- Chức năng -->
-        <div class="panel">
-            <div class="panel-header">
-            Chức năng
-            </div>
-
-            <div class="panel-item">
-            <span>Sản phẩm</span>
-            <button class="edit-btn">✏️</button>
-          </div>
-
-          <div class="panel-item" routerLink="/admin/feedback">
-            <span>Feedback</span>
-            <button class="edit-btn">✏️</button>
-            </div>
-
-            <div class="panel-item">
-            <span>Danh mục</span>
-            <button class="edit-btn">✏️</button>
-            </div>
-
-            <div class="panel-item">
-            <span>Liên hệ</span>
-            <button class="edit-btn">✏️</button>
-            </div>
-
-            <div class="panel-item" routerLink="/admin/orders">
-                <span>Đơn hàng</span>
-                <button class="edit-btn">✏️</button>
-            </div>
-
-            <div class="panel-item">
-            <span>Blogs</span>
-            <button class="edit-btn">✏️</button>
-            </div>
-
-            <div class="panel-item">
-            <span>Giảm giá</span>
-            <button class="edit-btn">✏️</button>
-            </div>
-
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa fa-shopping-cart"></i></div>
+        <div class="stat-info">
+          <div class="stat-number">15</div>
+          <div class="stat-label">Đơn hàng mới</div>
         </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa fa-money-bill"></i></div>
+        <div class="stat-info">
+          <div class="stat-number">₫12,000,000</div>
+          <div class="stat-label">Doanh thu tháng</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa fa-users"></i></div>
+        <div class="stat-info">
+          <div class="stat-number">320</div>
+          <div class="stat-label">Khách hàng</div>
+        </div>
+      </div>
+    </section>
 
-    </div>
+    <!-- Thống kê tổng hợp -->
+    <section class="dashboard-summary">
+      <div class="summary-card">
+        <h4>Thống kê tổng hợp</h4>
+        <table class="summary-table">
+          <tr><td>Tổng số sản phẩm</td><td><b>120</b></td></tr>
+          <tr><td>Đơn hàng mới hôm nay</td><td><b>15</b></td></tr>
+          <tr><td>Khách hàng mới tháng này</td><td><b>25</b></td></tr>
+          <tr><td>Doanh thu tháng</td><td><b>₫12,000,000</b></td></tr>
+        </table>
+      </div>
+      <div class="summary-card">
+        <h4>Top sản phẩm bán chạy</h4>
+        <ol class="top-products">
+          <li>Áo Dài Hồng Liên <span class="sold">(32 đã bán)</span></li>
+          <li>Áo Bà Ba Truyền Thống <span class="sold">(21 đã bán)</span></li>
+          <li>Khăn Lụa Sắc Việt <span class="sold">(18 đã bán)</span></li>
+        </ol>
+      </div>
+    </section>
 
-  </div>
-
+    <!-- Recent Activity -->
+    <section class="recent-activity">
+      <h4>Hoạt động gần đây</h4>
+      <ul class="activity-list">
+        <li><i class="fa fa-plus"></i> Thêm sản phẩm mới: <b>Áo Dài Hồng Liên</b> (2 phút trước)</li>
+        <li><i class="fa fa-shopping-cart"></i> Đơn hàng #1234 vừa được tạo (5 phút trước)</li>
+        <li><i class="fa fa-comment"></i> Feedback mới từ khách hàng <b>Nguyễn Văn A</b> (10 phút trước)</li>
+      </ul>
+    </section>
+  </main>
 </div>
