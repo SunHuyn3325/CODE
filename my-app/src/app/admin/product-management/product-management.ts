@@ -51,6 +51,7 @@ export class ProductManagement implements OnInit {
       rating: [4],
       material: [''],
       origin: [''],
+      suitableFor: [''],
       quantityS: [0, [Validators.required, Validators.min(0)]],
       quantityM: [0, [Validators.required, Validators.min(0)]],
       quantityL: [0, [Validators.required, Validators.min(0)]],
@@ -108,11 +109,15 @@ export class ProductManagement implements OnInit {
       this.showError('❌ Vui lòng điền đầy đủ: Tên sản phẩm và Danh mục.');
       return;
     }
+    // Đồng bộ giá trị số lượng size từ form vào sizesInput
+    this.sizesInput = [
+      { size: 'S', quantity: this.productForm.value.quantityS },
+      { size: 'M', quantity: this.productForm.value.quantityM },
+      { size: 'L', quantity: this.productForm.value.quantityL },
+      { size: 'XL', quantity: this.productForm.value.quantityXL }
+    ];
     const sizes = this.sizesInput.filter(s => typeof s.quantity === 'number' && s.quantity > 0);
-    if (sizes.length === 0) {
-      this.showError('Vui lòng nhập số lượng cho ít nhất 1 size.');
-      return;
-    }
+    // Cho phép lưu nếu có ít nhất 1 size > 0, nếu không nhập thì không lưu size đó
     const data = { ...this.productForm.value, images: this.images.filter(img => img), sizes };
     this.productService.addProduct(data).subscribe({
       next: (res: any) => {

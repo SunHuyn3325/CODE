@@ -16,7 +16,8 @@
 
   <!-- Form Thêm / Cập nhật -->
   <div class="product-form" *ngIf="canEdit">
-    <h3>{{ isEditing ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới' }}</h3>
+    <h2 class="form-title">{{ isEditing ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới' }}</h2>
+    <hr class="form-divider" />
 
     <form [formGroup]="productForm" (ngSubmit)="isEditing ? updateProduct() : createProduct()">
 
@@ -62,22 +63,22 @@
         </div>
         <div class="col">
           <label>Số lượng theo size *</label>
-          <div class="size-qty-group">
-            <div class="size-qty-item">
-              <label>S</label>
-              <input type="number" min="0" formControlName="quantityS" [attr.data-size]="'S'" style="width:60px;display:inline-block;"/>
+          <div style="display: flex; gap: 12px; align-items: flex-end; margin-top: 4px;">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <label style="font-weight: 500;">S</label>
+              <input type="number" min="0" formControlName="quantityS" [attr.data-size]="'S'" style="width:60px;"/>
             </div>
-            <div class="size-qty-item">
-              <label>M</label>
-              <input type="number" min="0" formControlName="quantityM" [attr.data-size]="'M'" style="width:60px;display:inline-block;"/>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <label style="font-weight: 500;">M</label>
+              <input type="number" min="0" formControlName="quantityM" [attr.data-size]="'M'" style="width:60px;"/>
             </div>
-            <div class="size-qty-item">
-              <label>L</label>
-              <input type="number" min="0" formControlName="quantityL" [attr.data-size]="'L'" style="width:60px;display:inline-block;"/>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <label style="font-weight: 500;">L</label>
+              <input type="number" min="0" formControlName="quantityL" [attr.data-size]="'L'" style="width:60px;"/>
             </div>
-            <div class="size-qty-item">
-              <label>XL</label>
-              <input type="number" min="0" formControlName="quantityXL" [attr.data-size]="'XL'" style="width:60px;display:inline-block;"/>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <label style="font-weight: 500;">XL</label>
+              <input type="number" min="0" formControlName="quantityXL" [attr.data-size]="'XL'" style="width:60px;"/>
             </div>
           </div>
         </div>
@@ -97,10 +98,14 @@
 
       <!-- Row 4: Chất liệu + Xuất xứ -->
       <div class="row">
-        <div class="col">
+        <div class="col" style="display: flex; flex-direction: column; justify-content: flex-start;">
           <label>Chất liệu</label>
-          <input type="text" formControlName="material" placeholder="Lụa, cotton, voan..."/>
+          <textarea formControlName="material" placeholder="Lụa, cotton, voan..." rows="3"
+            style="width: 98%; min-width: 120px; max-width: 100%; min-height: 70px; max-height: 120px; resize: vertical; border-radius: 12px; padding: 12px; box-sizing: border-box; font-size: 1.1em;"></textarea>
         </div>
+      </div>
+
+      <div class="row">
         <div class="col">
           <label>Xuất xứ</label>
           <input type="text" formControlName="origin" placeholder="Hà Nội, TP.HCM..."/>
@@ -181,11 +186,9 @@
               </span>
             </span>
             <ng-template #noSize>Không có size</ng-template>
-            | Giảm: {{ product.discount || 0 }}%
           </p>
         </div>
-
-        <div class="card-actions">
+        <div style="display: flex; gap: 8px; justify-content: center; margin-top: 12px;">
           <button class="btn btn-warning" *ngIf="canEdit" (click)="editProduct(product)">
             Sửa
           </button>

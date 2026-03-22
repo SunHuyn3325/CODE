@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProductApiService } from '../product-api.service';
@@ -19,6 +20,23 @@ import { WishlistApiService } from '../wishlist-api.service';
 })
 
 export class ProductDetail implements OnInit {
+
+  // ...existing code...
+
+  buyNow() {
+    // Chuyển hướng sang trang thanh toán với sản phẩm và size đã chọn
+    if (!this.selectedSize) {
+      alert('Vui lòng chọn size trước khi mua!');
+      return;
+    }
+    if (!this.product || !this.cartService || !this.router) return;
+    this.cartService.addToCart({
+      ...this.product,
+      selectedSize: this.selectedSize,
+      quantity: this.quantity
+    });
+    this.router.navigate(['/cart'], { queryParams: { buyNow: 1 } });
+  }
 
   product!: Product;
   selectedImage: string = '';
@@ -99,7 +117,7 @@ export class ProductDetail implements OnInit {
 
   // lưu sản phẩm đã xem
   saveViewedProduct(product: Product) {
-    if (typeof localStorage === 'undefined') return;
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
     let viewed = JSON.parse(
       localStorage.getItem('viewedProducts') || '[]'
     );
@@ -117,12 +135,16 @@ export class ProductDetail implements OnInit {
 
   // load sản phẩm đã xem
   loadViewedProducts() {
-    if (typeof localStorage === 'undefined') return;
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
     this.viewedProducts = JSON.parse(
       localStorage.getItem('viewedProducts') || '[]'
     );
   }
   addToCart() {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      alert('Tính năng này chỉ hoạt động trên trình duyệt.');
+      return;
+    }
     const userRaw = localStorage.getItem('user');
     if (!userRaw) {
       alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng và nhận voucher ưu đãi.');
@@ -147,7 +169,8 @@ export class ProductDetail implements OnInit {
   }
 
   toggleWishlist() {
-    const userRaw = localStorage.getItem('user');
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
+    const userRaw = window.localStorage.getItem('user');
     if (!userRaw) {
       alert('Vui lòng đăng nhập để thêm sản phẩm yêu thích.');
       this.router.navigate(['/login']);
@@ -180,7 +203,11 @@ export class ProductDetail implements OnInit {
   }
 
   private syncWishlistState() {
-    const userRaw = localStorage.getItem('user');
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      this.isWishlisted = false;
+      return;
+    }
+    const userRaw = window.localStorage.getItem('user');
     if (!userRaw || !this.product?._id) {
       this.isWishlisted = false;
       return;

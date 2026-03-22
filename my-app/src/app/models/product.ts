@@ -15,6 +15,8 @@ export interface Product {
 
   material?: string
   origin?: string
+  suitableFor?: string
+  color?: string
 
   images?: string[]
 
