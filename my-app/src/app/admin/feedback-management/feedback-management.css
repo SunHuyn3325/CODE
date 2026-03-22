@@ -1,0 +1,91 @@
+.filter-select {
+	padding: 7px 12px;
+	border-radius: 6px;
+	border: 1px solid #ccc;
+	margin-left: 10px;
+	font-size: 15px;
+}
+/* Custom checkbox for replied */
+.custom-checkbox {
+	appearance: none;
+	width: 22px;
+	height: 22px;
+	border: 2px solid #8b2f3f;
+	border-radius: 6px;
+	background: #fff;
+	outline: none;
+	cursor: pointer;
+	position: relative;
+	transition: border-color 0.2s, box-shadow 0.2s;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.custom-checkbox:checked {
+	background: #e6f7ea;
+	border-color: #2ecc40;
+}
+.custom-checkbox:checked::after {
+	content: '\2714';
+	color: #2ecc40;
+	font-size: 16px;
+	position: absolute;
+	left: 3px;
+	top: 0px;
+}
+.custom-checkbox:disabled {
+	background: #f3f3f3;
+	border-color: #bbb;
+	cursor: not-allowed;
+}
+.custom-checkbox:hover:not(:disabled) {
+	border-color: #2ecc40;
+	box-shadow: 0 2px 8px rgba(46,204,64,0.08);
+}
+.tick-btn {
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 2px 6px;
+	border-radius: 4px;
+	transition: background 0.2s;
+}
+.tick-btn:hover {
+	background: #e0e0e0;
+}
+.feedback-container{
+padding:40px;
+background:#ebe1d8;
+}
+
+h2{
+color:#40513b;
+margin-bottom:20px;
+}
+
+.search{
+padding:10px;
+margin-bottom:20px;
+color:#6e5034;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid #eee;
+color:#40513b;
+}
+
+button{
+background:#a94053;
+color:white;
+border:none;
+padding:6px 12px;
+border-radius:4px;
+cursor:pointer;
+}

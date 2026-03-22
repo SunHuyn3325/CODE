@@ -90,14 +90,23 @@
 
                 <td class="order-actions">
                   <div class="action-btn-group modern-btn-group">
-                    <button (click)="showOrderDetail(order)" class="modern-btn btn-detail" title="Xem chi tiết" aria-label="Xem chi tiết">
-                      <span class="material-icons" aria-hidden="true">visibility</span>
+                    <button
+                      class="modern-btn btn-detail"
+                      (click)="showOrderDetail(order)"
+                      title="Xem chi tiết">
+                      <span class="material-icons">visibility</span>
                     </button>
-                    <button (click)="exportInvoice(order)" class="modern-btn btn-export" title="Xuất hoá đơn" aria-label="Xuất hoá đơn">
-                      <span class="material-icons" aria-hidden="true">description</span>
+                    <button
+                      class="modern-btn btn-export"
+                      (click)="exportInvoice(order)"
+                      title="Xuất hoá đơn">
+                      <span class="material-icons">receipt_long</span>
                     </button>
-                    <button (click)="cancelOrder(order)" class="modern-btn btn-danger" title="Huỷ đơn" aria-label="Huỷ đơn">
-                      <span class="material-icons" aria-hidden="true">cancel</span>
+                    <button
+                      class="modern-btn btn-cancel"
+                      (click)="cancelOrder(order)"
+                      title="Huỷ đơn">
+                      <span class="material-icons">cancel</span>
                     </button>
                   </div>
                 </td>

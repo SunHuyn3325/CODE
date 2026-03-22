@@ -3,11 +3,6 @@
   <!-- Header -->
   <div class="header">
     <h2>Quản lý Sản phẩm</h2>
-    <button class="btn btn-delete"
-      [disabled]="selectedProducts.length === 0"
-      (click)="deleteSelectedProducts()">
-      Xóa đã chọn ({{ selectedProducts.length }})
-    </button>
   </div>
 
   <!-- Thông báo -->
@@ -143,13 +138,33 @@
   <!-- Danh sách sản phẩm -->
   <div class="product-list">
     <div class="list-header">
-      <h3>Danh sách sản phẩm ({{ products.length }})</h3>
-      <label class="select-all-label">
-        <input type="checkbox"
-          [checked]="selectedProducts.length === paginatedProducts.length && paginatedProducts.length > 0"
-          (change)="toggleSelectAll($event)"/>
-        Chọn tất cả trang này
-      </label>
+        <div class="product-list-header-flex-2rows">
+          <div class="header-row-left">
+            <h3 class="product-list-title">Danh sách sản phẩm ({{ filteredProducts.length }})</h3>
+            <label class="select-all-label">
+              <input type="checkbox"
+                [checked]="selectedProducts.length === paginatedProducts.length && paginatedProducts.length > 0"
+                (change)="toggleSelectAll($event)"/>
+              Chọn tất cả trang này
+            </label>
+          </div>
+          <div class="header-filters-row">
+            <input type="text" [(ngModel)]="searchProduct" placeholder="Tìm kiếm sản phẩm..." />
+            <select [(ngModel)]="filterCategory">
+              <option value="">Tất cả danh mục</option>
+              <option value="ao-dai">Áo dài</option>
+              <option value="viet-phuc">Việt phục</option>
+              <option value="ao-ba-ba">Áo bà ba</option>
+              <option value="phu-kien">Phụ kiện</option>
+            </select>
+            <button class="btn btn-primary" (click)="applyProductFilter()">Lọc</button>
+            <button class="btn btn-primary delete-selected-btn"
+              [disabled]="selectedProducts.length === 0"
+              (click)="deleteSelectedProducts()">
+              Xóa đã chọn ({{ selectedProducts.length }})
+            </button>
+          </div>
+        </div>
     </div>
 
     <div class="card-grid">

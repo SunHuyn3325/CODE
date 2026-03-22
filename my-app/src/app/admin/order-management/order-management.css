@@ -1,28 +1,59 @@
-.modern-btn-group {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	gap: 18px;
-	min-width: 120px;
+.modern-btn-group{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:12px;
 }
 
-.modern-btn {
-	background: #fff;
-	border: none;
-	border-radius: 50%;
-	width: 44px;
-	height: 44px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	transition: background 0.18s, box-shadow 0.18s, color 0.18s;
-	box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-	cursor: pointer;
-	font-size: 24px;
-	color: #555;
-	margin: 0 2px;
-	position: relative;
+.modern-btn{
+background:#fff;
+border:none;
+border-radius:50%;
+width:40px;
+height:40px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+transition:all .2s ease;
+box-shadow:0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* HOVER */
+.modern-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* ICON SIZE */
+.modern-btn .material-icons{
+font-size:22px;
+}
+
+/* COLORS */
+.btn-detail .material-icons{
+color:#1976d2;
+}
+
+.btn-export .material-icons{
+color:#27ae60;
+}
+
+.btn-cancel .material-icons{
+color:#e74c3c;
+}
+
+/* HOVER BACKGROUND */
+.btn-detail:hover{
+background:#e3f2fd;
+}
+
+.btn-export:hover{
+background:#e8f5e9;
+}
+
+.btn-cancel:hover{
+background:#fdecea;
 }
 .modern-btn:active {
 	background: #f4f6f8;

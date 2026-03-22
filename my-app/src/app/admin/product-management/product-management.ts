@@ -13,6 +13,22 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 })
 export class ProductManagement implements OnInit {
 
+  searchProduct: string = '';
+  filterCategory: string = '';
+  filteredProducts: any[] = [];
+
+  applyProductFilter() {
+    const text = this.searchProduct.toLowerCase();
+    this.filteredProducts = this.products.filter(p => {
+      const matchText = p.product_name.toLowerCase().includes(text);
+      const matchCat = this.filterCategory ? p.product_dept === this.filterCategory : true;
+      return matchText && matchCat;
+    });
+    this.totalPages = Math.ceil(this.filteredProducts.length / this.pageSize) || 1;
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
   products: any[] = [];
   paginatedProducts: any[] = [];
   selectedProducts: string[] = [];
@@ -63,7 +79,9 @@ export class ProductManagement implements OnInit {
     this.productService.getProducts().subscribe({
       next: (data: any[]) => {
         this.products = data;
+        this.filteredProducts = data;
         this.totalPages = Math.ceil(this.products.length / this.pageSize) || 1;
+        this.currentPage = 1;
         this.updatePagination();
       },
       error: () => this.showError('Không thể tải danh sách sản phẩm!')
@@ -72,7 +90,7 @@ export class ProductManagement implements OnInit {
 
   updatePagination() {
     const start = (this.currentPage - 1) * this.pageSize;
-    this.paginatedProducts = this.products.slice(start, start + this.pageSize);
+    this.paginatedProducts = this.filteredProducts.slice(start, start + this.pageSize);
   }
 
   previousPage() {

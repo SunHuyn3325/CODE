@@ -1,0 +1,54 @@
+<div class="feedback-container">
+
+<h2>Quản lý phản hồi khách hàng</h2>
+
+<input
+type="text"
+placeholder="Tìm kiếm..."
+[(ngModel)]="searchText"
+class="search"
+/>
+
+<select [(ngModel)]="filterReplied" class="filter-select">
+	<option value="all">Tất cả</option>
+	<option value="replied">Đã phản hồi</option>
+	<option value="notReplied">Chưa phản hồi</option>
+</select>
+<button (click)="applyFilter()" class="btn-primary" style="margin-left:8px;">Lọc</button>
+
+<table>
+
+<thead>
+<tr>
+<th>STT</th>
+<th>Họ tên</th>
+<th>Email</th>
+<th>Số điện thoại</th>
+<th>Nội dung</th>
+<th>Đã phản hồi</th>
+</tr>
+</thead>
+
+<tbody>
+
+<tr *ngFor="let f of filteredFeedback(); let i=index">
+
+
+<td>{{i+1}}</td>
+<td>{{f.fullName}}</td>
+<td>{{f.email}}</td>
+<td>{{f.phone}}</td>
+<td>{{f.message}}</td>
+<td>
+	<div style="display:flex;justify-content:center;align-items:center;">
+		<input type="checkbox" class="custom-checkbox" [checked]="f.replied" (change)="markReplied(f, $event)" [disabled]="f.replied" title="Đánh dấu đã phản hồi" />
+	</div>
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
