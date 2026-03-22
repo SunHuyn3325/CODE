@@ -2,8 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { BlogApiService } from '../../blog-api.service';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, Subscription } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import { ProductService } from '../../services/product.service';
 import { WishlistService } from '../../services/wishlist.service';
 import { CartService } from '../../services/cart.service';
@@ -57,6 +59,7 @@ interface Product {
 export class BlogDetail implements OnInit, OnDestroy, AfterViewInit {
   // Data properties
   currentPost: BlogPost | null = null;
+  blogId: string | null = null;
   relatedProducts: Product[] = [];
   prevPost: BlogPost | null = null;
   nextPost: BlogPost | null = null;
@@ -84,6 +87,7 @@ export class BlogDetail implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private http: HttpClient,
+    private blogApi: BlogApiService,
     private router: Router,
     private route: ActivatedRoute,
     private productService: ProductService,
@@ -94,22 +98,25 @@ export class BlogDetail implements OnInit, OnDestroy, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadBlogData();
+    this.route.paramMap.subscribe(params => {
+      this.blogId = params.get('id');
+      console.log('BlogDetail id:', this.blogId);
+      this.loadBlogData();
+    });
     this.initScrollListener();
+  }
 
-    // Subscribe to route params changes để reload khi navigate
-    this.routeParamsSubscription = this.route.params.subscribe((params) => {
-      const newPostId = params['id'] || '';
-      // Normalize newPostId
-      const normalizedNewPostId = newPostId ? newPostId.trim().replace(/,$/, '').trim() : newPostId;
-      const normalizedCurrentPostId = this.postId
-        ? this.postId.trim().replace(/,$/, '').trim()
-        : this.postId;
-
-      if (normalizedNewPostId && normalizedNewPostId !== normalizedCurrentPostId) {
-        console.log(' [BlogDetail] Route params changed, reloading blog:', normalizedNewPostId);
-        this.postId = normalizedNewPostId;
-        this.loadBlogPost(normalizedNewPostId);
+  fetchBlogDetail(id: string) {
+    this.blogApi.getBlogById(id).subscribe({
+      next: (blog: any) => {
+        console.log('Fetched blog detail:', blog);
+        this.currentPost = blog;
+        this.isLoading = false;
+      },
+      error: (err: any) => {
+        console.error('Error fetching blog detail:', err);
+        this.error = 'Không tìm thấy bài viết hoặc có lỗi khi tải.';
+        this.isLoading = false;
       }
     });
   }
@@ -189,144 +196,21 @@ export class BlogDetail implements OnInit, OnDestroy, AfterViewInit {
 
   // Load blog data
   async loadBlogData(): Promise<void> {
-    try {
-      this.isLoading = true;
-      this.error = '';
-
-      // Get post ID from route params - sử dụng snapshot để lấy ngay lập tức
-      this.postId =
-        this.route.snapshot.params['id'] || this.route.snapshot.paramMap.get('id') || '';
-
-      // Normalize postId
-      if (this.postId) {
-        this.postId = this.postId.trim().replace(/,$/, '').trim();
-      }
-
-      if (this.postId) {
-        console.log(' [BlogDetail] Loading post with ID:', this.postId);
-        await this.loadBlogPost(this.postId);
-      } else {
-        this.error = 'Không tìm thấy ID bài viết';
-        this.isLoading = false;
-      }
-    } catch (err) {
-      this.error = 'Không thể tải dữ liệu bài viết';
-      console.error('Error loading blog data:', err);
+    this.isLoading = true;
+    this.error = '';
+    this.postId = this.blogId || '';
+    if (this.postId) {
+      const normalizedId = this.postId.trim().replace(/,$/, '').trim();
+      this.fetchBlogDetail(normalizedId);
+    } else {
+      this.error = 'Không tìm thấy ID bài viết';
       this.isLoading = false;
     }
   }
 
   // Load specific blog post
   async loadBlogPost(postId: string): Promise<void> {
-    if (!postId) {
-      console.error(' [BlogDetail] No postId provided');
-      this.error = 'Không tìm thấy ID bài viết';
-      this.isLoading = false;
-      return;
-    }
-
-    // Normalize postId: trim và loại bỏ dấu phẩy thừa
-    const normalizedPostId = postId.trim().replace(/,$/, '').trim();
-
-    try {
-      console.log(
-        ' [BlogDetail] Fetching blog post from API:',
-        `http://localhost:3000/api/blogs/${normalizedPostId}`
-      );
-
-      // Load blog post từ backend API
-      const response = await this.http
-        .get<{ success: boolean; data: BlogPost }>(
-          `http://localhost:3000/api/blogs/${normalizedPostId}`
-        )
-        .toPromise();
-
-      console.log(' [BlogDetail] API Response:', response);
-
-      if (response && response.success && response.data) {
-        console.log(' [BlogDetail] Loaded from MongoDB:', response.data.id);
-
-        // Normalize blog ID từ response
-        const normalizedBlog = {
-          ...response.data,
-          id: response.data.id
-            ? response.data.id.trim().replace(/,$/, '').trim()
-            : response.data.id,
-        };
-
-        this.currentPost = normalizedBlog;
-
-        // Load all blogs để tìm prev/next posts
-        try {
-          const allBlogsResponse = await this.http
-            .get<{ success: boolean; data: BlogPost[] }>('http://localhost:3000/api/blogs')
-            .toPromise();
-
-          if (allBlogsResponse && allBlogsResponse.success && allBlogsResponse.data) {
-            // Normalize tất cả blog IDs từ response
-            const normalizedBlogs = allBlogsResponse.data.map((blog) => ({
-              ...blog,
-              id: blog.id ? blog.id.trim().replace(/,$/, '').trim() : blog.id,
-            }));
-            await this.loadRelatedData(normalizedBlogs);
-          }
-        } catch (relatedErr) {
-          console.warn(' [BlogDetail] Error loading related posts:', relatedErr);
-          // Không block việc hiển thị bài viết chính nếu lỗi load related posts
-        }
-
-        this.loadRelatedProducts();
-
-        // Set page title
-        document.title = `${this.currentPost.title} - VGreen Blog`;
-
-        this.isLoading = false;
-        this.error = '';
-
-        // Apply styles to article content after data is loaded
-        setTimeout(() => this.applyArticleStyles(), 200);
-      } else {
-        console.error(' [BlogDetail] Invalid response format:', response);
-        this.error = 'Không tìm thấy bài viết';
-        this.isLoading = false;
-      }
-    } catch (err: any) {
-      console.error(' [BlogDetail] Error loading from backend:', err);
-      console.error(' [BlogDetail] Error details:', {
-        message: err?.message,
-        status: err?.status,
-        statusText: err?.statusText,
-        url: err?.url,
-      });
-
-      // Fallback: thử load từ JSON nếu backend lỗi
-      try {
-        const fallbackResponse = await this.http
-          .get<BlogPost[]>('../../data/blog.json')
-          .toPromise();
-        if (fallbackResponse) {
-          console.log(' [BlogDetail] Using fallback JSON data');
-          this.currentPost = fallbackResponse.find((post) => post.id === postId) || null;
-
-          if (!this.currentPost) {
-            this.error = 'Không tìm thấy bài viết';
-            this.isLoading = false;
-            return;
-          }
-
-          await this.loadRelatedData(fallbackResponse);
-          this.loadRelatedProducts();
-          document.title = `${this.currentPost.title} - VGreen Blog`;
-          this.isLoading = false;
-          setTimeout(() => this.applyArticleStyles(), 200);
-          this.error = '';
-        }
-      } catch (fallbackErr) {
-        this.error = 'Không thể tải bài viết';
-        console.error(' [BlogDetail] Fallback also failed:', fallbackErr);
-        this.isLoading = false;
-      }
-    }
+    // Đã chuyển sang fetchBlogDetail, không cần loadBlogPost nữa
   }
 
   // Load related data

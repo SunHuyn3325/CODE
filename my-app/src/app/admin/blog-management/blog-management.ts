@@ -246,9 +246,13 @@ export class BlogManagement implements OnInit {
   }
 
   submit(status: BlogStatus): void {
+
+    // Đảm bảo luôn lấy nội dung mới nhất từ editor
+    if (this.contentEditor?.nativeElement) {
+      this.blogForm.content = this.contentEditor.nativeElement.innerHTML || '';
+    }
     this.formErrors.title = !this.blogForm.title.trim();
     this.formErrors.content = !this.blogForm.content.trim();
-
     if (this.formErrors.title || this.formErrors.content) {
       return;
     }

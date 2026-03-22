@@ -1,24 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { BlogApiService, BlogPost } from '../../blog-api.service';
+import { HttpClientModule } from '@angular/common/http';
 
-// Interface cho Blog Post - Khớp với MongoDB schema
-interface BlogPost {
-  id: string; // MongoDB: id
-  img: string; // MongoDB: img
-  title: string; // MongoDB: title
-  excerpt: string; // MongoDB: excerpt
-  pubDate: string | Date; // MongoDB: pubDate (Date)
-  author: string; // MongoDB: author
-  categoryTag: string; // MongoDB: categoryTag
-  content: string; // MongoDB: content
-  status?: string; // MongoDB: status (Active/Draft/Archived)
-  views?: number; // MongoDB: views
-  createdAt?: Date; // MongoDB: createdAt
-  updatedAt?: Date; // MongoDB: updatedAt
-}
+// BlogPost interface moved to BlogApiService
 
 @Component({
   selector: 'app-blog',
@@ -28,31 +15,22 @@ interface BlogPost {
   styleUrls: ['./blog.css'],
 })
 export class Blog implements OnInit, AfterViewInit {
-  // Dữ liệu blog
   allBlogs: BlogPost[] = [];
   displayedBlogs: BlogPost[] = [];
   featuredPost: BlogPost | null = null;
-
-  // Pagination
   currentPage = 1;
   postsPerPage = 9;
   totalPages = 0;
-
-  // Load more functionality
   hasMorePosts = false;
   isLoadingMore = false;
-  displayedPostsCount = 9; // Số bài viết hiện đang hiển thị
-
-  // Search và Filter
+  displayedPostsCount = 9;
   searchTerm = '';
   selectedCategory = '';
   categories: string[] = [];
-
-  // Loading states
   isLoading = true;
   error = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private blogApi: BlogApiService, private router: Router) {}
 
   ngOnInit() {
     this.loadBlogData();
@@ -66,41 +44,42 @@ export class Blog implements OnInit, AfterViewInit {
   loadBlogData(): void {
     this.isLoading = true;
     this.error = '';
-
-    // Load data từ backend API sử dụng subscribe thay vì toPromise
-    this.http.get<{ success: boolean; data: BlogPost[]; count: number }>('/api/blogs').subscribe({
-      next: (response) => {
-        if (response && response.success && response.data) {
-          // Map và convert pubDate nếu cần, và normalize blog IDs
-          this.allBlogs = response.data.map((blog) => {
-            // Normalize ID: trim và loại bỏ dấu phẩy thừa
-            let normalizedId = blog.id;
+    this.blogApi.getBlogs().subscribe({
+      next: (blogs) => {
+        if (Array.isArray(blogs)) {
+          this.allBlogs = blogs.map((blog: any) => {
+            // Ưu tiên lấy _id nếu có, nếu không lấy id
+            let normalizedId = blog._id || blog.id;
             if (normalizedId && typeof normalizedId === 'string') {
               normalizedId = normalizedId.trim().replace(/,$/, '').trim();
+            } else if (normalizedId) {
+              normalizedId = String(normalizedId);
+            } else {
+              normalizedId = '';
             }
-
-            // Đảm bảo pubDate là string ISO
             let pubDateStr = blog.pubDate;
             if (pubDateStr instanceof Date) {
               pubDateStr = pubDateStr.toISOString();
             } else if (typeof pubDateStr === 'string') {
-              // Nếu đã là string, giữ nguyên
               pubDateStr = pubDateStr;
             } else {
-              // Fallback
               pubDateStr = new Date().toISOString();
             }
-
+            // Ưu tiên lấy thumbnail từ backend, nếu không có thì lấy img
+            let imgPath = blog.thumbnail || blog.img;
+            if (imgPath && typeof imgPath === 'string' && !imgPath.startsWith('http') && !imgPath.startsWith('/')) {
+              imgPath = '/images/' + imgPath;
+            }
             return {
               ...blog,
-              id: normalizedId, // Sử dụng ID đã normalize
+              id: normalizedId,
               pubDate: pubDateStr,
+              img: imgPath,
             };
           });
-
+          console.log('Blog images:', this.allBlogs.map(b => b.img));
           this.setupBlogData();
           this.isLoading = false;
-          // Restore scroll state sau khi blogs đã load xong
           setTimeout(() => {
             this.restoreScrollState();
           }, 100);
@@ -112,26 +91,7 @@ export class Blog implements OnInit, AfterViewInit {
       error: (err) => {
         console.error(' [Blog] Error loading from backend:', err);
         this.error = 'Không thể tải dữ liệu blog. Vui lòng thử lại sau.';
-
-        // Fallback: thử load từ JSON nếu backend lỗi
-        this.http.get<BlogPost[]>('../../data/blog.json').subscribe({
-          next: (fallbackResponse) => {
-            if (fallbackResponse) {
-              this.allBlogs = fallbackResponse;
-              this.setupBlogData();
-              this.error = '';
-              this.isLoading = false;
-              // Restore scroll state sau khi blogs đã load xong
-              setTimeout(() => {
-                this.restoreScrollState();
-              }, 100);
-            }
-          },
-          error: (fallbackErr) => {
-            console.error(' [Blog] Fallback also failed:', fallbackErr);
-            this.isLoading = false;
-          },
-        });
+        this.isLoading = false;
       },
     });
   }
@@ -287,15 +247,17 @@ export class Blog implements OnInit, AfterViewInit {
     img.style.opacity = '1';
   }
 
-  onImageError(event: Event) {
-    const img = event.target as HTMLImageElement;
-    img.src =
-      'data:image/svg+xml;utf8,' +
-      encodeURIComponent(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial, Helvetica, sans-serif" font-size="16">No Image</text></svg>`
-      );
+  onImageError(event?: Event) {
+    if (event && event.target) {
+      const img = event.target as HTMLImageElement;
+      img.src =
+        'data:image/svg+xml;utf8,' +
+        encodeURIComponent(
+          `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial, Helvetica, sans-serif" font-size="16">No Image</text></svg>`
+        );
+    }
   }
-
+  // ...existing code...
   // -----------------------------
   // 🎯 Scroll State Management (E-commerce UX)
   // -----------------------------

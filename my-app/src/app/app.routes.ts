@@ -1,3 +1,4 @@
+import { Blog } from './sac-blog/blog/blog';
 import { Routes } from '@angular/router';
 import { Home } from './home/home';
 import { Contact } from './contact/contact';
@@ -23,6 +24,7 @@ import { ForgotPasswordGmail } from './account/forgot-password-gmail/forgot-pass
 import { ForgotPasswordReset } from './account/forgot-password-reset/forgot-password-reset';
 
 export const routes: Routes = [
+    { path: 'sac-blog', component: Blog },
   { path: '', component: Home },
   { path: 'contact', component: Contact },
   { path: 'policy', component: Policy },
