@@ -381,6 +381,22 @@ app.post("/blogs", async (req, res) => {
       return res.status(400).json({ message: "Thiếu tiêu đề hoặc nội dung bài viết" });
     }
 
+    // Xử lý authorId - nếu không có hoặc rỗng thì tạo một ObjectId mặc định
+    if (!payload.authorId || payload.authorId.trim() === '') {
+      // Tạo một ObjectId mặc định hoặc tìm admin user
+      payload.authorId = new mongoose.Types.ObjectId();
+    } else {
+      // Kiểm tra authorId có phải ObjectId hợp lệ không
+      if (!mongoose.Types.ObjectId.isValid(payload.authorId)) {
+        payload.authorId = new mongoose.Types.ObjectId();
+      }
+    }
+
+    // Đảm bảo có authorName
+    if (!payload.authorName || payload.authorName.trim() === '') {
+      payload.authorName = 'Admin';
+    }
+
     if (!payload.slug) {
       payload.slug = await buildUniqueBlogSlug(payload.title);
     } else {
@@ -398,13 +414,19 @@ app.post("/blogs", async (req, res) => {
         .filter(Boolean);
     }
 
+    console.log('Creating blog with payload:', JSON.stringify(payload, null, 2));
+    
     const blog = new Blog(payload);
     const savedBlog = await blog.save();
+    
+    console.log('Blog created successfully:', savedBlog._id);
     res.status(201).json(savedBlog);
   } catch (err) {
+    console.error('Error creating blog:', err);
     res.status(500).json({
       message: "Tạo bài viết thất bại",
-      error: err?.message || err
+      error: err?.message || err,
+      details: err.name === 'ValidationError' ? err.errors : undefined
     });
   }
 });
