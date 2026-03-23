@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OrderApiService } from '../../order-api.service';
+import { AddressService } from '../../address.service';
 import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
@@ -38,7 +39,8 @@ export class OrderManagement implements OnInit {
 
   constructor(
     private orderService: OrderApiService,
-     private cdr: ChangeDetectorRef
+    private addressService: AddressService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -53,6 +55,20 @@ export class OrderManagement implements OnInit {
         this.filteredOrders = [...data];
         this.totalOrders = this.orders.length;
         this.totalPages = Math.ceil(this.totalOrders / this.pageSize);
+        // compute subtotal and total for orders that don't include them
+        this.orders.forEach(o => {
+          try {
+            const items = o.orderItems || (o as any).items || [];
+            const sub = items.reduce((acc: number, it: any) => {
+              const p = Number(it.price || it.unit_price || 0) || 0;
+              const q = Number(it.qty || it.quantity || it.qtyOrdered || 0) || 0;
+              return acc + p * q;
+            }, 0);
+            if (o.subTotal == null) o.subTotal = sub;
+            if (o.shippingFee == null && (o as any).shipping_fee != null) o.shippingFee = (o as any).shipping_fee;
+            if (o.totalPrice == null) o.totalPrice = (Number(o.subTotal || 0) || 0) + (Number(o.shippingFee || 0) || 0);
+          } catch (e) {}
+        });
 
       },
       error: (err) => {
@@ -159,7 +175,70 @@ export class OrderManagement implements OnInit {
   selectedOrder: any = null;
 
   showOrderDetail(order: any) {
-  this.selectedOrder = { ...order };
+    // clone to avoid mutating list view state
+    this.selectedOrder = { ...order };
+
+    // Try to attach saved address object for display (address, ward, city)
+    const uid = order?.user || order?.userId || (typeof localStorage !== 'undefined' && JSON.parse(localStorage.getItem('user') || '{}')._id) || '';
+    if (!uid) return;
+
+    this.addressService.getAddressByUser(uid).subscribe({
+      next: (addr: any) => {
+        // normalize various address shapes
+        let addrString = '';
+        if (!addr) addrString = '';
+        else if (typeof addr === 'string') addrString = addr;
+        else if (addr.address) addrString = addr.address;
+        else if (addr.fullAddress) addrString = addr.fullAddress;
+        else {
+          const parts: string[] = [];
+          if (addr.houseNumber) parts.push(addr.houseNumber);
+          if (addr.street) parts.push(addr.street);
+          if (addr.address) parts.push(addr.address);
+          if (addr.ward) parts.push(addr.ward);
+          if (addr.district) parts.push(addr.district);
+          if (addr.city) parts.push(addr.city);
+          if (addr.province) parts.push(addr.province);
+          addrString = parts.filter(Boolean).join(', ');
+        }
+
+        if (this.selectedOrder) {
+          this.selectedOrder.shippingAddress = this.selectedOrder.shippingAddress || addrString;
+          if (addr && typeof addr === 'object') this.selectedOrder.shippingAddressObj = addr;
+          if (!this.selectedOrder.customerInfo) this.selectedOrder.customerInfo = {};
+          this.selectedOrder.customerInfo.address = this.selectedOrder.customerInfo.address || addrString;
+          // compute subtotal if missing
+          try {
+            const items = this.selectedOrder.orderItems || (this.selectedOrder as any).items || [];
+            const sub = items.reduce((acc: number, it: any) => {
+              const p = Number(it.price || it.unit_price || 0) || 0;
+              const q = Number(it.qty || it.quantity || it.qtyOrdered || 0) || 0;
+              return acc + p * q;
+            }, 0);
+            if (this.selectedOrder.subTotal == null) this.selectedOrder.subTotal = sub;
+          } catch (e) {}
+          // compute shipping fee if missing
+          if (this.selectedOrder.shippingFee == null) {
+            if ((this.selectedOrder as any).shipping_fee != null) this.selectedOrder.shippingFee = (this.selectedOrder as any).shipping_fee;
+            else {
+              const cityCandidate = (addr && typeof addr === 'object' ? addr.city : '') || addrString || this.selectedOrder.customerInfo?.address;
+              const fee = this.computeShippingFeeFromLocation(cityCandidate);
+              this.selectedOrder.shippingFee = fee;
+              console.log('admin computed shipping fee for selectedOrder', this.selectedOrder._id, 'cityCandidate=', cityCandidate, 'fee=', fee);
+            }
+          }
+          // compute total
+          this.selectedOrder.totalPrice = (Number(this.selectedOrder.subTotal || 0) || 0) + (Number(this.selectedOrder.shippingFee || 0) || 0);
+          console.log('admin selectedOrder totals:', { orderId: this.selectedOrder._id, subTotal: this.selectedOrder.subTotal, shippingFee: this.selectedOrder.shippingFee, totalPrice: this.selectedOrder.totalPrice });
+        }
+
+        // ensure modal updates
+        try { this.cdr.detectChanges(); } catch (e) {}
+      },
+      error: () => {
+        // ignore missing address
+      }
+    });
   }
 
   closeOrderDetail() {
@@ -189,6 +268,16 @@ export class OrderManagement implements OnInit {
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
     return this.filteredOrders.slice(start, end);
+  }
+
+  // Compute shipping fee based on city/location: HCM city => 25000, others => 35000
+  private computeShippingFeeFromLocation(loc?: string | null): number {
+    const raw = (loc || '').toString().toLowerCase().trim();
+    if (!raw) return 35000;
+    let normalized = raw.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    normalized = normalized.replace(/\s|\.|\-/g, '');
+    if (normalized.includes('hochiminh') || normalized.includes('tphcm') || normalized.includes('hcm')) return 25000;
+    return 35000;
   }
 
 }

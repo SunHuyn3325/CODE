@@ -201,6 +201,32 @@ background:#fdecea;
 	font-size: 18px;
 	margin-left: 8px;
 }
+
+/* Summary list (subtotal / shipping / total) styling to match provided design */
+.order-total .summary-list {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	align-items: stretch;
+}
+.order-total .summary-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.order-total .summary-label {
+	color: #707070;
+	font-size: 18px;
+}
+.order-total .summary-value {
+	color: #222;
+	font-weight: 700;
+	font-size: 18px;
+}
+.order-total .summary-row.total .summary-value.big {
+	color: #111;
+	font-size: 22px;
+}
 .order-container{
 background:#f4f6f8;
 padding:30px;

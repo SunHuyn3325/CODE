@@ -122,7 +122,15 @@
     <div class="order-info-grid">
       <div><span class="label">Mã đơn:</span> <span>{{selectedOrder._id}}</span></div>
       <div><span class="label">Khách hàng:</span> <span>{{selectedOrder.userName || 'Guest'}}</span></div>
-      <div><span class="label">Địa chỉ giao hàng:</span> <span>{{selectedOrder.shippingAddress}}</span></div>
+      <div>
+        <span class="label">Địa chỉ giao hàng:</span>
+        <span>
+          {{ selectedOrder.shippingAddressObj?.address || selectedOrder.shippingAddress || selectedOrder.customerInfo?.address }}
+          <span *ngIf="selectedOrder.shippingAddressObj?.ward || selectedOrder.shippingAddressObj?.city">
+            , {{ selectedOrder.shippingAddressObj?.ward }}<span *ngIf="selectedOrder.shippingAddressObj?.ward && selectedOrder.shippingAddressObj?.city">, </span>{{ selectedOrder.shippingAddressObj?.city }}
+          </span>
+        </span>
+      </div>
       <div><span class="label">Ngày đặt:</span> <span>{{selectedOrder.createdAt | date:'dd/MM/yyyy HH:mm'}}</span></div>
       <div><span class="label">Trạng thái:</span> <span class="status-badge status-{{selectedOrder.status}}">{{selectedOrder.status}}</span></div>
     </div>
@@ -138,18 +146,30 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of selectedOrder.items">
-            <td>{{item.productName}}</td>
-            <td>{{item.quantity}}</td>
-            <td>{{item.price | number}} đ</td>
-            <td>{{item.price * item.quantity | number}} đ</td>
+          <tr *ngFor="let item of (selectedOrder.items || selectedOrder.orderItems || [])">
+            <td>{{item.productName || item.name || item.title}}</td>
+            <td>{{item.quantity || item.qty || item.qtyOrdered}}</td>
+            <td>{{(item.price || item.unit_price) | number}} đ</td>
+            <td>{{((item.price || item.unit_price) * (item.quantity || item.qty || item.qtyOrdered || 0)) | number}} đ</td>
           </tr>
         </tbody>
       </table>
     </div>
     <div class="order-total">
-      <span class="label">Tổng tiền:</span>
-      <span class="total-value">{{selectedOrder.totalPrice | number}} đ</span>
+      <div class="summary-list">
+        <div class="summary-row">
+          <div class="summary-label">Tạm tính</div>
+          <div class="summary-value">{{ selectedOrder?.subTotal | number }} đ</div>
+        </div>
+        <div class="summary-row">
+          <div class="summary-label">Phí vận chuyển</div>
+          <div class="summary-value">{{ selectedOrder?.shippingFee | number }} đ</div>
+        </div>
+        <div class="summary-row total">
+          <div class="summary-label">Tổng tiền</div>
+          <div class="summary-value big">{{ selectedOrder?.totalPrice | number }} đ</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
