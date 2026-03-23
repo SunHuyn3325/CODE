@@ -103,9 +103,12 @@ export class AddressComponent implements OnInit {
         } else {
           this.isEditing = true;
         }
+        // ensure view updates immediately after async load
+        this.defChangeRec();
       },
       error: () => {
         this.isEditing = true;
+        this.defChangeRec();
       },
     });
   }

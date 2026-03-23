@@ -51,7 +51,7 @@
       <!-- TỈNH -->
       <label>
         Tỉnh / Thành phố
-        <select (change)="onProvinceChange($event)">
+        <select (change)="onProvinceChange($event)" [(ngModel)]="selectedProvince" name="province">
           <option value="">Chọn Tỉnh / Thành phố</option>
           <option *ngFor="let p of provinces" [value]="p.code">
             {{ p.name }}
@@ -64,6 +64,8 @@
         Phường / Xã
         <select
           (change)="onWardChange($event)"
+          [(ngModel)]="selectedWard"
+          name="ward"
           [disabled]="!wards.length"
         >
           <option value="">Chọn Phường / Xã</option>
