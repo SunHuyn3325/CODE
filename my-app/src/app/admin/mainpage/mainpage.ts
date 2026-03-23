@@ -1,36 +1,65 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { AdminApiService } from '../admin-api.service';
 
 @Component({
   selector: 'app-mainpage',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './mainpage.html',
   styleUrl: './mainpage.css',
 })
-export class Mainpage {
+export class Mainpage implements OnInit {
   profileName: string = '';
 
-  recentActivities = [
-    { module: 'Sản phẩm / Áo dài', action: 'Thêm sản phẩm mới' },
-    { module: 'Đơn hàng / Order', action: 'Cập nhật trạng thái' },
-    { module: 'Tài khoản / User', action: 'Tạo tài khoản admin' },
-    { module: 'Danh mục / Category', action: 'Chỉnh sửa danh mục' }
-  ];
+  // Stats (loaded from admin APIs)
+  totalUsers: number = 0;
+  totalOrders: number = 0;
+  totalProducts: number = 0;
+  revenue: number = 0;
 
-  constructor(private router: Router) {}
+  activities: Array<any> = [];
+  recentOrders: Array<any> = [];
+
+  constructor(private router: Router, private adminApi: AdminApiService) {}
 
   ngOnInit() {
-    // sau này gọi API backend ở đây
-    this.profileName = 'Admin'; 
+    this.profileName = 'Admin';
+    this.loadAdminStats();
+    this.loadActivities();
+    this.loadRecentOrders();
   }
 
-  goToWebsite() {
-    this.router.navigate(['/']);
+  loadAdminStats() {
+    this.adminApi.getUserCount().subscribe({ next: res => this.totalUsers = res?.count || 0, error: () => this.totalUsers = 0 });
+    this.adminApi.getOrderCount().subscribe({ next: res => this.totalOrders = res?.count || 0, error: () => this.totalOrders = 0 });
+    this.adminApi.getProductCount().subscribe({ next: res => this.totalProducts = res?.count || 0, error: () => this.totalProducts = 0 });
+    this.adminApi.getRevenue().subscribe({ next: res => this.revenue = res?.revenue || 0, error: () => this.revenue = 0 });
   }
 
-  changePassword() {
-    this.router.navigate(['/change-password']);
+  loadActivities() {
+    this.adminApi.getActivities().subscribe({ next: (a) => this.activities = a || [], error: () => this.activities = [] });
+  }
+
+  loadRecentOrders() {
+    this.adminApi.getRecentOrders().subscribe({ next: (o) => this.recentOrders = o || [], error: () => this.recentOrders = [] });
+  }
+
+  formatCurrency(v: number) {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v || 0);
+  }
+
+  statusClass(status: string) {
+    const s = (status || '').toLowerCase();
+    if (s === 'pending') return 'status-pending';
+    if (s === 'completed' || s === 'delivered') return 'status-completed';
+    if (s === 'shipping' || s === 'shipped') return 'status-shipping';
+    return 'status-default';
+  }
+
+  goTo(path: string) {
+    this.router.navigate([path]);
   }
 }

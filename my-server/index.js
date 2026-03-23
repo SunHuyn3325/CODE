@@ -703,6 +703,24 @@ app.get("/orders", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+// ADMIN STATS - aggregated counts and revenue
+app.get("/api/admin/stats", async (req, res) => {
+  try {
+    const usersCount = await User.countDocuments();
+    const ordersCount = await Order.countDocuments();
+    const productsCount = await Product.countDocuments();
+
+    const revenueAgg = await Order.aggregate([
+      { $group: { _id: null, total: { $sum: "$totalPrice" } } }
+    ]);
+    const revenue = revenueAgg && revenueAgg.length ? revenueAgg[0].total || 0 : 0;
+
+    res.json({ users: usersCount, orders: ordersCount, products: productsCount, revenue });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 app.get("/orders/user/:userId", async (req, res) => {
   try {
     const orders = await Order.find({ userId: req.params.userId });
