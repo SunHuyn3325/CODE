@@ -90,6 +90,12 @@ export class Vision implements AfterViewInit, OnDestroy {
     const galleryEl = this.gallery?.nativeElement;
     if (!galleryEl) return;
 
+    // Cancel previous animation loop before starting new one
+    if (this.animFrameId !== null) {
+      cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = null;
+    }
+
     this.cardElements = Array.from(galleryEl.querySelectorAll('.vision-card')) as HTMLElement[];
     const totalCards = this.cardElements.length;
     if (totalCards === 0) return;

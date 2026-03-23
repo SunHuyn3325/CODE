@@ -13,6 +13,7 @@ import { AdminApiService } from '../admin-api.service';
 })
 export class Mainpage implements OnInit {
   profileName: string = '';
+  today: string = '';
 
   // Stats (loaded from admin APIs)
   totalUsers: number = 0;
@@ -27,6 +28,7 @@ export class Mainpage implements OnInit {
 
   ngOnInit() {
     this.profileName = 'Admin';
+    this.today = new Intl.DateTimeFormat('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(new Date());
     this.loadAdminStats();
     this.loadActivities();
     this.loadRecentOrders();
