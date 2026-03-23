@@ -52,7 +52,7 @@
           <input *ngIf="editingUserId === user._id" [(ngModel)]="editedUser.phone"/>
         </td>
         <td>
-          <span *ngIf="editingUserId !== user._id">{{ user.address || '-' }}</span>
+          <span *ngIf="editingUserId !== user._id">{{ user._formattedAddress || formatAddress(user.address) || '-' }}</span>
           <input *ngIf="editingUserId === user._id" [(ngModel)]="editedUser.address"/>
         </td>
         <td>

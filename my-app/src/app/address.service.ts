@@ -19,4 +19,23 @@ export class AddressService {
   deleteAddress(id:any){
     return this.http.delete(this.api + "/" + id);
   }
+
+  // Format an address value into the string: "address, ward, city"
+  // Accepts either a string or an object with { address, ward, city }.
+  formatAddress(addr:any): string {
+    if (!addr && addr !== '') return '';
+    if (typeof addr === 'string') return addr;
+    try {
+      const parts: string[] = [];
+      const a = (addr.address || addr.addr || addr.street || '').toString().trim();
+      const w = (addr.ward || addr.wards || '').toString().trim();
+      const c = (addr.city || addr.province || '').toString().trim();
+      if (a) parts.push(a);
+      if (w) parts.push(w);
+      if (c) parts.push(c);
+      return parts.join(', ');
+    } catch (e) {
+      return '';
+    }
+  }
 }

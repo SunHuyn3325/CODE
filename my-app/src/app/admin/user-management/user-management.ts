@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserApiService } from '../../user-api.service';
+import { AddressService } from '../../address.service';
 
 @Component({
   selector: 'app-user-management',
@@ -37,16 +38,55 @@ export class UserManagement implements OnInit {
   };
 
 
-  constructor(private userService: UserApiService) {}
+  constructor(private userService: UserApiService, private addressService: AddressService) {}
 
   ngOnInit(): void {
     this.loadUsers();
+  }
+
+  // Template wrapper to format address consistently
+  formatAddress(addr: any): string {
+    return this.addressService.formatAddress(addr) || '-';
   }
 
   // load user
   loadUsers() {
     this.userService.getUsers().subscribe((data: any) => {
       this.users = data;
+      // for each user, attempt to fetch their address(es) from AddressService
+      // and attach a formatted address string to display in the table
+      (this.users || []).forEach((u: any) => {
+        if (!u) return;
+        try {
+          this.addressService.getAddressByUser(u._id).subscribe({
+            next: (addrRes: any) => {
+              // addrRes may be an array or single object
+              const addrObj = Array.isArray(addrRes) ? (addrRes[0] || null) : (addrRes || null);
+              u._shippingAddressObj = addrObj;
+              const formatted = this.addressService.formatAddress(addrObj);
+              u._formattedAddress = formatted || (u.address || '');
+            },
+            error: (err) => {
+              // fallback: keep existing user.address
+              u._formattedAddress = u.address || '';
+            }
+          });
+        } catch (e) {
+          u._formattedAddress = u.address || '';
+        }
+      });
+      // Debug: show sample of address-related fields so we can confirm shape
+      try {
+        console.log('UserManagement.loadUsers - users sample:', (data || []).slice(0,5).map((u: any) => ({
+          _id: u._id,
+          profileName: u.profileName,
+          address_field: u.address,
+          shippingAddress: (u as any).shippingAddress || null,
+          addresses: (u as any).addresses || null
+        })));
+      } catch (e) {
+        console.log('UserManagement.loadUsers - preview failed', e);
+      }
       this.filteredUsers = [...this.users];
       this.currentPage = 1;
       this.totalPages = Math.ceil(this.filteredUsers.length / this.pageSize);
@@ -96,6 +136,29 @@ export class UserManagement implements OnInit {
   editUser(user: any) {
     this.editingUserId = user._id;
     this.editedUser = { ...user };
+
+    // Ensure the edit form's address field is populated with the formatted address.
+    // If the formatted address was already fetched, use it; otherwise request it now.
+    if (user._formattedAddress) {
+      this.editedUser.address = user._formattedAddress;
+    } else {
+      try {
+        this.addressService.getAddressByUser(user._id).subscribe({
+          next: (addrRes: any) => {
+            const addrObj = Array.isArray(addrRes) ? (addrRes[0] || null) : (addrRes || null);
+            const formatted = this.addressService.formatAddress(addrObj);
+            this.editedUser.address = formatted || (user.address || '');
+            // cache on the original user object so table reflects it immediately
+            user._formattedAddress = this.editedUser.address;
+          },
+          error: () => {
+            this.editedUser.address = user.address || '';
+          }
+        });
+      } catch (e) {
+        this.editedUser.address = user.address || '';
+      }
+    }
   }
 
   cancelEditing() {
@@ -176,3 +239,7 @@ export class UserManagement implements OnInit {
   }
 
 }
+
+// helper wrapper for templates will be used to format addresses as "address, ward, city"
+// keeps logic in AddressService and avoids duplicating normalization code here
+export interface _UserManagementInternal {}
