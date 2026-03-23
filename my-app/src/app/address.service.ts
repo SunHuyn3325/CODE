@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -8,7 +9,11 @@ export class AddressService {
   api = "http://localhost:3000/addresses";
   constructor(private http: HttpClient) {}
   getAddressByUser(userId:any){
-    return this.http.get(this.api + "/" + userId);
+    // Normalize response: backend returns an object (or null),
+    // some callers previously treated arrays — coerce to single object.
+    return this.http.get<any>(this.api + "/" + userId).pipe(
+      map(res => Array.isArray(res) ? res[0] : res)
+    );
   }
   createAddress(data:any){
     return this.http.post(this.api, data);

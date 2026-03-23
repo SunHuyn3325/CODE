@@ -77,7 +77,12 @@ export class Cart implements OnInit, OnDestroy {
       if (!userRaw) return;
       const user = JSON.parse(userRaw);
       // fill name/email if available (check multiple possible keys)
-      const detectedName = (user.name || user.fullName || user.fullname || user.displayName || (user.firstName && user.lastName ? (user.firstName + ' ' + user.lastName) : '') || '').toString().trim();
+      // Support multiple possible name keys used across app/backends
+      const detectedName = (
+        user.name || user.profileName || user.fullName || user.fullname || user.displayName || user.username ||
+        (user.firstName && user.lastName ? (user.firstName + ' ' + user.lastName) : '') ||
+        ''
+      ).toString().trim();
       if (detectedName) this.form.name = detectedName;
       this.form.email = user.email || this.form.email;
 
