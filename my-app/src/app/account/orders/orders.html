@@ -52,8 +52,8 @@
             <td>{{ (order.orderItems || []).length }}</td>
             <td class="amount">{{ (order.totalPrice || 0) | number:'1.0-0' }} đ</td>
             <td>
-              <span [class.paid]="orderIsPaid(order)" [class.unpaid]="!orderIsPaid(order)">
-                {{ orderIsPaid(order) ? 'Đã thanh toán' : 'Chưa thanh toán' }}
+              <span [class.paid]="!isCod(order)" [class.cod]="isCod(order)" [title]="isCod(order) ? 'Thanh toán khi nhận hàng (COD)' : 'Đã thanh toán'">
+                {{ isCod(order) ? 'COD' : 'Đã thanh toán' }}
               </span>
             </td>
             <td>

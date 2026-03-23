@@ -118,9 +118,9 @@
             </td>
             <td class="price-cell">{{ order.totalPrice | number }} đ</td>
             <td>
-              <span class="paid-pill" [class.paid]="order.isPaid" [class.unpaid]="!order.isPaid"
-                    (click)="togglePaid(order, !order.isPaid)" title="Bấm để đổi">
-                {{ order.isPaid ? 'Đã TT' : 'Chưa TT' }}
+              <span class="paid-pill" [class.paid]="order.isPaid" [class.cod]="isCod(order)"
+                    [title]="order.isPaid ? 'Đã thanh toán' : (isCod(order) ? 'Thanh toán khi nhận hàng (COD) - Chưa thanh toán' : 'Chưa thanh toán')">
+                {{ getPaymentLabel(order) }}
               </span>
             </td>
             <td>{{ order.createdAt | date:'dd/MM/yyyy' }}</td>

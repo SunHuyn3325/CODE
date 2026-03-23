@@ -137,9 +137,15 @@ export class OrderManagement implements OnInit {
     this.orderService.updateOrderStatus(order._id, status)
       .subscribe({
 
-        next: () => {
-
-          order.status = status;
+        next: (updated: any) => {
+          // Use returned order to keep local state in sync (including isPaid/paidAt)
+          if (updated) {
+            order.status = updated.status;
+            order.isPaid = updated.isPaid;
+            order.paidAt = updated.paidAt;
+          } else {
+            order.status = status;
+          }
 
         },
 
@@ -261,6 +267,23 @@ export class OrderManagement implements OnInit {
   exportInvoice(order: any) {
     this.successMsg = 'Chức năng xuất hóa đơn sẽ được phát triển!';
     this.clearMsg();
+  }
+
+  // Return true when order payment method indicates COD/cash
+  isCod(order: any): boolean {
+    if (!order) return false;
+    const pm = (order.paymentMethod || order.payment || '').toString().toLowerCase();
+    return pm.includes('cod') || pm.includes('cash') || pm === 'cod' || pm === 'cash';
+  }
+
+  // Display label for payment column: 'COD' for cash-on-delivery, otherwise 'Đã thanh toán'
+  getPaymentLabel(order: any): string {
+    if (!order) return '';
+    if (order.isPaid) return 'Đã thanh toán';
+    // Not paid yet
+    if (this.isCod(order)) return 'Chưa TT';
+    // For non-COD (online) orders, assume paid (server should set isPaid)
+    return 'Đã thanh toán';
   }
 
   nextPage(): void {

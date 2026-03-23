@@ -287,6 +287,19 @@ export class OrdersComponent implements OnInit {
     return false;
   }
 
+  // Return true when order payment method indicates COD/cash
+  isCod(order: any): boolean {
+    if (!order) return false;
+    const pm = (order.paymentMethod || order.payment || '').toString().toLowerCase();
+    return pm.includes('cod') || pm.includes('cash') || pm === 'cod' || pm === 'cash';
+  }
+
+  // Helper to show payment label: 'COD' for cash-on-delivery, otherwise 'Đã thanh toán'
+  getPaymentLabel(order: any): string {
+    if (!order) return '';
+    return this.isCod(order) ? 'COD' : 'Đã thanh toán';
+  }
+
   // Compute shipping fee based on city/location: HCM city => 25000, others => 35000
   private computeShippingFeeFromLocation(loc?: string | null): number {
     const raw = (loc || '').toString().toLowerCase().trim();
