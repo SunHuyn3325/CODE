@@ -25,20 +25,21 @@ export class ProductDetail implements OnInit {
   // ...existing code...
 
   buyNow() {
-    // Kiểm tra size đã chọn
-    if (!this.selectedSize) {
+    // If product has sizes, ensure a size is selected
+    if (this.product?.sizes && this.product.sizes.length > 0 && !this.selectedSize) {
       alert('Vui lòng chọn size trước khi mua!');
       return;
     }
-    
+
     if (!this.product) {
       alert('Không tìm thấy thông tin sản phẩm!');
       return;
     }
 
-    // Tạo đối tượng theo định dạng CartService API
+    // build cart item; include size when selected
+    const name = this.selectedSize ? `${this.product.product_name} - Size ${this.selectedSize}` : this.product.product_name;
     const cartItem = {
-      name: `${this.product.product_name} - Size ${this.selectedSize}`,
+      name,
       price: this.product.unit_price,
       image: this.product.images?.[0] || '',
       quantity: this.quantity
@@ -79,8 +80,22 @@ export class ProductDetail implements OnInit {
   // Lấy số lượng còn lại của size đã chọn
   getSelectedSizeQuantity(): number {
     if (!this.product?.sizes || !this.selectedSize) return 0;
-    const found = this.product.sizes.find(s => s.size === this.selectedSize);
-    return found ? found.stock : 0;
+    const found: any = this.product.sizes.find((s: any) => s.size === this.selectedSize);
+    return found ? (Number(found.quantity || found.stock || 0)) : 0;
+  }
+
+  // total available stock (for accessories or summed sizes)
+  getAvailableStock(): number {
+    if (!this.product) return 0;
+    if (this.product.sizes && this.product.sizes.length > 0) {
+      return this.product.sizes.reduce((s: number, it: any) => s + (Number((it as any).quantity || (it as any).stock || 0) || 0), 0);
+    }
+    const p: any = this.product as any;
+    return Number(p.stock || p.stocked_quantity || 0) || 0;
+  }
+
+  isSoldOut(): boolean {
+    return this.getAvailableStock() === 0;
   }
 
   constructor(
@@ -166,13 +181,18 @@ export class ProductDetail implements OnInit {
       alert('Tính năng này chỉ hoạt động trên trình duyệt.');
       return;
     }
-    
-    // Kiểm tra size đã chọn
-    if (!this.selectedSize) {
+
+    if (!this.product) {
+      alert('Không tìm thấy thông tin sản phẩm!');
+      return;
+    }
+
+    // If product has sizes, require a size selection
+    if (this.product.sizes && this.product.sizes.length > 0 && !this.selectedSize) {
       alert('Vui lòng chọn size trước khi thêm vào giỏ hàng!');
       return;
     }
-    
+
     const userRaw = localStorage.getItem('user');
     if (!userRaw) {
       alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng và nhận voucher ưu đãi.');
@@ -180,12 +200,13 @@ export class ProductDetail implements OnInit {
       return;
     }
 
-    // Tạo đối tượng theo định dạng CartService API
-    const cartItem = {
-      name: `${this.product.product_name} - Size ${this.selectedSize}`,
+    const name = this.selectedSize ? `${this.product.product_name} - Size ${this.selectedSize}` : this.product.product_name;
+    const cartItem: any = {
+      name,
       price: this.product.unit_price,
-      image: this.product.images?.[0] || '',
-      quantity: this.quantity
+      image: this.getImageSrc(this.product.images?.[0]),
+      quantity: this.quantity,
+      productId: this.product._id,
     };
 
     // Sử dụng CartService API để thêm vào backend

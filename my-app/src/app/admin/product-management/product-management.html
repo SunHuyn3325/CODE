@@ -57,25 +57,33 @@
           <input type="number" formControlName="unit_price" min="0"/>
         </div>
         <div class="col">
-          <label>Số lượng theo size *</label>
-          <div style="display: flex; gap: 12px; align-items: flex-end; margin-top: 4px;">
-            <div style="display: flex; flex-direction: column; align-items: center;">
-              <label style="font-weight: 500;">S</label>
-              <input type="number" min="0" formControlName="quantityS" [attr.data-size]="'S'" style="width:60px;"/>
+          <!-- If accessory selected, show single stock input -->
+          <ng-container *ngIf="productForm.get('product_dept')?.value === 'phu-kien'; else sizesBlock">
+            <label>Số lượng *</label>
+            <input type="number" min="0" formControlName="stock" style="width:120px; margin-top:8px;"/>
+            <small class="error-text" *ngIf="productForm.get('stock')?.invalid && productForm.get('stock')?.touched">Vui lòng nhập số lượng</small>
+          </ng-container>
+          <ng-template #sizesBlock>
+            <label>Số lượng theo size *</label>
+            <div style="display: flex; gap: 12px; align-items: flex-end; margin-top: 4px;">
+              <div style="display: flex; flex-direction: column; align-items: center;">
+                <label style="font-weight: 500;">S</label>
+                <input type="number" min="0" formControlName="quantityS" [attr.data-size]="'S'" style="width:60px;"/>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: center;">
+                <label style="font-weight: 500;">M</label>
+                <input type="number" min="0" formControlName="quantityM" [attr.data-size]="'M'" style="width:60px;"/>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: center;">
+                <label style="font-weight: 500;">L</label>
+                <input type="number" min="0" formControlName="quantityL" [attr.data-size]="'L'" style="width:60px;"/>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: center;">
+                <label style="font-weight: 500;">XL</label>
+                <input type="number" min="0" formControlName="quantityXL" [attr.data-size]="'XL'" style="width:60px;"/>
+              </div>
             </div>
-            <div style="display: flex; flex-direction: column; align-items: center;">
-              <label style="font-weight: 500;">M</label>
-              <input type="number" min="0" formControlName="quantityM" [attr.data-size]="'M'" style="width:60px;"/>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: center;">
-              <label style="font-weight: 500;">L</label>
-              <input type="number" min="0" formControlName="quantityL" [attr.data-size]="'L'" style="width:60px;"/>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: center;">
-              <label style="font-weight: 500;">XL</label>
-              <input type="number" min="0" formControlName="quantityXL" [attr.data-size]="'XL'" style="width:60px;"/>
-            </div>
-          </div>
+          </ng-template>
         </div>
       </div>
 

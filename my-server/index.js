@@ -282,17 +282,27 @@ app.post("/products", async (req, res) => {
       payload.slug = await buildUniqueSlug(payload.product_name);
     }
 
-    // Validate sizes array
-    if (!Array.isArray(payload.sizes) || payload.sizes.length === 0) {
-      return res.status(400).json({ message: "Sản phẩm phải có ít nhất một size với số lượng." });
-    }
+    // For accessories (product_dept === 'phu-kien'), accept a single stock number
     const validSizes = ["S", "M", "L", "XL"];
-    for (const s of payload.sizes) {
-      if (!s.size || !validSizes.includes(s.size)) {
-        return res.status(400).json({ message: `Size không hợp lệ: ${s.size}` });
+    if (payload.product_dept === 'phu-kien') {
+      // require numeric stock >= 0
+      if (typeof payload.stock !== 'number' || payload.stock < 0) {
+        return res.status(400).json({ message: "Phụ kiện cần trường `stock` là số >= 0." });
       }
-      if (typeof s.quantity !== "number" || s.quantity < 0) {
-        return res.status(400).json({ message: `Số lượng cho size ${s.size} phải là số không âm.` });
+      // ensure sizes is empty array for accessories
+      payload.sizes = [];
+    } else {
+      // Validate sizes array for clothing items
+      if (!Array.isArray(payload.sizes) || payload.sizes.length === 0) {
+        return res.status(400).json({ message: "Sản phẩm phải có ít nhất một size với số lượng." });
+      }
+      for (const s of payload.sizes) {
+        if (!s.size || !validSizes.includes(s.size)) {
+          return res.status(400).json({ message: `Size không hợp lệ: ${s.size}` });
+        }
+        if (typeof s.quantity !== "number" || s.quantity < 0) {
+          return res.status(400).json({ message: `Số lượng cho size ${s.size} phải là số không âm.` });
+        }
       }
     }
 
@@ -341,13 +351,17 @@ app.put("/products/:id", async (req, res) => {
     if (!payload.slug && payload.product_name) {
       payload.slug = await buildUniqueSlug(payload.product_name, req.params.id);
     }
-
-    // Validate sizes array if present
-    if (payload.sizes) {
+    // For accessories (product_dept === 'phu-kien'), accept stock field and clear sizes
+    const validSizes = ["S", "M", "L", "XL"];
+    if (payload.product_dept === 'phu-kien') {
+      if (typeof payload.stock !== 'number' || payload.stock < 0) {
+        return res.status(400).json({ message: "Phụ kiện cần trường `stock` là số >= 0." });
+      }
+      payload.sizes = [];
+    } else if (payload.sizes) {
       if (!Array.isArray(payload.sizes) || payload.sizes.length === 0) {
         return res.status(400).json({ message: "Sản phẩm phải có ít nhất một size với số lượng." });
       }
-      const validSizes = ["S", "M", "L", "XL"];
       for (const s of payload.sizes) {
         if (!s.size || !validSizes.includes(s.size)) {
           return res.status(400).json({ message: `Size không hợp lệ: ${s.size}` });

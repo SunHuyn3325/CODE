@@ -9,6 +9,8 @@ export interface Product {
   unit_price: number
   discount: number
   stocked_quantity: number
+  // single-stock for accessories
+  stock?: number
 
   product_dept: string
   rating: number
@@ -20,9 +22,11 @@ export interface Product {
 
   images?: string[]
 
+  // sizes may have either 'stock' or 'quantity' depending on backend shape
   sizes?: {
     size: string
-    stock: number
+    quantity?: number
+    stock?: number
   }[]
 
 }

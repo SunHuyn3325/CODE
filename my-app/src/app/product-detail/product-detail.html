@@ -29,15 +29,17 @@
         <span class="option-value">{{ product?.color }}</span>
       </div>
 
-      <div class="product-option">
+      <div class="product-option" *ngIf="(product?.sizes?.length || 0) > 0">
         <span class="option-label">Kích thước:</span>
         <div class="size-options">
-          <button *ngFor="let size of product?.sizes"
-                  [class.selected]="selectedSize === size.size"
-                  [disabled]="size.stock === 0"
-                  (click)="selectSize(size.size)">
-            {{ size.size }}
-          </button>
+          <ng-container *ngIf="(product?.sizes?.length || 0) > 0">
+            <button *ngFor="let size of product?.sizes"
+                    [class.selected]="selectedSize === size.size"
+                    [disabled]="(size['quantity'] || size['stock'] || 0) === 0"
+                    (click)="selectSize(size.size)">
+              {{ size.size }}
+            </button>
+          </ng-container>
         </div>
       </div>
 

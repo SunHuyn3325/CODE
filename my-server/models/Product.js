@@ -81,6 +81,14 @@ const ProductSchema = new mongoose.Schema({
     default: Date.now
   }
 
+  ,
+  // For items without sizes (e.g., accessories), store a single stock number
+  stock: {
+    type: Number,
+    default: 0,
+    min: 0
+  }
+
 });
 
 module.exports = mongoose.model("Product", ProductSchema);

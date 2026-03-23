@@ -63,6 +63,8 @@ export class ProductManagement implements OnInit {
       product_dept: ['', Validators.required],
       description: [''],
       unit_price: [0, [Validators.required, Validators.min(0)]],
+      // stock used for accessories
+      stock: [0, [Validators.min(0)]],
       discount: [0],
       rating: [4],
       material: [''],
@@ -72,6 +74,27 @@ export class ProductManagement implements OnInit {
       quantityM: [0, [Validators.required, Validators.min(0)]],
       quantityL: [0, [Validators.required, Validators.min(0)]],
       quantityXL: [0, [Validators.required, Validators.min(0)]],
+    });
+
+    // react to category changes to toggle validators
+    this.productForm.get('product_dept')?.valueChanges.subscribe((v) => {
+      if (v === 'phu-kien') {
+        // accessories: make stock required, remove size validators
+        this.productForm.get('stock')?.setValidators([Validators.required, Validators.min(0)]);
+        ['quantityS','quantityM','quantityL','quantityXL'].forEach(k => {
+          this.productForm.get(k)?.clearValidators();
+          this.productForm.get(k)?.updateValueAndValidity();
+        });
+      } else {
+        // clothing: require at least one size (validators on inputs)
+        this.productForm.get('stock')?.clearValidators();
+        this.productForm.get('stock')?.updateValueAndValidity();
+        ['quantityS','quantityM','quantityL','quantityXL'].forEach(k => {
+          this.productForm.get(k)?.setValidators([Validators.required, Validators.min(0)]);
+          this.productForm.get(k)?.updateValueAndValidity();
+        });
+      }
+      this.productForm.get('stock')?.updateValueAndValidity();
     });
   }
 
@@ -127,16 +150,24 @@ export class ProductManagement implements OnInit {
       this.showError('❌ Vui lòng điền đầy đủ: Tên sản phẩm và Danh mục.');
       return;
     }
-    // Đồng bộ giá trị số lượng size từ form vào sizesInput
-    this.sizesInput = [
-      { size: 'S', quantity: this.productForm.value.quantityS },
-      { size: 'M', quantity: this.productForm.value.quantityM },
-      { size: 'L', quantity: this.productForm.value.quantityL },
-      { size: 'XL', quantity: this.productForm.value.quantityXL }
-    ];
-    const sizes = this.sizesInput.filter(s => typeof s.quantity === 'number' && s.quantity > 0);
-    // Cho phép lưu nếu có ít nhất 1 size > 0, nếu không nhập thì không lưu size đó
-    const data = { ...this.productForm.value, images: this.images.filter(img => img), sizes };
+    const formVal = this.productForm.value;
+    let data: any = { ...formVal, images: this.images.filter(img => img) };
+    if (formVal.product_dept === 'phu-kien') {
+      // accessories: use stock
+      data.sizes = [];
+      data.stock = Number(formVal.stock) || 0;
+    } else {
+      // clothing: build sizes array
+      this.sizesInput = [
+        { size: 'S', quantity: formVal.quantityS },
+        { size: 'M', quantity: formVal.quantityM },
+        { size: 'L', quantity: formVal.quantityL },
+        { size: 'XL', quantity: formVal.quantityXL }
+      ];
+      const sizes = this.sizesInput.filter(s => typeof s.quantity === 'number' && s.quantity > 0);
+      data.sizes = sizes;
+      data.stock = 0;
+    }
     this.productService.addProduct(data).subscribe({
       next: (res: any) => {
         this.products.unshift(res); // thêm vào đầu danh sách
@@ -203,12 +234,20 @@ export class ProductManagement implements OnInit {
       this.showError('❌ Vui lòng điền đầy đủ: Tên sản phẩm và Danh mục.');
       return;
     }
-    const sizes = this.sizesInput.filter(s => typeof s.quantity === 'number' && s.quantity > 0);
-    if (sizes.length === 0) {
-      this.showError('Vui lòng nhập số lượng cho ít nhất 1 size.');
-      return;
+    const formVal = this.productForm.value;
+    let data: any = { ...formVal, images: this.images.filter(img => img) };
+    if (formVal.product_dept === 'phu-kien') {
+      data.sizes = [];
+      data.stock = Number(formVal.stock) || 0;
+    } else {
+      const sizes = this.sizesInput.filter(s => typeof s.quantity === 'number' && s.quantity > 0);
+      if (sizes.length === 0) {
+        this.showError('Vui lòng nhập số lượng cho ít nhất 1 size.');
+        return;
+      }
+      data.sizes = sizes;
+      data.stock = 0;
     }
-    const data = { ...this.productForm.value, images: this.images.filter(img => img), sizes };
     this.productService.updateProduct(this.editingProductId, data).subscribe({
       next: (res: any) => {
         const idx = this.products.findIndex(p => p._id === this.editingProductId);
