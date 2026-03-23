@@ -109,7 +109,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let order of paginatedOrders">
-            <td class="order-id-cell" [title]="order._id">{{ order._id | slice:-8 }}</td>
+            <td class="order-id-cell" [title]="order.orderID || order._id || order.id">{{ order.orderID || order._id || order.id }}</td>
             <td>
               <div class="customer-cell">
                 <div class="customer-avatar">{{ (order.userName || 'G')[0] | uppercase }}</div>
