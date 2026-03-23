@@ -26,6 +26,10 @@ export class UserManagement implements OnInit {
   editingUserId: string | null = null;
   editedUser: any = {};
 
+  loading = false;
+  successMsg = '';
+  errorMsg = '';
+
   showAddUserForm = false;
   newUser: any = {
     profileName: '',
@@ -44,6 +48,10 @@ export class UserManagement implements OnInit {
     this.loadUsers();
   }
 
+  countByRole(role: string): number {
+    return this.users.filter(u => (u.role || 'user') === role).length;
+  }
+
   // Template wrapper to format address consistently
   formatAddress(addr: any): string {
     return this.addressService.formatAddress(addr) || '-';
@@ -51,8 +59,10 @@ export class UserManagement implements OnInit {
 
   // load user
   loadUsers() {
-    this.userService.getUsers().subscribe((data: any) => {
-      this.users = data;
+    this.loading = true;
+    this.userService.getUsers().subscribe({
+      next: (data: any) => {
+        this.users = data;
       // for each user, attempt to fetch their address(es) from AddressService
       // and attach a formatted address string to display in the table
       (this.users || []).forEach((u: any) => {
@@ -91,6 +101,15 @@ export class UserManagement implements OnInit {
       this.currentPage = 1;
       this.totalPages = Math.ceil(this.filteredUsers.length / this.pageSize);
       this.updatePagination();
+      this.loading = false;
+    },
+    error: (err) => {
+      this.loading = false;
+      this.errorMsg = err.status === 0
+        ? 'Không thể kết nối server.'
+        : `Lỗi tải dữ liệu (${err.status})`;
+      this.clearMsg();
+    }
     });
   }
 
@@ -175,9 +194,12 @@ export class UserManagement implements OnInit {
         this.filteredUsers = [...this.users];
         this.updatePagination();
         this.editingUserId = null;
+        this.successMsg = 'Cập nhật thành công!';
+        this.clearMsg();
       },
-      error: (err) => {
-        console.error("Update user lỗi:", err);
+      error: () => {
+        this.errorMsg = 'Cập nhật thất bại. Vui lòng thử lại.';
+        this.clearMsg();
       }
     });
   }
@@ -192,9 +214,12 @@ export class UserManagement implements OnInit {
         this.filteredUsers = [...this.users];
         this.totalPages = Math.ceil(this.filteredUsers.length / this.pageSize);
         this.updatePagination();
+        this.successMsg = 'Đã xóa người dùng.';
+        this.clearMsg();
       },
       error: () => {
-        alert("Xóa thất bại");
+        this.errorMsg = 'Xóa thất bại. Vui lòng thử lại.';
+        this.clearMsg();
       }
     });
   }
@@ -218,28 +243,31 @@ export class UserManagement implements OnInit {
   }
 
   addUser() {
-    // validate dữ liệu bắt buộc
     if (!this.newUser.profileName || !this.newUser.email || !this.newUser.password) {
-      alert('Vui lòng nhập đầy đủ tên, email và mật khẩu');
+      this.errorMsg = 'Vui lòng nhập đầy đủ tên, email và mật khẩu.';
+      this.clearMsg();
       return;
     }
 
-    // gọi API thêm user
     this.userService.addUser(this.newUser).subscribe({
       next: () => {
-        alert('Thêm người dùng thành công!');
+        this.successMsg = 'Thêm người dùng thành công!';
+        this.clearMsg();
         this.showAddUserForm = false;
-        this.loadUsers(); // reload bảng user
+        this.loadUsers();
       },
-      error: (err) => {
-        console.error(err);
-        alert('Có lỗi xảy ra khi thêm người dùng');
+      error: () => {
+        this.errorMsg = 'Có lỗi xảy ra khi thêm người dùng.';
+        this.clearMsg();
       }
     });
   }
 
-}
+  private clearMsg() {
+    setTimeout(() => {
+      this.successMsg = '';
+      this.errorMsg = '';
+    }, 3000);
+  }
 
-// helper wrapper for templates will be used to format addresses as "address, ward, city"
-// keeps logic in AddressService and avoids duplicating normalization code here
-export interface _UserManagementInternal {}
+}

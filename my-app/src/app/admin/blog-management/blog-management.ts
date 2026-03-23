@@ -41,6 +41,7 @@ interface BlogForm {
 export class BlogManagement implements OnInit {
 
   @ViewChild('contentEditor') contentEditor?: ElementRef<HTMLDivElement>;
+  @ViewChild('blogFormPanel') blogFormPanel?: ElementRef;
 
   private apiUrl = 'http://localhost:3000/blogs';
   private uploadUrl = 'http://localhost:3000/upload-image';
@@ -174,7 +175,8 @@ export class BlogManagement implements OnInit {
       if (this.contentEditor?.nativeElement) {
         this.contentEditor.nativeElement.innerHTML = '';
       }
-    });
+      this.blogFormPanel?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   }
 
   openEditForm(blog: BlogItem): void {
@@ -198,7 +200,8 @@ export class BlogManagement implements OnInit {
       if (this.contentEditor?.nativeElement) {
         this.contentEditor.nativeElement.innerHTML = this.blogForm.content || '';
       }
-    });
+      this.blogFormPanel?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   }
 
   closeForm(): void {

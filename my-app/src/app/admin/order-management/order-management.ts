@@ -28,6 +28,8 @@ export class OrderManagement implements OnInit {
   totalPages = 1;
 
   loading = true;
+  successMsg = '';
+  errorMsg = '';
 
   statusOptions = [
     { value: 'pending', label: 'Chờ xử lý' },
@@ -45,6 +47,14 @@ export class OrderManagement implements OnInit {
 
   ngOnInit(): void {
     this.loadOrders();
+  }
+
+  countByStatus(status: string): number {
+    return this.orders.filter(o => o.status === status).length;
+  }
+
+  private clearMsg() {
+    setTimeout(() => { this.successMsg = ''; this.errorMsg = ''; }, 3000);
   }
 
   loadOrders(): void {
@@ -144,29 +154,32 @@ export class OrderManagement implements OnInit {
   }
 
   togglePaid(order: any, paid: boolean) {
-    // Gọi API cập nhật trạng thái thanh toán (chỉ gửi status, cập nhật isPaid local)
     this.orderService.updateOrderStatus(order._id, order.status).subscribe({
       next: () => {
         order.isPaid = paid;
-        // Có thể thêm thông báo cho khách hàng tại đây
       },
       error: () => {
-        alert('Cập nhật trạng thái thanh toán thất bại!');
+        this.errorMsg = 'Cập nhật trạng thái thanh toán thất bại!';
+        this.clearMsg();
       }
     });
   }
 
 
 
+  confirmCancelId: string | null = null;
+
   cancelOrder(order: any): void {
-    if (!confirm('Bạn có chắc muốn huỷ đơn này?')) return;
+    if (order.status === 'cancelled') return;
     this.orderService.cancelOrder(order._id).subscribe({
       next: () => {
-        // đổi trạng thái ngay trên bảng
         order.status = 'cancelled';
+        this.successMsg = 'Đã huỷ đơn hàng.';
+        this.clearMsg();
       },
       error: () => {
-        alert('Huỷ đơn thất bại');
+        this.errorMsg = 'Huỷ đơn thất bại.';
+        this.clearMsg();
       }
     });
   }
@@ -246,21 +259,19 @@ export class OrderManagement implements OnInit {
   }
 
   exportInvoice(order: any) {
-    // Placeholder: xuất hóa đơn, có thể dùng window.print() hoặc tạo PDF
-    alert('Chức năng xuất hóa đơn sẽ được phát triển!');
+    this.successMsg = 'Chức năng xuất hóa đơn sẽ được phát triển!';
+    this.clearMsg();
   }
 
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
-      this.loadOrders();
     }
   }
 
   previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
-      this.loadOrders();
     }
   }
 

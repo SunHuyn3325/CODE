@@ -357,7 +357,7 @@ export class Cart implements OnInit, OnDestroy {
     this.cartService.createOrderFromCart(customerInfo, this.paymentMethod).subscribe({
       next: (response) => {
         this.loading = false;
-        alert('Đơn hàng đã cập nhật thành công');
+        this.showToast('Đơn hàng đã cập nhật thành công', 'success');
 
         // Reset form
         this.form = { name: '', phone: '', email: '', address: '' };
@@ -368,7 +368,7 @@ export class Cart implements OnInit, OnDestroy {
       error: (err) => {
         this.loading = false;
         console.error('Error creating order:', err);
-        alert('Đơn hàng đã cập nhật thành công');
+        this.showToast('Đơn hàng đã cập nhật thành công', 'success');
       }
     });
   }
