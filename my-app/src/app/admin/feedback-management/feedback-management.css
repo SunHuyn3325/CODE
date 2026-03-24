@@ -230,20 +230,22 @@
   color: #8b2f3f;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid #f5dde1;
+  white-space: nowrap;
 }
-.th-num { width: 50px; text-align: center; }
-.th-customer { width: 25%; }
+.th-num { width: 50px; }
+.th-customer { width: 22%; text-align: center; }
 .th-message { width: auto; }
-.th-status { width: 130px; text-align: center; white-space: nowrap; }
-.th-actions { width: 130px; text-align: center; white-space: nowrap; }
+.th-status { width: 120px; }
+.th-actions { width: 120px; }
 
 .feedback-table td {
   padding: 14px 16px;
   border-bottom: 1px solid #f5eef0;
   font-size: 0.9rem;
   vertical-align: middle;
+  text-align: center;
 }
 .table-row {
   transition: background 0.15s;
@@ -252,19 +254,17 @@
   background: #fdf8f9;
 }
 .td-num {
-  text-align: center;
   font-weight: 600;
   color: #b89ca3;
 }
 .td-center {
-  text-align: center;
   padding: 40px 16px;
-}
-.td-status {
-  text-align: center;
 }
 
 /* Customer cell */
+.td-customer {
+  text-align: left;
+}
 .customer-cell {
   display: flex;
   align-items: center;
@@ -287,6 +287,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  text-align: left;
 }
 .customer-name {
   font-weight: 700;
@@ -312,6 +313,8 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   max-width: 380px;
+  margin: 0 auto;
+  text-align: left;
 }
 
 /* Status pill */

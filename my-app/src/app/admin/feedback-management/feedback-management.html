@@ -99,7 +99,7 @@
         <!-- Data rows -->
         <tr *ngFor="let f of paginatedFeedbacks; let i = index" class="table-row">
           <td class="td-num">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
-          <td>
+          <td class="td-customer">
             <div class="customer-cell">
               <div class="customer-avatar">{{ f.fullName?.charAt(0)?.toUpperCase() }}</div>
               <div class="customer-info">

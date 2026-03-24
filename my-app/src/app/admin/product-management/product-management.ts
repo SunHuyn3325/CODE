@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProductApiService } from '../../product-api.service';
 import { CommonModule } from '@angular/common';
@@ -47,12 +47,15 @@ export class ProductManagement implements OnInit {
   ];
 
   currentPage = 1;
-  pageSize = 10;
+  pageSize = 50;
   totalPages = 1;
 
   canEdit = true;
+  showForm = false;
   successMsg = '';
   errorMsg = '';
+
+  @ViewChild('formSection') formSection!: ElementRef;
 
   constructor(private fb: FormBuilder, private productService: ProductApiService) {}
 
@@ -122,6 +125,17 @@ export class ProductManagement implements OnInit {
 
   nextPage() {
     if (this.currentPage < this.totalPages) { this.currentPage++; this.updatePagination(); }
+  }
+
+  toggleForm() {
+    this.showForm = !this.showForm;
+    if (!this.showForm) {
+      this.cancelEdit();
+    } else {
+      setTimeout(() => {
+        this.formSection?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    }
   }
 
   showSuccess(msg: string) {
@@ -220,7 +234,10 @@ export class ProductManagement implements OnInit {
       const last = img.split('/').pop() || img;
       return last.split('?')[0];
     });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.showForm = true;
+    setTimeout(() => {
+      this.formSection?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
   }
 
   updateProduct() {

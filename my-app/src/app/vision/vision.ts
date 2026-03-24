@@ -21,16 +21,16 @@ export class Vision implements AfterViewInit, OnDestroy {
   private cardResizeObserver: ResizeObserver | null = null;
 
   cards = [
-    { image: '/assets/thy1.png', alt: 'Áo dài truyền thống' },
-    { image: '/assets/xuananh1.jpg', alt: 'Áo dài truyền thống' },
-    { image: '/assets/thy2.jpg', alt: 'Áo dài truyền thống' },
-    { image: '/assets/thy3.jpg', alt: 'Áo dài truyền thống' },
-    { image: '/assets/thy4.jpg', alt: 'Áo dài truyền thống' },
-    { image: '/assets/thy5.jpg', alt: 'Áo dài truyền thống' },
-    { image: '/assets/yhien1.png', alt: 'Áo dài truyền thống' },
-    { image: '/assets/yhien2.png', alt: 'Áo dài truyền thống' },
-    { image: '/assets/yhien3.png', alt: 'Áo dài truyền thống' },
-    { image: '/assets/yhien4.png', alt: 'Áo dài truyền thống' },
+    { image: '/assets/vision1.png', alt: 'Áo dài truyền thống' },
+    { image: '/assets/vision2.png', alt: 'Áo dài truyền thống' },
+    { image: '/assets/vision3.png', alt: 'Áo dài truyền thống' },
+    { image: '/assets/vision4.png', alt: 'Áo dài truyền thống' },
+    { image: '/assets/vision5.png', alt: 'Áo dài truyền thống' },
+    { image: '/assets/vision6.png', alt: 'Áo dài truyền thống' },
+    { image: '/assets/vision7.png', alt: 'Áo dài truyền thống' },
+    { image: '/assets/vision8.png', alt: 'Áo dài truyền thống' },
+    { image: '/assets/vision9.png', alt: 'Áo dài truyền thống' },
+    { image: '/assets/vision10.png', alt: 'Áo dài truyền thống' },
   ];
 
   get allCards() {

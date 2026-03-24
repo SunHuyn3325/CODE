@@ -151,30 +151,57 @@
 </section>
 
 <!-- Blog Section -->
-<section class="home-blog-section" *ngIf="latestBlogs.length > 0">
+<section class="home-blog-section" *ngIf="allBlogs.length > 0">
   <div class="home-blog-container">
-    <p class="home-blog-eyebrow">Từ nhật ký SẮC</p>
-    <h2 class="home-blog-title">Mẩu chuyện nhỏ</h2>
-    <p class="home-blog-subtitle">Gói ghém hồn Việt vào tà áo dài qua những chuyện kể giản đơn mà sâu sắc.</p>
-
-    <div class="home-blog-grid">
-      <article class="home-blog-card" *ngFor="let blog of latestBlogs" (click)="goToBlog(blog._id)">
-        <div class="home-blog-card-img">
-          <img [src]="blog.thumbnail" [alt]="blog.title">
-        </div>
-        <div class="home-blog-card-body">
-          <div class="home-blog-card-meta">
-            <span>{{ blog.authorName }}</span>
-            <span class="home-blog-card-dot">·</span>
-            <span>{{ formatBlogDate(blog.publishedAt || blog.createdAt) }}</span>
-          </div>
-          <h3 class="home-blog-card-title">{{ blog.title }}</h3>
-          <p class="home-blog-card-excerpt">{{ blog.excerpt }}</p>
-        </div>
-      </article>
+    <div class="home-blog-header">
+      <div>
+        <p class="home-blog-eyebrow">Từ nhật ký SẮC</p>
+        <h2 class="home-blog-title">Bài viết nổi bật</h2>
+      </div>
     </div>
-    <div class="home-blog-cta">
-      <a routerLink="/sac-blog" class="home-blog-cta-btn">Xem tất cả bài viết</a>
+
+    <div class="blog-split-layout">
+      <!-- Featured Post (left) -->
+      <div class="blog-featured" *ngIf="featuredBlog" (click)="goToBlog(featuredBlog._id)">
+        <div class="blog-featured-img">
+          <img [src]="featuredBlog.thumbnail" [alt]="featuredBlog.title" />
+          <span class="blog-featured-badge">Nổi bật</span>
+        </div>
+        <div class="blog-featured-body">
+          <div class="blog-featured-meta">
+            <span *ngIf="featuredBlog.authorName">{{ featuredBlog.authorName }}</span>
+            <span class="meta-dot" *ngIf="featuredBlog.authorName">·</span>
+            <span>{{ formatBlogDate(featuredBlog.publishedAt || featuredBlog.createdAt) }}</span>
+          </div>
+          <h3 class="blog-featured-title">{{ featuredBlog.title }}</h3>
+          <p class="blog-featured-excerpt">{{ featuredBlog.excerpt || featuredBlog.content?.substring(0, 180) + '...' }}</p>
+          <span class="blog-featured-link">Đọc thêm <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+      </div>
+
+      <!-- All Posts (right, scrollable) -->
+      <div class="blog-sidebar">
+        <div class="blog-sidebar-header">
+          <h3 class="blog-sidebar-title">Tất cả bài viết</h3>
+          <a routerLink="/sac-blog" class="blog-sidebar-viewall">Tất cả <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+        <div class="blog-sidebar-list" #blogSidebarList>
+          <div class="blog-sidebar-card" *ngFor="let blog of sidebarBlogs" (click)="goToBlog(blog._id)">
+            <div class="blog-sidebar-card-img" *ngIf="blog.thumbnail">
+              <img [src]="blog.thumbnail" [alt]="blog.title" />
+            </div>
+            <div class="blog-sidebar-card-body">
+              <h4 class="blog-sidebar-card-title">{{ blog.title }}</h4>
+              <p class="blog-sidebar-card-excerpt">{{ blog.excerpt || blog.content?.substring(0, 80) + '...' }}</p>
+              <div class="blog-sidebar-card-meta">
+                <span *ngIf="blog.authorName">{{ blog.authorName }}</span>
+                <span class="meta-dot" *ngIf="blog.authorName">·</span>
+                <span>{{ formatBlogDate(blog.publishedAt || blog.createdAt) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>

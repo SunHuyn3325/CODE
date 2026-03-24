@@ -13,6 +13,9 @@ import { Vision } from '../vision/vision';
 })
 export class Home implements OnInit, OnDestroy {
   latestBlogs: any[] = [];
+  allBlogs: any[] = [];
+  featuredBlog: any = null;
+  sidebarBlogs: any[] = [];
   slides = [
     { image: '/assets/slide-1.png' },
     { image: '/assets/slide-2.png' },
@@ -161,13 +164,19 @@ export class Home implements OnInit, OnDestroy {
     this.http.get<any>('http://localhost:3000/blogs').subscribe({
       next: (res) => {
         const blogs = Array.isArray(res) ? res : (res?.data || []);
-        this.latestBlogs = blogs
+        const published = blogs
           .filter((b: any) => b.status === 'published')
-          .sort((a: any, b: any) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime())
-          .slice(0, 3);
+          .sort((a: any, b: any) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime());
+        this.allBlogs = published;
+        this.latestBlogs = published.slice(0, 3);
+        this.featuredBlog = published.length > 0 ? published[0] : null;
+        this.sidebarBlogs = published.slice(1);
       },
       error: () => {
+        this.allBlogs = [];
         this.latestBlogs = [];
+        this.featuredBlog = null;
+        this.sidebarBlogs = [];
       }
     });
   }
