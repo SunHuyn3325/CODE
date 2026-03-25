@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { UserApiService } from '../../user-api.service';
 
 @Component({
   selector: 'app-forgot-password-gmail',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterLink],
+  imports: [FormsModule, CommonModule],
   templateUrl: './forgot-password-gmail.html',
   styleUrls: ['./forgot-password-gmail.css'],
 })
