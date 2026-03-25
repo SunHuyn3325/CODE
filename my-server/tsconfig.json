@@ -1,5 +1,4 @@
-/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
-/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+// ...existing code...
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -14,7 +13,7 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "baseUrl": "./",
     "paths": {
       "@angular/ssr": ["node_modules/@angular/ssr"],
@@ -37,3 +36,4 @@
     }
   ]
 }
+// ...existing code...

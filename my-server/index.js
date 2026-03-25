@@ -24,6 +24,15 @@ const Review = require('./models/Review.js');
 const app = express()
 const port = 3000
 
+// Simple admin middleware: if ADMIN_TOKEN is set, require header 'x-admin-token' matches it.
+function requireAdmin(req, res, next) {
+  const adminToken = process.env.ADMIN_TOKEN || '';
+  if (!adminToken) return next(); // no token configured -> allow (dev convenience)
+  const provided = req.get('x-admin-token') || '';
+  if (provided === adminToken) return next();
+  return res.status(401).json({ message: 'Admin token required' });
+}
+
 const FRONTEND_BASE_URL = process.env.FRONTEND_BASE_URL || "http://localhost:4200"
 const PASSWORD_RESET_EXPIRES_MINUTES = Number(process.env.PASSWORD_RESET_EXPIRES_MINUTES || 15)
 const SMTP_USER = process.env.SMTP_USER || ""
@@ -754,7 +763,7 @@ app.post("/orders", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-app.put("/orders/:id/status", async (req, res) => {
+app.put("/orders/:id/status", requireAdmin, async (req, res) => {
   try {
     const existing = await Order.findById(req.params.id);
     if (!existing) return res.status(404).json({ message: 'Order not found' });
@@ -783,7 +792,7 @@ app.put("/orders/:id/status", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-app.put("/orders/:id/cancel", async (req, res) => {
+app.put("/orders/:id/cancel", requireAdmin, async (req, res) => {
   try {
     const order = await Order.findByIdAndUpdate(req.params.id, { status: "cancelled" }, { new: true });
     res.json(order);
@@ -793,7 +802,7 @@ app.put("/orders/:id/cancel", async (req, res) => {
 });
 
 // Update shipping / logistics info for an order
-app.put("/orders/:id/shipping", async (req, res) => {
+app.put("/orders/:id/shipping", requireAdmin, async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).json({ message: "Order not found" });
@@ -815,7 +824,7 @@ app.put("/orders/:id/shipping", async (req, res) => {
   }
 });
 // Ship order: set status to shipped + save SPX tracking code
-app.put("/orders/:id/ship", async (req, res) => {
+app.put("/orders/:id/ship", requireAdmin, async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).json({ message: "Order not found" });
@@ -832,6 +841,124 @@ app.put("/orders/:id/ship", async (req, res) => {
     await order.save();
     res.json(order);
   } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Append a logistics event to an order (admin/manual)
+app.post("/orders/:id/shipping/event", requireAdmin, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    const { eventId, status, timestamp, location, details, raw } = req.body;
+
+    // dedupe: by eventId if provided, otherwise by status+timestamp
+    const exists = order.logisticsEvents && order.logisticsEvents.some(ev => {
+      if (eventId && ev.eventId === eventId) return true;
+      if (!eventId && ev.status === status && ev.timestamp && timestamp && new Date(ev.timestamp).getTime() === new Date(timestamp).getTime()) return true;
+      return false;
+    });
+    if (exists) return res.status(200).json({ message: "Event already recorded", order });
+
+    const ev = {
+      eventId: eventId || "",
+      status: status || "",
+      timestamp: timestamp ? new Date(timestamp) : new Date(),
+      location: location || "",
+      details: details || "",
+      raw: raw || {}
+    };
+
+    order.logisticsEvents = order.logisticsEvents || [];
+    order.logisticsEvents.push(ev);
+
+    // update quick-access fields
+    order.shipping = order.shipping || {};
+    order.shipping.lastEventStatus = ev.status;
+    order.shipping.lastEventAt = ev.timestamp;
+    if (ev.location) order.shipping.lastLocation = ev.location;
+
+    // update order status and timestamps
+    if (ev.status === 'shipped' && !order.shipping.shippedAt) order.shipping.shippedAt = ev.timestamp;
+    if (ev.status === 'delivered') {
+      order.shipping.deliveredAt = ev.timestamp;
+      order.status = 'delivered';
+      if (!order.isPaid) {
+        const pm = (order.paymentMethod || '').toString().toLowerCase();
+        if (pm === 'cod' || pm === 'cash') {
+          order.isPaid = true;
+          order.paidAt = new Date();
+        }
+      }
+    }
+
+    await order.save();
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Carrier webhook: accept tracking updates and map to order
+app.post("/logistics/webhook", async (req, res) => {
+  try {
+    const token = req.get('x-webhook-token') || req.query.token || '';
+    const expected = process.env.WEBHOOK_TOKEN || '';
+    if (expected && token !== expected) return res.status(401).json({ message: 'Invalid webhook token' });
+
+    const payload = req.body || {};
+    // Accept either { orderId, trackingCode, status, timestamp, location, details, eventId }
+    const { orderId, trackingCode, status, timestamp, location, details, eventId } = payload;
+
+    let order = null;
+    if (orderId) {
+      order = await Order.findById(orderId);
+    }
+    if (!order && trackingCode) {
+      order = await Order.findOne({ 'shipping.trackingCode': trackingCode });
+    }
+    if (!order) return res.status(404).json({ message: 'Order not found for webhook' });
+
+    const ev = {
+      eventId: eventId || payload.id || '',
+      status: status || payload.event || '',
+      timestamp: timestamp ? new Date(timestamp) : new Date(),
+      location: location || payload.location || '',
+      details: details || payload.details || '',
+      raw: payload
+    };
+
+    // dedupe
+    const exists = order.logisticsEvents && order.logisticsEvents.some(e => (ev.eventId && e.eventId === ev.eventId) || (!ev.eventId && e.status === ev.status && e.timestamp && ev.timestamp && new Date(e.timestamp).getTime() === new Date(ev.timestamp).getTime()));
+    if (!exists) {
+      order.logisticsEvents = order.logisticsEvents || [];
+      order.logisticsEvents.push(ev);
+    }
+
+    // update shipping summary
+    order.shipping = order.shipping || {};
+    order.shipping.lastEventStatus = ev.status;
+    order.shipping.lastEventAt = ev.timestamp;
+    if (ev.location) order.shipping.lastLocation = ev.location;
+
+    if (ev.status === 'shipped' && !order.shipping.shippedAt) order.shipping.shippedAt = ev.timestamp;
+    if (ev.status === 'delivered') {
+      order.shipping.deliveredAt = ev.timestamp;
+      order.status = 'delivered';
+      if (!order.isPaid) {
+        const pm = (order.paymentMethod || '').toString().toLowerCase();
+        if (pm === 'cod' || pm === 'cash') {
+          order.isPaid = true;
+          order.paidAt = new Date();
+        }
+      }
+    }
+
+    await order.save();
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('webhook error', err);
     res.status(500).json({ message: err.message });
   }
 });

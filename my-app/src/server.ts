@@ -6,6 +6,7 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import { existsSync } from 'node:fs';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
@@ -41,9 +42,19 @@ app.use(
 app.use((req, res, next) => {
   angularApp
     .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
+    .then((response) => {
+      if (response) {
+        return writeResponseToNodeResponse(response, res);
+      }
+
+      const indexPath = join(browserDistFolder, 'index.html');
+      if (existsSync(indexPath)) {
+        return res.sendFile(indexPath);
+      }
+
+      // Let the dev server (vite/ng) handle the request when no built index exists
+      return next();
+    })
     .catch(next);
 });
 

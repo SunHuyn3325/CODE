@@ -13,6 +13,8 @@ interface OrderItem {
   price?: number;
   image?: string;
   sku?: string;
+  // product id reference (backend may provide `product` as product id)
+  product?: string;
 }
 
 interface Order {
