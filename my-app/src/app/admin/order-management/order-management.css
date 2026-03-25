@@ -442,7 +442,7 @@
 }
 .status-pill.status-pending   { background: #fff3cd; color: #b8860b; }
 .status-pill.status-processing { background: #d1ecf1; color: #0c5460; }
-.status-pill.status-shipped   { background: #d6eaf8; color: #21618c; }
+.status-pill.status-shipped   { background: #d4edda; color: #43a047; animation: blink-green 1.2s ease-in-out infinite; }
 .status-pill.status-delivered  { background: #d4edda; color: #155724; }
 .status-pill.status-cancelled  { background: #f8d7da; color: #721c24; }
 
@@ -528,4 +528,122 @@
   .stats-row { grid-template-columns: 1fr; }
   .toolbar-card { flex-direction: column; gap: 10px; align-items: stretch; }
   .detail-grid { grid-template-columns: 1fr; }
+  .shipping-form { grid-template-columns: 1fr; }
 }
+
+/* ===== Order Actions Section (Shopee-style) ===== */
+.order-actions-section {
+  margin-top: 24px;
+}
+.action-block {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: #fef8f4;
+  border: 1px solid #f0ddd5;
+}
+.action-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f5a623;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.action-icon.ship-icon { background: #1976d2; }
+.action-icon.delivered-icon { background: #43a047; }
+.action-icon.done-icon { background: #43a047; }
+.action-icon.cancel-icon { background: #c62828; }
+.action-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.action-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+}
+.action-desc {
+  font-size: 13px;
+  color: #666;
+}
+.btn-action {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-family: 'Inter', 'Montserrat', sans-serif;
+}
+.btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-confirm {
+  background: #f5a623;
+  color: #fff;
+}
+.btn-confirm:hover:not(:disabled) { background: #e09500; }
+.btn-ship {
+  background: #1976d2;
+  color: #fff;
+}
+.btn-ship:hover:not(:disabled) { background: #1565c0; }
+.btn-delivered {
+  background: #43a047;
+  color: #fff;
+}
+.btn-delivered:hover:not(:disabled) { background: #388e3c; }
+
+.ship-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tracking-input {
+  padding: 9px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 200px;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
+}
+.tracking-input:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
+}
+
+/* Shipped status blinking green */
+.status-shipping-active {
+  color: #43a047;
+  animation: blink-green 1.2s ease-in-out infinite;
+}
+@keyframes blink-green {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.tracking-code-display {
+  color: #1976d2;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
+}
+
+/* Confirm block */
+.confirm-block { background: #fffaf0; border-color: #ffe4b5; }
+/* Ship block */
+.ship-block { background: #f0f7ff; border-color: #b8d7f0; }
+/* Shipping active block */
+.shipping-block { background: #f0fff4; border-color: #b7e4c7; }
+/* Delivered done block */
+.delivered-done-block { background: #f0fff4; border-color: #c3e6cb; }
+/* Cancelled block */
+.cancelled-block { background: #fff5f5; border-color: #f5c6cb; }

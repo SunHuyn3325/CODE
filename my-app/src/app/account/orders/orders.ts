@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { OrderApiService } from '../../order-api.service';
 import { AddressService } from '../../address.service';
+import { ReviewApiService } from '../../review-api.service';
 
 
 interface OrderItem {
@@ -31,6 +33,7 @@ interface Order {
   user?: string;
   userId?: string;
   shippingAddressObj?: any;
+  shipping?: { carrier?: string; trackingCode?: string; shippedAt?: string | Date; deliveredAt?: string | Date };
 }
 
 @Component({
@@ -51,7 +54,14 @@ export class OrdersComponent implements OnInit {
   selectedOrder: Order | null = null;
   showOrderModal = false;
 
-  constructor(private orderApiService: OrderApiService, private addressService: AddressService) {
+  // Review modal state
+  showReviewModal = false;
+  reviewOrder: Order | null = null;
+  reviewRating = 0;
+  reviewComment = '';
+  private reviewedOrderIds: Set<string> = new Set();
+
+  constructor(private orderApiService: OrderApiService, private addressService: AddressService, private router: Router, private reviewApiService: ReviewApiService) {
     // Kiểm tra localStorage có tồn tại (tránh lỗi SSR)
     if (typeof localStorage !== 'undefined') {
       this.userId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
@@ -60,6 +70,7 @@ export class OrdersComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadOrders();
+    this.loadReviewedOrders();
   }
 
   loadOrders(): void {
@@ -151,8 +162,8 @@ export class OrdersComponent implements OnInit {
     }
   }
 
-  toggleOrderExpand(orderId: string): void {
-    this.expandedOrderId = this.expandedOrderId === orderId ? null : orderId;
+  countByStatus(status: string): number {
+    return this.orders.filter(o => o.status === status).length;
   }
 
   viewOrder(order: any): void {
@@ -241,6 +252,22 @@ export class OrdersComponent implements OnInit {
     }
   }
 
+  confirmDelivered(orderId: string): void {
+    if (confirm('Xác nhận bạn đã nhận được hàng?')) {
+      this.orderApiService.updateOrderStatus(orderId, 'delivered').subscribe({
+        next: () => {
+          if (this.selectedOrder) {
+            this.selectedOrder.status = 'delivered';
+            this.selectedOrder.shipping = this.selectedOrder.shipping || {};
+            this.selectedOrder.shipping.deliveredAt = new Date().toISOString();
+          }
+          this.loadOrders();
+        },
+        error: (err) => console.error('Error confirming delivery:', err)
+      });
+    }
+  }
+
   getStatusBadgeClass(status: string): string {
     const statusClasses: { [key: string]: string } = {
       'pending': 'badge-pending',
@@ -254,10 +281,10 @@ export class OrdersComponent implements OnInit {
 
   getStatusLabel(status: string): string {
     const statusLabels: { [key: string]: string } = {
-      'pending': 'Chờ xử lý',
-      'processing': 'Đang xử lý',
-      'shipped': 'Đã gửi',
-      'delivered': 'Đã giao',
+      'pending': 'Chờ xác nhận',
+      'processing': 'Đang chuẩn bị hàng',
+      'shipped': 'Đang giao hàng',
+      'delivered': 'Đã giao hàng',
       'cancelled': 'Đã hủy'
     };
     return statusLabels[status] || status;
@@ -310,5 +337,91 @@ export class OrdersComponent implements OnInit {
       normalized = normalized.replace(/\s|\.|\-/g, '');
     if (normalized.includes('hochiminh') || normalized.includes('tphcm') || normalized.includes('hcm')) return 25000;
     return 35000;
+  }
+
+  // Timeline helpers
+  private statusOrder = ['pending', 'processing', 'shipped', 'delivered'];
+
+  isStepReached(order: any, step: string): boolean {
+    if (!order) return false;
+    if (step === 'pickedUp') return !!order.shipping?.pickedUpAt;
+    const current = this.statusOrder.indexOf(order.status);
+    const target = this.statusOrder.indexOf(step);
+    return current >= target;
+  }
+
+  isStepPassed(order: any, step: string): boolean {
+    if (!order) return false;
+    if (step === 'pickedUp') return !!order.shipping?.pickedUpAt && this.isStepReached(order, 'shipped');
+    const current = this.statusOrder.indexOf(order.status);
+    const target = this.statusOrder.indexOf(step);
+    return current > target;
+  }
+
+  // ===== RETURN / REVIEW =====
+
+  goToReturnGuide(): void {
+    this.router.navigate(['/how-to-buy'], { queryParams: { open: 'return' } });
+  }
+
+  private loadReviewedOrders(): void {
+    this.reviewApiService.getReviewsByUser(this.userId).subscribe({
+      next: (reviews: any[]) => {
+        this.reviewedOrderIds = new Set(reviews.map((r: any) => r.order));
+      },
+      error: () => {
+        this.reviewedOrderIds = new Set();
+      }
+    });
+  }
+
+  hasReviewed(orderId: string): boolean {
+    return this.reviewedOrderIds.has(orderId);
+  }
+
+  openReviewModal(order: Order | null): void {
+    if (!order || this.hasReviewed(order._id || '')) return;
+    this.reviewOrder = order;
+    this.reviewRating = 0;
+    this.reviewComment = '';
+    this.showReviewModal = true;
+  }
+
+  closeReviewModal(): void {
+    this.showReviewModal = false;
+    this.reviewOrder = null;
+  }
+
+  submitReview(): void {
+    if (!this.reviewOrder || this.reviewRating === 0) return;
+    const orderId = this.reviewOrder._id || '';
+    const items = this.reviewOrder.orderItems || [];
+    const userName = this.reviewOrder.customerInfo?.name || '';
+
+    // Create a review for each product in the order
+    items.forEach(item => {
+      this.reviewApiService.createReview({
+        user: this.userId,
+        order: orderId,
+        product: item.product,
+        rating: this.reviewRating,
+        comment: this.reviewComment,
+        userName
+      }).subscribe();
+    });
+
+    this.reviewedOrderIds.add(orderId);
+    this.closeReviewModal();
+  }
+
+  getRatingText(rating: number): string {
+    const texts: { [key: number]: string } = {
+      1: 'Tệ',
+      2: 'Không hài lòng',
+      3: 'Bình thường',
+      4: 'Hài lòng',
+      5: 'Tuyệt vời'
+    };
+    return texts[rating] || '';
   }
 }

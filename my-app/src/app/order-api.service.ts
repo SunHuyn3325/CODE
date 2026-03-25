@@ -26,7 +26,15 @@ export class OrderApiService {
     return this.http.put(`${this.apiUrl}/${id}/cancel`, {});
   }
 
+  shipOrder(id: string, trackingCode: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/ship`, { trackingCode });
+  }
+
   deleteOrder(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  updateShipping(id: string, shippingData: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/shipping`, shippingData);
   }
 }

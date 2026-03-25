@@ -1,62 +1,36 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-// Local storage based return management service
 @Injectable({
   providedIn: 'root',
 })
 export class ReturnApiService {
-  private readonly RETURNS_KEY = 'userReturns';
+  private apiUrl = 'http://localhost:3000/returns';
 
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
-  // Get all returns for a user
-  getReturnsByUser(userId: string): any[] {
-    const returns = localStorage.getItem(this.RETURNS_KEY);
-    if (!returns) return [];
-    const allReturns = JSON.parse(returns);
-    return allReturns.filter((r: any) => r.userId === userId);
+  getReturns(): Observable<any> {
+    return this.http.get(this.apiUrl);
   }
 
-  // Create a return request
-  createReturn(returnData: any): any {
-    const returns = localStorage.getItem(this.RETURNS_KEY);
-    const allReturns = returns ? JSON.parse(returns) : [];
-    
-    const newReturn = {
-      _id: Date.now().toString(),
-      ...returnData,
-      createdAt: new Date().toISOString(),
-      status: 'pending'
-    };
-    
-    allReturns.push(newReturn);
-    localStorage.setItem(this.RETURNS_KEY, JSON.stringify(allReturns));
-    return newReturn;
+  getReturnsByUser(userId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/user/${userId}`);
   }
 
-  // Update return status
-  updateReturnStatus(returnId: string, status: string): any {
-    const returns = localStorage.getItem(this.RETURNS_KEY);
-    if (!returns) return null;
-    
-    const allReturns = JSON.parse(returns);
-    const returnItem = allReturns.find((r: any) => r._id === returnId);
-    
-    if (returnItem) {
-      returnItem.status = status;
-      localStorage.setItem(this.RETURNS_KEY, JSON.stringify(allReturns));
-    }
-    
-    return returnItem;
+  getReturnsByOrder(orderId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/order/${orderId}`);
   }
 
-  // Delete a return
-  deleteReturn(returnId: string): void {
-    const returns = localStorage.getItem(this.RETURNS_KEY);
-    if (!returns) return;
-    
-    const allReturns = JSON.parse(returns);
-    const filtered = allReturns.filter((r: any) => r._id !== returnId);
-    localStorage.setItem(this.RETURNS_KEY, JSON.stringify(filtered));
+  createReturn(returnData: any): Observable<any> {
+    return this.http.post(this.apiUrl, returnData);
+  }
+
+  updateReturnStatus(returnId: string, status: string, adminNote?: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${returnId}/status`, { status, adminNote });
+  }
+
+  deleteReturn(returnId: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${returnId}`);
   }
 }

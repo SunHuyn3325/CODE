@@ -18,6 +18,8 @@ const Address = require("./models/Address.js");
 const Order = require("./models/Order.js");
 const Cart = require('./models/Cart.js');
 const Blog = require('./models/Blog.js');
+const Return = require('./models/Return.js');
+const Review = require('./models/Review.js');
 
 const app = express()
 const port = 3000
@@ -754,7 +756,6 @@ app.post("/orders", async (req, res) => {
 });
 app.put("/orders/:id/status", async (req, res) => {
   try {
-    // Load existing order so we can inspect paymentMethod/isPaid
     const existing = await Order.findById(req.params.id);
     if (!existing) return res.status(404).json({ message: 'Order not found' });
 
@@ -768,6 +769,14 @@ app.put("/orders/:id/status", async (req, res) => {
       updateData.paidAt = new Date();
     }
 
+    // Auto-set shipping timestamps based on status changes
+    if (newStatus === 'shipped' && !existing.shipping?.shippedAt) {
+      updateData['shipping.shippedAt'] = new Date();
+    }
+    if (newStatus === 'delivered' && !existing.shipping?.deliveredAt) {
+      updateData['shipping.deliveredAt'] = new Date();
+    }
+
     const order = await Order.findByIdAndUpdate(req.params.id, updateData, { new: true });
     res.json(order);
   } catch (err) {
@@ -777,6 +786,50 @@ app.put("/orders/:id/status", async (req, res) => {
 app.put("/orders/:id/cancel", async (req, res) => {
   try {
     const order = await Order.findByIdAndUpdate(req.params.id, { status: "cancelled" }, { new: true });
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Update shipping / logistics info for an order
+app.put("/orders/:id/shipping", async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    const { carrier, trackingCode, estimatedDelivery, pickedUpAt, shippedAt, deliveredAt, note } = req.body;
+    if (!order.shipping) order.shipping = {};
+    if (carrier !== undefined) order.shipping.carrier = carrier;
+    if (trackingCode !== undefined) order.shipping.trackingCode = trackingCode;
+    if (estimatedDelivery !== undefined) order.shipping.estimatedDelivery = estimatedDelivery || null;
+    if (pickedUpAt !== undefined) order.shipping.pickedUpAt = pickedUpAt || null;
+    if (shippedAt !== undefined) order.shipping.shippedAt = shippedAt || null;
+    if (deliveredAt !== undefined) order.shipping.deliveredAt = deliveredAt || null;
+    if (note !== undefined) order.shipping.note = note;
+
+    await order.save();
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+// Ship order: set status to shipped + save SPX tracking code
+app.put("/orders/:id/ship", async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    const { trackingCode } = req.body;
+    if (!trackingCode) return res.status(400).json({ message: "Tracking code is required" });
+
+    order.status = "shipped";
+    if (!order.shipping) order.shipping = {};
+    order.shipping.carrier = "SPX Express";
+    order.shipping.trackingCode = trackingCode;
+    order.shipping.shippedAt = new Date();
+
+    await order.save();
     res.json(order);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -895,6 +948,186 @@ app.post("/order/from-cart", async (req, res) => {
       orderId: order._id,
       order: order
     });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ==================== RETURN ROUTES ====================
+
+// Get all returns
+app.get('/returns', async (req, res) => {
+  try {
+    const returns = await Return.find().sort({ createdAt: -1 });
+    res.json(returns);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get returns by user
+app.get('/returns/user/:userId', async (req, res) => {
+  try {
+    const returns = await Return.find({ user: req.params.userId }).sort({ createdAt: -1 });
+    res.json(returns);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get returns by order
+app.get('/returns/order/:orderId', async (req, res) => {
+  try {
+    const returns = await Return.find({ order: req.params.orderId });
+    res.json(returns);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Create return request
+app.post('/returns', async (req, res) => {
+  try {
+    const { user, order, items, reason, description, images, refundAmount } = req.body;
+    const newReturn = new Return({
+      user,
+      order,
+      items,
+      reason,
+      description: description || '',
+      images: images || [],
+      refundAmount: refundAmount || 0,
+    });
+    const saved = await newReturn.save();
+    res.status(201).json(saved);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Update return status (admin)
+app.put('/returns/:id/status', async (req, res) => {
+  try {
+    const { status, adminNote } = req.body;
+    const updated = await Return.findByIdAndUpdate(
+      req.params.id,
+      { status, ...(adminNote && { adminNote }) },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ message: 'Return not found' });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Delete return
+app.delete('/returns/:id', async (req, res) => {
+  try {
+    await Return.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Return deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ==================== REVIEW ROUTES ====================
+
+// Get all reviews
+app.get('/reviews', async (req, res) => {
+  try {
+    const reviews = await Review.find().sort({ createdAt: -1 });
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get reviews by user
+app.get('/reviews/user/:userId', async (req, res) => {
+  try {
+    const reviews = await Review.find({ user: req.params.userId }).sort({ createdAt: -1 });
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get reviews by order
+app.get('/reviews/order/:orderId', async (req, res) => {
+  try {
+    const reviews = await Review.find({ order: req.params.orderId });
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get reviews by product
+app.get('/reviews/product/:productId', async (req, res) => {
+  try {
+    const reviews = await Review.find({ product: req.params.productId }).sort({ createdAt: -1 });
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Check if user already reviewed a product in an order
+app.get('/reviews/check', async (req, res) => {
+  try {
+    const { userId, orderId, productId } = req.query;
+    const existing = await Review.findOne({ user: userId, order: orderId, product: productId });
+    res.json({ reviewed: !!existing, review: existing });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Create review
+app.post('/reviews', async (req, res) => {
+  try {
+    const { user, order, product, rating, comment, images, userName } = req.body;
+    const newReview = new Review({
+      user,
+      order,
+      product,
+      rating,
+      comment: comment || '',
+      images: images || [],
+      userName: userName || '',
+    });
+    const saved = await newReview.save();
+    res.status(201).json(saved);
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ message: 'Bạn đã đánh giá sản phẩm này rồi' });
+    }
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Update review
+app.put('/reviews/:id', async (req, res) => {
+  try {
+    const { rating, comment, images } = req.body;
+    const updated = await Review.findByIdAndUpdate(
+      req.params.id,
+      { rating, comment, images },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ message: 'Review not found' });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Delete review
+app.delete('/reviews/:id', async (req, res) => {
+  try {
+    await Review.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Review deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -48,6 +48,13 @@ const orderSchema = mongoose.Schema(
         type: String,
         enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
         default: "pending"
+    },
+
+    shipping: {
+        carrier: { type: String, default: "SPX Express" },
+        trackingCode: { type: String, default: "" },
+        shippedAt: { type: Date, default: null },
+        deliveredAt: { type: Date, default: null }
     }
 
 },

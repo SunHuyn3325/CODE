@@ -32,10 +32,10 @@ export class OrderManagement implements OnInit {
   errorMsg = '';
 
   statusOptions = [
-    { value: 'pending', label: 'Chờ xử lý' },
-    { value: 'processing', label: 'Đang xử lý' },
+    { value: 'pending', label: 'Chờ xác nhận' },
+    { value: 'processing', label: 'Đang chuẩn bị' },
     { value: 'shipped', label: 'Đang giao' },
-    { value: 'delivered', label: 'Hoàn thành' },
+    { value: 'delivered', label: 'Đã giao' },
     { value: 'cancelled', label: 'Đã hủy' }
   ];
 
@@ -193,9 +193,14 @@ export class OrderManagement implements OnInit {
   // --- Các hàm modal chi tiết đơn hàng ---
   selectedOrder: any = null;
 
+  // Shipping form — SPX tracking code
+  trackingCodeInput = '';
+  savingShipping = false;
+
   showOrderDetail(order: any) {
     // clone to avoid mutating list view state
     this.selectedOrder = { ...order };
+    this.trackingCodeInput = order?.shipping?.trackingCode || '';
 
     // Try to attach saved address object for display (address, ward, city)
     const uid = order?.user || order?.userId || (typeof localStorage !== 'undefined' && JSON.parse(localStorage.getItem('user') || '{}')._id) || '';
@@ -262,6 +267,94 @@ export class OrderManagement implements OnInit {
 
   closeOrderDetail() {
     this.selectedOrder = null;
+  }
+
+  private loadShippingForm(order: any) {}
+
+  private toDateTimeLocal(dateStr: string): string { return ''; }
+
+  // Xác nhận đơn hàng: pending → processing
+  confirmOrder() {
+    if (!this.selectedOrder) return;
+    this.orderService.updateOrderStatus(this.selectedOrder._id, 'processing').subscribe({
+      next: (updated: any) => {
+        if (updated) {
+          this.selectedOrder.status = updated.status;
+          const idx = this.orders.findIndex((o: any) => o._id === this.selectedOrder._id);
+          if (idx >= 0) this.orders[idx].status = updated.status;
+        }
+        this.successMsg = 'Đã xác nhận đơn hàng!';
+        this.clearMsg();
+      },
+      error: () => {
+        this.errorMsg = 'Xác nhận đơn hàng thất bại!';
+        this.clearMsg();
+      }
+    });
+  }
+
+  // Gửi hàng: processing → shipped + tracking code
+  shipOrder() {
+    if (!this.selectedOrder || !this.trackingCodeInput.trim()) return;
+    this.savingShipping = true;
+    this.orderService.shipOrder(this.selectedOrder._id, this.trackingCodeInput.trim()).subscribe({
+      next: (updated: any) => {
+        this.savingShipping = false;
+        if (updated) {
+          this.selectedOrder.status = updated.status;
+          this.selectedOrder.shipping = updated.shipping;
+          const idx = this.orders.findIndex((o: any) => o._id === this.selectedOrder._id);
+          if (idx >= 0) {
+            this.orders[idx].status = updated.status;
+            this.orders[idx].shipping = updated.shipping;
+          }
+        }
+        this.successMsg = 'Đã gửi hàng thành công!';
+        this.clearMsg();
+      },
+      error: () => {
+        this.savingShipping = false;
+        this.errorMsg = 'Gửi hàng thất bại!';
+        this.clearMsg();
+      }
+    });
+  }
+
+  // Xác nhận đã giao: shipped → delivered
+  markDelivered() {
+    if (!this.selectedOrder) return;
+    this.orderService.updateOrderStatus(this.selectedOrder._id, 'delivered').subscribe({
+      next: (updated: any) => {
+        if (updated) {
+          this.selectedOrder.status = updated.status;
+          this.selectedOrder.isPaid = updated.isPaid;
+          const idx = this.orders.findIndex((o: any) => o._id === this.selectedOrder._id);
+          if (idx >= 0) {
+            this.orders[idx].status = updated.status;
+            this.orders[idx].isPaid = updated.isPaid;
+          }
+        }
+        this.successMsg = 'Đã xác nhận giao hàng!';
+        this.clearMsg();
+      },
+      error: () => {
+        this.errorMsg = 'Cập nhật thất bại!';
+        this.clearMsg();
+      }
+    });
+  }
+
+  saveShipping() {}
+
+  getStatusLabel(status: string): string {
+    const map: {[k: string]: string} = {
+      'pending': 'Chờ xác nhận',
+      'processing': 'Đang chuẩn bị hàng',
+      'shipped': 'Đang giao hàng',
+      'delivered': 'Đã giao hàng',
+      'cancelled': 'Đã hủy'
+    };
+    return map[status] || status;
   }
 
   exportInvoice(order: any) {

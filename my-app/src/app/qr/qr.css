@@ -2,6 +2,7 @@
 .modal-content {
 	border-radius: 10px;
 	overflow: hidden;
+	font-family: 'Montserrat', sans-serif;
 }
 .modal-header {
 	display: flex;
@@ -40,8 +41,8 @@
 }
 
 .modal-dialog {
-	max-width: 760px;
-	width: 95%;
+	max-width: 420px;
+	width: 90%;
 	margin: 0; /* centered by flex parent */
 	pointer-events: auto;
 	z-index: 2100;
@@ -57,12 +58,12 @@
 .modal-header {
 	background: linear-gradient(180deg,#b82a2a,#8e1f1f);
 	color: #fff;
-	padding: 28px 28px 20px 28px;
+	padding: 14px 18px 12px 18px;
 	border-bottom: none;
 }
 
 .modal-title {
-	font-size: 34px;
+	font-size: 20px;
 	margin: 0;
 	font-weight: 700;
 }
@@ -70,8 +71,8 @@
 .btn-close {
 	background: rgba(255,255,255,0.2);
 	border-radius: 50%;
-	width: 36px;
-	height: 36px;
+	width: 28px;
+	height: 28px;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -82,7 +83,7 @@
 
 .modal-body {
 	background: #fff8f6;
-	padding: 26px 32px 32px 32px;
+	padding: 14px 18px 18px 18px;
 }
 
 .modal-body .nav-tabs { border-bottom: none; padding: 0; }
@@ -94,21 +95,21 @@
 
 /* Center the QR area and use a neat white card */
 .qr-wrap { display:flex; justify-content:center; align-items:center; }
-.qr-box { background: #fff; padding: 22px; border-radius: 12px; border: 6px solid rgba(255,230,230,0.9); box-shadow: 0 10px 30px rgba(0,0,0,0.12); max-width: 360px; }
-.qr-box img { width:100%; height:auto; display:block; border-radius:8px; max-height:420px; object-fit:contain; }
+.qr-box { background: #fff; padding: 14px; border-radius: 10px; border: 4px solid rgba(255,230,230,0.9); box-shadow: 0 6px 18px rgba(0,0,0,0.1); max-width: 260px; }
+.qr-box img { width:100%; height:auto; display:block; border-radius:6px; max-height:260px; object-fit:contain; }
 
 /* Ensure modal body centers content vertically */
 .modal-body { display:flex; flex-direction:column; align-items:center; }
 
 /* Reduce dialog width and center vertically */
-.modal-dialog { max-width: 560px; }
+.modal-dialog { max-width: 420px; }
 
 /* Tighter header spacing */
-.modal-header { padding: 20px 22px 16px 22px; }
-.modal-title { font-size: 28px; }
+.modal-header { padding: 14px 18px 12px 18px; }
+.modal-title { font-size: 20px; }
 
 /* make close button smaller and subtle */
-.btn-close { width:34px; height:34px; }
+.btn-close { width:28px; height:28px; }
 
 .modal-footer {
 	background: #fff8f6; /* solid background so footer isn't transparent */
