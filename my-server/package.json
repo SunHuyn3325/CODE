@@ -9,7 +9,8 @@
   "main": "index.js",
   "scripts": {
     "ng": "ng",
-    "start": "nodemon index.js",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",

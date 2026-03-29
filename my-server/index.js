@@ -22,7 +22,7 @@ const Return = require('./models/Return.js');
 const Review = require('./models/Review.js');
 
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
 // Simple admin middleware: if ADMIN_TOKEN is set, require header 'x-admin-token' matches it.
 function requireAdmin(req, res, next) {
