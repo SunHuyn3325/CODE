@@ -64,7 +64,16 @@ const orderSchema = mongoose.Schema(
         lastLocation: { type: String, default: "" },
         lastEventStatus: { type: String, default: "" },
         lastEventAt: { type: Date, default: null },
-        note: { type: String, default: "" }
+        note: { type: String, default: "" },
+        // Delivery person information (assigned courier/driver)
+        deliveryPerson: {
+            // reference to a User document (if delivery personnel are stored as users)
+            id: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+            name: { type: String, default: "" },
+            phone: { type: String, default: "" },
+            vehicle: { type: String, default: "" },
+            assignedAt: { type: Date, default: null }
+        }
     }
 
 },
