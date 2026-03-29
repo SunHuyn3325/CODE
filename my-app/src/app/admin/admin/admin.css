@@ -445,6 +445,10 @@
     flex-shrink: 0;
 }
 
+.notif-dot.hidden {
+    visibility: hidden;
+}
+
 .notif-body {
     display: flex;
     flex-direction: column;

@@ -24,12 +24,12 @@ export class Admin {
 
   searchQuery: string = '';
   showNotifications: boolean = false;
-  unreadCount: number = 3;
+  unreadCount: number = 4;
   notifications: Array<{message: string; time: string; read: boolean}> = [
     { message: 'Đơn hàng mới #1042 vừa được tạo', time: '5 phút trước', read: false },
     { message: 'Người dùng mới đã đăng ký tài khoản', time: '12 phút trước', read: false },
     { message: 'Sản phẩm "Áo dài lụa" sắp hết hàng', time: '1 giờ trước', read: false },
-    { message: 'Feedback mới từ khách hàng', time: '3 giờ trước', read: true },
+    { message: 'Feedback mới từ khách hàng', time: '3 giờ trước', read: false },
   ];
 
   constructor(private router: Router, private userApi: UserApiService) {}

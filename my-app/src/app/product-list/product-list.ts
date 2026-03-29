@@ -17,6 +17,7 @@ export class ProductList implements OnInit{
 
   products:any[] = [];
   currentCategory:string | null = null;
+  searchQuery:string | null = null;
   constructor(
     private productService:ProductApiService,
     private route: ActivatedRoute,
@@ -29,18 +30,32 @@ export class ProductList implements OnInit{
     const category = this.normalizeCategory(params.get('category'));
     this.currentCategory = category;
 
-    this.productService.getProducts().subscribe((data:any)=>{
+    this.route.queryParamMap.subscribe(queryParams => {
+      this.searchQuery = queryParams.get('q');
 
-      if(category){
-        this.products = data.filter(
-          (p:any) => this.normalizeCategory(p.product_dept) === category
-        );
-      } 
-      else {
-        this.products = data;
-      }
+      this.productService.getProducts().subscribe((data:any)=>{
 
-      this.cdr.detectChanges(); 
+        if(category){
+          this.products = data.filter(
+            (p:any) => this.normalizeCategory(p.product_dept) === category
+          );
+        }
+        else if(this.searchQuery){
+          const q = this.searchQuery.toLowerCase();
+          const qNorm = this.normalizeCategory(this.searchQuery);
+          this.products = data.filter((p:any) => {
+            const nameMatch = p.product_name?.toLowerCase().includes(q);
+            const deptMatch = this.normalizeCategory(p.product_dept) === qNorm;
+            const descMatch = p.product_description?.toLowerCase().includes(q);
+            return nameMatch || deptMatch || descMatch;
+          });
+        }
+        else {
+          this.products = data;
+        }
+
+        this.cdr.detectChanges(); 
+      });
     });
 
   });
