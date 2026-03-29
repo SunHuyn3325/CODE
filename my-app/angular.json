@@ -21,15 +21,7 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              {
-                "glob": "**/*",
-                "input": "src/assets",
-                "output": "assets"
-              },
-              {
-                "glob": "**/*",
-                "input": "public"
-              },
+              "src/assets",
               "src/_redirects"
             ],
             "styles": [
