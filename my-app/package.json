@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve --port 4300",
     "build": "ng build",
+    "postbuild": "node ./scripts/postbuild-rename.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:my-app": "node dist/my-app/server/server.mjs"
