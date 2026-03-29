@@ -16,6 +16,7 @@ export class Qr {
   countdown = 60;
   private timer: any = null;
   confirmed = false;
+  successMessage = '';
 
   @Output() paymentConfirmed = new EventEmitter<void>();
 
@@ -25,6 +26,7 @@ export class Qr {
     this.selectedBank = 'vietcombank';
     this.countdown = 60;
     this.confirmed = false;
+    this.successMessage = '';
     this.startCountdown();
   }
 
@@ -32,6 +34,7 @@ export class Qr {
     this.isVisible = false;
     this.stopCountdown();
     this.confirmed = false;
+    this.successMessage = '';
   }
 
   switchTab(tab: 'momo' | 'internet_banking' | 'zalopage') {
@@ -40,14 +43,12 @@ export class Qr {
 
   confirmPayment() {
     if (this.confirmed) return;
-    // mark confirmed locally to show success immediately
     this.confirmed = true;
-    // emit event so parent can create order / verify
     this.paymentConfirmed.emit();
-    // auto-close shortly after showing success
     setTimeout(() => {
       this.closeModal();
-    }, 1400);
+      alert('Đơn hàng đã được cập nhật, cảm ơn quý khách.');
+    }, 500);
   }
 
   private startCountdown() {

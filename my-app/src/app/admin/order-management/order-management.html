@@ -256,12 +256,14 @@
 
         <!-- Bước 2: Đang chuẩn bị → Nhập mã vận đơn SPX + Gửi hàng -->
         <div class="action-block ship-block" *ngIf="selectedOrder.status === 'processing'">
-          <div class="action-icon ship-icon">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M1 3h15v13H1z" stroke="#fff" stroke-width="1.5"/><path d="M16 8h4l3 4v5h-7V8z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><circle cx="5.5" cy="18.5" r="2.5" stroke="#fff" stroke-width="1.5"/><circle cx="18.5" cy="18.5" r="2.5" stroke="#fff" stroke-width="1.5"/></svg>
-          </div>
-          <div class="action-info">
-            <span class="action-title">Người bán đang chuẩn bị hàng</span>
-            <span class="action-desc">Nhập mã vận đơn SPX Express để gửi hàng</span>
+          <div class="ship-block-top">
+            <div class="action-icon ship-icon">
+              <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M1 3h15v13H1z" stroke="#fff" stroke-width="1.5"/><path d="M16 8h4l3 4v5h-7V8z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><circle cx="5.5" cy="18.5" r="2.5" stroke="#fff" stroke-width="1.5"/><circle cx="18.5" cy="18.5" r="2.5" stroke="#fff" stroke-width="1.5"/></svg>
+            </div>
+            <div class="action-info">
+              <span class="action-title">Đang chuẩn bị hàng</span>
+              <span class="action-desc">Nhập mã vận đơn để gửi hàng qua SPX Express</span>
+            </div>
           </div>
           <div class="ship-input-group">
             <input type="text" class="tracking-input" [(ngModel)]="trackingCodeInput" placeholder="VD: SPXVN04..." />

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { FeedbackApiService } from '../feedback-api.service';
 
@@ -9,8 +10,54 @@ import { FeedbackApiService } from '../feedback-api.service';
   templateUrl: './contact.html',
   styleUrls: ['./contact.css']
 })
-export class Contact {
-  constructor(private FeedbackApiService : FeedbackApiService) { }
+export class Contact implements AfterViewInit, OnDestroy {
+  private observer?: IntersectionObserver;
+  private platformId = inject(PLATFORM_ID);
+
+  activeTab: 'contact' | 'team' | 'tech' = 'contact';
+
+  constructor(private FeedbackApiService: FeedbackApiService) {}
+
+  switchTab(tab: 'contact' | 'team' | 'tech') {
+    this.activeTab = tab;
+    // Re-observe after Angular renders the new tab content
+    setTimeout(() => this.setupObserver(), 50);
+  }
+
+  ngAfterViewInit() {
+    this.setupObserver();
+  }
+
+  private setupObserver() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    // Disconnect previous observer
+    this.observer?.disconnect();
+
+    const elements = document.querySelectorAll(
+      '.animate-left, .animate-right, .animate-up'
+    );
+
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('observed');
+            entry.target.classList.add('show');
+          } else {
+            entry.target.classList.remove('show');
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -5% 0px' }
+    );
+
+    elements.forEach((el) => this.observer!.observe(el));
+  }
+
+  ngOnDestroy() {
+    this.observer?.disconnect();
+  }
 
   onSubmit(event: Event): void {
     event.preventDefault();

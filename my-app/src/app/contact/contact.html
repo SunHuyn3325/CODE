@@ -3,85 +3,296 @@
     <img src="/assets/bg_contact.png" alt="Background texture">
   </div>
 
-  <section class="content">
-    <div class="contact-shell">
-      <div class="contact-heading">
-        <p class="eyebrow">Chăm sóc khách hàng</p>
-        <h1 class="title">LIÊN HỆ VỚI SẮC</h1>
-        <p class="subtitle">
-          Để lại lời nhắn, đội ngũ SẮC sẽ phản hồi trong thời gian sớm nhất để hỗ trợ bạn tận tình.
-        </p>
-      </div>
+  <!-- Tab navigation -->
+  <nav class="contact-tabs">
+        <button class="tab-btn" [class.active]="activeTab === 'contact'" (click)="switchTab('contact')">
+          <span class="tab-icon">✉️</span> Liên Hệ
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'team'" (click)="switchTab('team')">
+          <span class="tab-icon">👥</span> Đội Ngũ
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'tech'" (click)="switchTab('tech')">
+          <span class="tab-icon">🛠</span> Tech Stack
+        </button>
+      </nav>
 
-      <div class="contact-container">
-        <form class="contact-form" (submit)="onSubmit($event)">
-          <div class="row">
-            <div class="form-group">
-              <input id="firstName" name="firstName" type="text" placeholder=" " required>
-              <label for="firstName">Họ và tên *</label>
+      <!-- TAB 1: Contact -->
+      <div class="tab-panel" *ngIf="activeTab === 'contact'">
+        <div class="contact-section">
+          <div class="ct-shape ct-shape-1"></div>
+          <div class="ct-shape ct-shape-2"></div>
+          <div class="ct-shape ct-shape-3"></div>
+
+          <div class="contact-inner">
+            <div class="contact-tab-header animate-up">
+              <span class="contact-badge">✉️ GỬI TIN NHẮN</span>
+              <h2 class="contact-tab-heading">Kết Nối Với <span class="ct-accent">Đội Ngũ SẮC</span></h2>
+              <div class="ct-heading-line"><span></span><span></span><span></span></div>
+              <p class="contact-tab-desc">Mọi thắc mắc đều được chúng tôi tiếp nhận và phản hồi tận tình trong thời gian ngắn nhất.</p>
             </div>
 
-            <div class="form-group">
-              <input id="phone" name="phone" type="tel" placeholder=" " required>
-              <label for="phone">Số điện thoại *</label>
+            <div class="contact-grid">
+              <div class="ct-card ct-card--form animate-up" style="--delay: .1s">
+                <div class="ct-card-inner">
+                  <form (submit)="onSubmit($event)">
+                    <div class="row">
+                      <div class="form-group">
+                        <input id="firstName" name="firstName" type="text" placeholder=" " required>
+                        <label for="firstName">Họ và tên *</label>
+                      </div>
+                      <div class="form-group">
+                        <input id="phone" name="phone" type="tel" placeholder=" " required>
+                        <label for="phone">Số điện thoại *</label>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <input id="email" name="email" type="email" placeholder=" " required>
+                      <label for="email">Email *</label>
+                    </div>
+                    <div class="form-group">
+                      <textarea id="message" name="message" rows="5" placeholder=" " required></textarea>
+                      <label for="message">Câu hỏi của bạn *</label>
+                    </div>
+                    <div class="button-group">
+                      <button class="btn-primary" type="submit">GỬI LỜI NHẮN ✦</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="ct-card ct-card--info animate-up" style="--delay: .2s">
+                <div class="ct-card-inner">
+                  <h3 class="info-title">Thông tin liên hệ</h3>
+                  <div class="info-item">
+                    <img src="/assets/location.png" alt="Location" class="icon icon-location">
+                    <span>123 Nguyễn Trãi, Quận 1, TP. Hồ Chí Minh</span>
+                  </div>
+                  <div class="info-item">
+                    <img src="/assets/time.png" alt="Time" class="icon icon-time">
+                    <span>8:00 – 23:00</span>
+                  </div>
+                  <div class="info-item">
+                    <img src="/assets/email.png" alt="Email" class="icon icon-email">
+                    <a href="mailto:sac.support@gmail.com" class="clickable">sac.support@gmail.com</a>
+                  </div>
+                  <div class="info-item">
+                    <img src="/assets/hotline.png" alt="Hotline" class="icon icon-hotline">
+                    <a href="tel:0812059720" class="clickable">Hotline: 0812 059 720</a>
+                  </div>
+                  <div class="social-row">
+                    <a class="social-icon" href="#" aria-label="Facebook">
+                      <img src="/assets/facebook.png" alt="Facebook">
+                    </a>
+                    <a class="social-icon" href="#" aria-label="Messenger">
+                      <img src="/assets/messenger.png" alt="Messenger" class="social-messenger">
+                    </a>
+                    <a class="social-icon" href="#" aria-label="Zalo">
+                      <img src="/assets/zalo.png" alt="Zalo" class="social-zalo">
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div class="form-group">
-            <input id="email" name="email" type="email" placeholder=" " required>
-            <label for="email">Email *</label>
-          </div>
-
-          <div class="form-group">
-            <textarea id="message" name="message" rows="5" placeholder=" " required></textarea>
-            <label for="message">Câu hỏi của bạn *</label>
-          </div>
-
-          <div class="button-group">
-            <button class="btn-primary" type="submit">GỬI LỜI NHẮN ✦</button>
-          </div>
-        </form>
-
-        <aside class="contact-info">
-          <h3 class="info-title">Thông tin liên hệ</h3>
-
-          <div class="info-item">
-            <img src="/assets/location.png" alt="Location" class="icon icon-location">
-            <span>123 Nguyễn Trãi, Quận 1, TP. Hồ Chí Minh</span>
-          </div>
-
-          <div class="info-item">
-            <img src="/assets/time.png" alt="Time" class="icon icon-time">
-            <span>8:00 – 23:00</span>
-          </div>
-
-          <div class="info-item">
-            <img src="/assets/email.png" alt="Email" class="icon icon-email">
-            <a href="mailto:sac.support@gmail.com" class="clickable">sac.support@gmail.com</a>
-          </div>
-
-          <div class="info-item">
-            <img src="/assets/hotline.png" alt="Hotline" class="icon icon-hotline">
-            <a href="tel:0812059720" class="clickable">Hotline: 0812 059 720</a>
-          </div>
-
-          <div class="social-row">
-            <a class="social-icon" href="#" aria-label="Facebook">
-              <img src="/assets/facebook.png" alt="Facebook">
-            </a>
-            <a class="social-icon" href="#" aria-label="Messenger">
-              <img src="/assets/messenger.png" alt="Messenger" class="social-messenger">
-            </a>
-            <a class="social-icon" href="#" aria-label="Zalo">
-              <img src="/assets/zalo.png" alt="Zalo" class="social-zalo">
-            </a>
-          </div>
-        </aside>
+        </div>
       </div>
-    </div>
-  </section>
 
-  <div class="map-full">
+      <!-- TAB 2: Team -->
+      <div class="tab-panel" *ngIf="activeTab === 'team'">
+        <div class="team-section">
+          <div class="team-shape team-shape-1"></div>
+          <div class="team-shape team-shape-2"></div>
+          <div class="team-shape team-shape-3"></div>
+          <div class="team-shape team-shape-4"></div>
+
+          <div class="team-container">
+            <div class="team-header animate-up">
+              <span class="team-badge">✨ ĐỘI NGŨ PHÁT TRIỂN</span>
+              <h2 class="team-heading">Gặp Gỡ <span class="accent-gradient">5 Thành Viên</span> Đằng Sau Dự Án</h2>
+              <div class="heading-line"><span></span><span></span><span></span></div>
+              <p class="team-desc">
+                Những con người đã cùng nhau xây dựng Website Sắc từ con số 0.<br>
+                Mỗi người một thế mạnh, hợp lại tạo nên một sản phẩm hoàn chỉnh.
+              </p>
+            </div>
+
+            <div class="team-grid">
+              <div class="team-card animate-up" style="--delay: 0s; --c1: #6366f1; --c2: #06b6d4;">
+                <div class="card-inner">
+                  <div class="card-number">01</div>
+                  <div class="card-photo">
+                    <img src="/assets/Xu%C3%A2n%20%C3%81i.png" alt="Xuân Ái">
+                    <div class="photo-overlay"><span class="overlay-emoji">👨‍💻</span></div>
+                  </div>
+                  <div class="card-info">
+                    <h3>Xuân Ái</h3>
+                    <span class="role-badge">Frontend Lead</span>
+                    <p>Thiết kế trải nghiệm người dùng và kiến trúc component.</p>
+                    <div class="card-techs"><span>Angular</span><span>SCSS</span><span>UI/UX</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="team-card animate-up" style="--delay: .1s; --c1: #f59e0b; --c2: #10b981;">
+                <div class="card-inner">
+                  <div class="card-number">02</div>
+                  <div class="card-photo">
+                    <img src="/assets/H%C6%B0%C6%A1ng%20Th%C6%B0.png" alt="Hương Thư">
+                    <div class="photo-overlay"><span class="overlay-emoji">🎨</span></div>
+                  </div>
+                  <div class="card-info">
+                    <h3>Hương Thư</h3>
+                    <span class="role-badge">Product & UX</span>
+                    <p>Chuẩn hóa nội dung, flow người dùng và tính rõ ràng giao diện.</p>
+                    <div class="card-techs"><span>Figma</span><span>Content</span><span>UX</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="team-card animate-up" style="--delay: .2s; --c1: #ec4899; --c2: #f97316;">
+                <div class="card-inner">
+                  <div class="card-number">03</div>
+                  <div class="card-photo">
+                    <img src="/assets/Xu%C3%A2n%20Quy%C3%AAn.png" alt="Xuân Quyên">
+                    <div class="photo-overlay"><span class="overlay-emoji">⚙️</span></div>
+                  </div>
+                  <div class="card-info">
+                    <h3>Xuân Quyên</h3>
+                    <span class="role-badge">Backend API</span>
+                    <p>Xây dựng API, session auth và quy tắc nghiệp vụ đơn hàng.</p>
+                    <div class="card-techs"><span>Node.js</span><span>MongoDB</span><span>REST</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="team-card animate-up" style="--delay: .3s; --c1: #8b5cf6; --c2: #d946ef;">
+                <div class="card-inner">
+                  <div class="card-number">04</div>
+                  <div class="card-photo">
+                    <img src="/assets/minhthu.png" alt="Minh Thư">
+                    <div class="photo-overlay"><span class="overlay-emoji">🔍</span></div>
+                  </div>
+                  <div class="card-info">
+                    <h3>Minh Thư</h3>
+                    <span class="role-badge">Quality & QA</span>
+                    <p>Kiểm thử luồng thanh toán, realtime sync và tính ổn định hệ thống.</p>
+                    <div class="card-techs"><span>Testing</span><span>QA</span><span>CI/CD</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="team-card animate-up" style="--delay: .4s; --c1: #14b8a6; --c2: #3b82f6;">
+                <div class="card-inner">
+                  <div class="card-number">05</div>
+                  <div class="card-photo">
+                    <img src="/assets/Th%E1%BB%8B%20Thanh.png" alt="Thị Thanh">
+                    <div class="photo-overlay"><span class="overlay-emoji">🚀</span></div>
+                  </div>
+                  <div class="card-info">
+                    <h3>Thị Thanh</h3>
+                    <span class="role-badge">DevOps</span>
+                    <p>Tối ưu build, vận hành môi trường dev và tích hợp dịch vụ.</p>
+                    <div class="card-techs"><span>DevOps</span><span>Docker</span><span>Deploy</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: Tech Stack -->
+      <div class="tab-panel" *ngIf="activeTab === 'tech'">
+        <div class="knowledge-section">
+          <div class="know-shape know-shape-1"></div>
+          <div class="know-shape know-shape-2"></div>
+
+          <div class="knowledge-container">
+            <div class="knowledge-header animate-up">
+              <span class="knowledge-badge">🛠 TECH STACK</span>
+              <h2 class="knowledge-heading">Kiến Thức <span class="know-accent">Đã Vận Dụng</span></h2>
+              <div class="know-heading-line"><span></span><span></span><span></span></div>
+              <p class="knowledge-subtitle">Tổng hợp công nghệ và kỹ thuật được áp dụng xuyên suốt quá trình phát triển.</p>
+            </div>
+
+            <div class="knowledge-grid">
+              <div class="knowledge-card animate-up" style="--delay: .05s; --kc1: #6366f1; --kc2: #818cf8;">
+                <div class="kcard-icon-wrap"><span class="kcard-icon">⚡</span></div>
+                <div class="kcard-label">Front-end</div>
+                <h4 class="kcard-title">Angular Standalone Architecture</h4>
+                <ul class="kcard-list">
+                  <li>Tổ chức route lazy-loading theo feature module.</li>
+                  <li>Signal + OnPush để tối ưu cập nhật UI.</li>
+                  <li>Interceptor xử lý credential, loading, auth lỗi tập trung.</li>
+                </ul>
+                <div class="kcard-tags"><span>Angular 19</span><span>Signals</span><span>Lazy Routes</span></div>
+              </div>
+
+              <div class="knowledge-card animate-up" style="--delay: .1s; --kc1: #8b5cf6; --kc2: #a78bfa;">
+                <div class="kcard-icon-wrap"><span class="kcard-icon">🎨</span></div>
+                <div class="kcard-label">Front-end</div>
+                <h4 class="kcard-title">UI/UX Engineering</h4>
+                <ul class="kcard-list">
+                  <li>Thiết kế dashboard quản trị có filter, pager, badge trạng thái.</li>
+                  <li>Responsive layout cho desktop/mobile với CSS theo component.</li>
+                  <li>Realtime feedback bằng toast, loading state, empty state.</li>
+                </ul>
+                <div class="kcard-tags"><span>Responsive</span><span>CSS</span><span>Dashboard</span></div>
+              </div>
+
+              <div class="knowledge-card animate-up" style="--delay: .15s; --kc1: #ec4899; --kc2: #f472b6;">
+                <div class="kcard-icon-wrap"><span class="kcard-icon">🔐</span></div>
+                <div class="kcard-label">Front-end</div>
+                <h4 class="kcard-title">Auth & State Management</h4>
+                <ul class="kcard-list">
+                  <li>JWT token lưu httpOnly cookie, auto-refresh khi hết hạn.</li>
+                  <li>Route guard phân quyền admin/user theo role.</li>
+                  <li>RxJS BehaviorSubject quản lý trạng thái giỏ hàng, user session.</li>
+                </ul>
+                <div class="kcard-tags"><span>JWT</span><span>Guards</span><span>RxJS</span></div>
+              </div>
+
+              <div class="knowledge-card animate-up" style="--delay: .2s; --kc1: #10b981; --kc2: #34d399;">
+                <div class="kcard-icon-wrap"><span class="kcard-icon">🖥️</span></div>
+                <div class="kcard-label">Back-end</div>
+                <h4 class="kcard-title">Node.js + Express API Design</h4>
+                <ul class="kcard-list">
+                  <li>REST API tách lớp route/controller/model rõ ràng.</li>
+                  <li>Middleware auth/admin/csrf/rate-limit bảo vệ endpoint.</li>
+                  <li>MongoDB Mongoose cho schema order/user/product.</li>
+                </ul>
+                <div class="kcard-tags"><span>Express</span><span>MongoDB</span><span>REST</span></div>
+              </div>
+
+              <div class="knowledge-card animate-up" style="--delay: .25s; --kc1: #f59e0b; --kc2: #fbbf24;">
+                <div class="kcard-icon-wrap"><span class="kcard-icon">📡</span></div>
+                <div class="kcard-label">Back-end</div>
+                <h4 class="kcard-title">Realtime & Domain Rules</h4>
+                <ul class="kcard-list">
+                  <li>SSE đồng bộ trạng thái đơn hàng đến khách hàng theo userId.</li>
+                  <li>Ràng buộc nghiệp vụ chuyển trạng thái đơn theo flow hợp lệ.</li>
+                  <li>Tự động hóa delivered → paid và ghi audit log thao tác admin.</li>
+                </ul>
+                <div class="kcard-tags"><span>SSE</span><span>Business Logic</span><span>Audit Log</span></div>
+              </div>
+
+              <div class="knowledge-card animate-up" style="--delay: .3s; --kc1: #06b6d4; --kc2: #22d3ee;">
+                <div class="kcard-icon-wrap"><span class="kcard-icon">🚀</span></div>
+                <div class="kcard-label">Back-end</div>
+                <h4 class="kcard-title">DevOps & Deployment</h4>
+                <ul class="kcard-list">
+                  <li>Angular SSR với Express adapter phục vụ SEO.</li>
+                  <li>Environment config tách biệt dev/staging/production.</li>
+                  <li>CORS, helmet, compression cấu hình production-ready.</li>
+                </ul>
+                <div class="kcard-tags"><span>SSR</span><span>Helmet</span><span>CORS</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  <div class="map-full" *ngIf="activeTab === 'contact'">
     <iframe
       title="Bản đồ cửa hàng SẮC"
       loading="lazy"
