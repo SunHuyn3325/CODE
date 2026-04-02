@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { BlogApiService } from '../../blog-api.service';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, Subscription } from 'rxjs';
@@ -272,7 +273,7 @@ export class BlogDetail implements OnInit, OnDestroy, AfterViewInit {
     }
 
     const normalizedPostId = this.currentPost._id.trim().replace(/,$/, '').trim();
-    const apiUrl = 'http://localhost:3000/api';
+    const apiUrl = `${environment.apiBase}/api`;
 
     // Call new API endpoint to get related products based on blog content keywords
     this.http
@@ -821,7 +822,7 @@ export class BlogDetail implements OnInit, OnDestroy, AfterViewInit {
       if (!sku) return;
 
       // Load reviews count from API
-      this.http.get<any>(`http://localhost:3000/api/reviews/${sku}`).subscribe({
+      this.http.get<any>(`${environment.apiBase}/api/reviews/${sku}`).subscribe({
         next: (response) => {
           if (response.success && response.data && response.data.reviews) {
             product.ReviewCount = response.data.reviews.length;

@@ -2,6 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { environment } from '../environments/environment';
 import { Vision } from '../vision/vision';
 
 @Component({
@@ -161,7 +162,7 @@ export class Home implements OnInit, OnDestroy {
   }
 
   loadLatestBlogs() {
-    this.http.get<any>('http://localhost:3000/blogs').subscribe({
+    this.http.get<any>(`${environment.apiBase}/blogs`).subscribe({
       next: (res) => {
         const blogs = Array.isArray(res) ? res : (res?.data || []);
         const published = blogs

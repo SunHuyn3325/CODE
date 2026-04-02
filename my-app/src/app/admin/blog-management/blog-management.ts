@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 type BlogStatus = 'draft' | 'published';
 
@@ -43,8 +44,8 @@ export class BlogManagement implements OnInit {
   @ViewChild('contentEditor') contentEditor?: ElementRef<HTMLDivElement>;
   @ViewChild('blogFormPanel') blogFormPanel?: ElementRef;
 
-  private apiUrl = 'http://localhost:3000/blogs';
-  private uploadUrl = 'http://localhost:3000/upload-image';
+  private apiUrl = `${environment.apiBase}/blogs`;
+  private uploadUrl = `${environment.apiBase}/upload-image`;
 
   blogs: BlogItem[] = [];
   filteredBlogs: BlogItem[] = [];
@@ -97,7 +98,7 @@ export class BlogManagement implements OnInit {
         console.error('✗ Server connection failed');
         console.error('Error details:', err);
         if (err.status === 0) {
-          this.errorMsg = 'Không thể kết nối đến server tại http://localhost:3000. Vui lòng khởi động server backend.';
+          this.errorMsg = `Không thể kết nối đến server tại ${environment.apiBase}. Vui lòng khởi động server backend.`;
         } else {
           this.errorMsg = `Server có vấn đề (${err.status}). Kiểm tra logs server.`;
         }
@@ -120,7 +121,7 @@ export class BlogManagement implements OnInit {
         this.loading = false;
         console.error('Error loading blogs:', err);
         if (err.status === 0) {
-          this.errorMsg = 'Không thể kết nối server. Kiểm tra server có đang chạy tại http://localhost:3000';
+          this.errorMsg = `Không thể kết nối server. Kiểm tra server có đang chạy tại ${environment.apiBase}`;
         } else {
           this.errorMsg = `Không tải được danh sách blog (${err.status})`;
         }
@@ -357,14 +358,14 @@ export class BlogManagement implements OnInit {
           
           this.saving = false;
           if (err.status === 0) {
-            this.errorMsg = 'Không thể kết nối đến server. Kiểm tra server có đang chạy không?';
-          } else if (err.status === 404) {
-            this.errorMsg = 'Không tìm thấy bài viết cần cập nhật';
-          } else if (err.status >= 500) {
-            this.errorMsg = 'Lỗi server. Vui lòng thử lại sau.';
-          } else {
-            this.errorMsg = err?.error?.message || `Cập nhật thất bại (Mã lỗi: ${err.status})`;
-          }
+          this.errorMsg = `Không thể kết nối đến server. Kiểm tra server có đang chạy tại ${environment.apiBase} không?`;
+        } else if (err.status === 404) {
+          this.errorMsg = 'Không tìm thấy bài viết cần cập nhật';
+        } else if (err.status >= 500) {
+          this.errorMsg = 'Lỗi server. Vui lòng thử lại sau.';
+        } else {
+          this.errorMsg = err?.error?.message || `Cập nhật thất bại (Mã lỗi: ${err.status})`;
+        }
         }
       });
       return;
@@ -391,7 +392,7 @@ export class BlogManagement implements OnInit {
         
         this.saving = false;
         if (err.status === 0) {
-          this.errorMsg = 'Không thể kết nối đến server. Kiểm tra server có đang chạy tại http://localhost:3000 không?';
+          this.errorMsg = `Không thể kết nối đến server. Kiểm tra server có đang chạy tại ${environment.apiBase} không?`;
         } else if (err.status === 400) {
           this.errorMsg = 'Dữ liệu không hợp lệ: ' + (err.error?.message || 'Kiểm tra lại thông tin');
         } else if (err.status === 500) {

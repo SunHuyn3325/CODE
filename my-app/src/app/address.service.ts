@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AddressService {
-  api = "http://localhost:3000/addresses";
+  api = `${environment.apiBase}/addresses`;
   constructor(private http: HttpClient) {}
   getAddressByUser(userId:any){
     // Normalize response: backend returns an object (or null),

@@ -136,14 +136,14 @@ app.post('/chat/message', async (req, res) => {
         }
         suggestedProducts = await Product.find(query)
           .limit(6)
-          .select('_id product_name unit_price discount images product_dept')
+          .select('_id product_name slug description unit_price discount images product_dept sizes stock createdAt updatedAt')
           .lean();
 
         // fallback: lấy sản phẩm đầu nếu keyword không match
         if (suggestedProducts.length === 0) {
           suggestedProducts = await Product.find({})
             .limit(6)
-            .select('_id product_name unit_price discount images product_dept')
+            .select('_id product_name slug description unit_price discount images product_dept sizes stock createdAt updatedAt')
             .lean();
         }
       } catch (productErr) {

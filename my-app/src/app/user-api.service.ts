@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap } from 'rxjs';
+import { environment } from '../environments/environment';
 import { Account } from '../app/models/Account'; 
 
 @Injectable({
@@ -8,7 +9,7 @@ import { Account } from '../app/models/Account';
 })
 export class UserApiService {
 
-  private api = "http://localhost:3000/users";
+  private api = `${environment.apiBase}/users`;
 
   // ✅ State quản lý user
   private currentUser = new BehaviorSubject<Account | null>(null);

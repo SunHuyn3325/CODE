@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AdminApiService {
   private base = '/api/admin';
   // backend server (matches my-server)
-  private backend = 'http://localhost:3000';
+  private backend = environment.apiBase;
 
   constructor(private http: HttpClient) {}
 

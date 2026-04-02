@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product } from './models/product';
 import { BehaviorSubject } from 'rxjs';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +11,8 @@ import { BehaviorSubject } from 'rxjs';
 
 export class ProductApiService {
 
-  private apiURL = "http://localhost:3000/products";
-  private uploadURL = "http://localhost:3000/upload-image";
+  private apiURL = `${environment.apiBase}/products`;
+  private uploadURL = `${environment.apiBase}/upload-image`;
   private currentProduct = new BehaviorSubject<any>(null);
   currentProduct$ = this.currentProduct.asObservable();
 
@@ -26,7 +27,7 @@ export class ProductApiService {
   }
 
   getProductsByCategory(category: string): Observable<Product[]> {
-  const url = `http://localhost:3000/products?product_dept=${category}`;
+  const url = `${environment.apiBase}/products?product_dept=${category}`;
   return this.http.get<Product[]>(url);
   }
   addProduct(data: any) {

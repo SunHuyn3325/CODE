@@ -2,6 +2,7 @@ import { Component, AfterViewInit, OnDestroy, OnInit, PLATFORM_ID, inject } from
 import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -23,7 +24,7 @@ export class AboutUs implements AfterViewInit, OnDestroy, OnInit {
   }
 
   loadPublishedBlogs() {
-    this.http.get<any[]>('http://localhost:3000/blogs').subscribe({
+    this.http.get<any[]>(`${environment.apiBase}/blogs`).subscribe({
       next: (data) => {
         // Lọc những blog đã xuất bản
         this.blogs = data.filter((blog: any) => blog.status === 'published');

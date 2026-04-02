@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { environment } from '../environments/environment';
 
 export interface BlogPost {
   id: string;
@@ -21,7 +22,7 @@ export interface BlogPost {
   providedIn: 'root',
 })
 export class BlogApiService {
-  private apiUrl = 'http://localhost:3000/blogs';
+  private apiUrl = `${environment.apiBase}/blogs`;
   constructor(private http: HttpClient) {}
 
   getBlogs(): Observable<any> {
