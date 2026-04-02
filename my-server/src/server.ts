@@ -7,7 +7,10 @@ import {
 import express from 'express';
 import { join } from 'node:path';
 
-const browserDistFolder = join(import.meta.dirname, '../browser');
+// Avoid using `import.meta` so the file type (CJS/ESM) doesn't cause TS errors during
+// type-check in different module resolutions. Use process.cwd() which is valid in
+// both environments for locating the built browser bundle when running the server.
+const browserDistFolder = join(process.cwd(), 'browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
@@ -51,7 +54,11 @@ app.use((req, res, next) => {
  * Start the server if this module is the main entry point, or it is ran via PM2.
  * The server listens on the port defined by the `PORT` environment variable, or defaults to 4000.
  */
-if (isMainModule(import.meta.url) || process.env['pm_id']) {
+// Determine whether to start the server. We avoid `import.meta.url` here for the
+// same reasons as above and instead rely on common runtime checks.
+const shouldStartServer = (typeof process !== 'undefined' && !!process.env['pm_id']) || (typeof require !== 'undefined' && require.main === module);
+
+if (shouldStartServer) {
   const port = process.env['PORT'] || 4000;
   app.listen(port, (error) => {
     if (error) {
