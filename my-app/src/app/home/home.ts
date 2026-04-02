@@ -1,8 +1,8 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { environment } from '../environments/environment';
+  import { HttpClient, HttpClientModule } from '@angular/common/http';
+  import { environment } from '../../environments/environment';
 import { Vision } from '../vision/vision';
 
 @Component({
